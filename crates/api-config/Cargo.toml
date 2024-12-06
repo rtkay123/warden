@@ -7,8 +7,14 @@ repository.workspace = true
 
 [dependencies]
 anyhow.workspace = true
+async-graphql = { version = "7.0.11", features = ["time"] }
+async-graphql-axum = "7.0.11"
 axum = { workspace = true, features = ["macros"] }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "signal"] }
 tracing.workspace = true
 warden-core = { workspace = true, features = ["serde", "time"] }
 warden-infra = { workspace = true, features = ["tracing"] }
+
+[features]
+default = ["playground"]
+playground = ["async-graphql/playground"]

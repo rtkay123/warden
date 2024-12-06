@@ -1,7 +1,9 @@
+pub mod handler;
 pub mod server;
+pub mod state;
 
 use anyhow::Result;
 
 pub async fn run() -> Result<()> {
-    todo!()
+    server::serve().await
 }
