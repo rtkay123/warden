@@ -10,12 +10,11 @@ use crate::state::AppState;
 pub async fn serve() -> Result<()> {
     let schema = ApiSchemaBuilder::build(AppState::default());
 
-    #[cfg(feature = "playground")]
-    let app = Router::new().route("/", get(handle).post_service(GraphQL::new(schema)));
+    let app = Router::new()
+        .route("/", get(handle).post_service(GraphQL::new(schema)))
+        .route("/health", get(health));
 
-    axum::serve(TcpListener::bind("127.0.0.1:8000").await.unwrap(), app)
-        .await
-        .unwrap();
+    axum::serve(TcpListener::bind("127.0.0.1:8000").await?, app).await?;
 
     Ok(())
 }
@@ -27,5 +26,13 @@ async fn handle() -> impl IntoResponse {
     ));
 
     #[cfg(not(feature = "playground"))]
-    return String::default();
+    return health().await;
+}
+
+async fn health() -> impl IntoResponse {
+    format!(
+        "{} v{} is live",
+        env!("CARGO_CRATE_NAME"),
+        env!("CARGO_PKG_VERSION")
+    )
 }
