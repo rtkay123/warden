@@ -6,6 +6,9 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
+anyhow.workspace = true
+axum = { workspace = true, features = ["macros"] }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "signal"] }
 tracing.workspace = true
+warden-core = { workspace = true, features = ["serde", "time"] }
 warden-infra = { workspace = true, features = ["tracing"] }

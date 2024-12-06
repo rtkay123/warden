@@ -12,3 +12,7 @@ tracing-subscriber = { version = "0.3.19", optional = true }
 [features]
 default = []
 tracing = ["dep:tracing", "tracing-subscriber/env-filter"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

@@ -1,8 +1,7 @@
-use tracing::info;
 use warden_infra::tracing::Telemetry;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), anyhow::Error> {
     let _tracing = Telemetry::builder().build();
-    info!("Hello, world!");
+    api_config::run().await
 }
