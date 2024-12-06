@@ -1,8 +1,11 @@
 [package]
 name = "api-config"
 version = "0.1.0"
-edition = "2024"
+edition.workspace = true
 license.workspace = true
 repository.workspace = true
 
 [dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "signal"] }
+tracing.workspace = true
+warden-infra = { workspace = true, features = ["tracing"] }

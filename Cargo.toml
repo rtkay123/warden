@@ -1,9 +1,13 @@
 [workspace]
 resolver = "2"
-members = ["crates/*"]
+members = ["crates/*", "lib/*"]
 
 [workspace.package]
+edition = "2024"
 license = "AGPL-3.0-only"
 repository = "https://github.com/rtkay123/warden"
 
 [workspace.dependencies]
+tokio = "1.42.0"
+tracing = "0.1.41"
+warden-infra = { path = "lib/warden-infra" }
