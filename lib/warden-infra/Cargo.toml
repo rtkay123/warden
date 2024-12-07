@@ -6,11 +6,18 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
+bon = { optional = true, workspace = true }
+secrecy = { optional = true, workspace = true }
+serde = { workspace = true, features = ["derive", "rc"] }
+sqlx = { optional = true, workspace = true }
+thiserror.workspace = true
 tracing = { optional = true, workspace = true }
 tracing-subscriber = { version = "0.3.19", optional = true }
 
 [features]
 default = []
+api = []
+postgres = ["bon", "secrecy/serde", "sqlx/postgres"]
 tracing = ["dep:tracing", "tracing-subscriber/env-filter"]
 
 [package.metadata.docs.rs]

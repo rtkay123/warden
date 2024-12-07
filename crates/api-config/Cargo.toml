@@ -7,13 +7,26 @@ repository.workspace = true
 
 [dependencies]
 anyhow.workspace = true
-async-graphql = { version = "7.0.11", features = ["time"] }
+async-graphql = { version = "7.0.11", features = ["raw_value", "time"] }
 async-graphql-axum = "7.0.11"
 axum = { workspace = true, features = ["macros"] }
+clap = { workspace = true, features = ["derive"] }
+config = { workspace = true, features = ["toml"] }
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+sqlx = { workspace = true, features = [
+    "macros",
+    "migrate",
+    "postgres",
+    "runtime-tokio",
+    "time",
+    "tls-rustls",
+] }
+time = { workspace = true, features = ["serde"] }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "signal"] }
 tracing.workspace = true
 warden-core = { workspace = true, features = ["serde", "time"] }
-warden-infra = { workspace = true, features = ["tracing"] }
+warden-infra = { workspace = true, features = ["api", "postgres", "tracing"] }
 
 [features]
 default = ["playground"]

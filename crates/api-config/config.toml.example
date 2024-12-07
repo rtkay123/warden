@@ -1,0 +1,12 @@
+environment = "development"
+port = 1304
+
+[database]
+pool_size = 100
+port = 5432
+name = "configuration"
+host = "localhost"
+user = "postgres"
+password = "password"
+
+# vim:ft=toml

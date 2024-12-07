@@ -1,20 +1,30 @@
 pub mod graphql;
+use std::net::{Ipv6Addr, SocketAddr};
+
 use anyhow::Result;
 use async_graphql_axum::GraphQL;
 use axum::{Router, response::IntoResponse, routing::get};
 use graphql::ApiSchemaBuilder;
-use tokio::net::TcpListener;
+use tracing::info;
 
 use crate::state::AppState;
 
-pub async fn serve() -> Result<()> {
-    let schema = ApiSchemaBuilder::build(AppState::default());
+pub async fn serve(state: AppState) -> Result<()> {
+    let port = state.config.port;
+    let addr = SocketAddr::from((Ipv6Addr::UNSPECIFIED, port));
+    let schema = ApiSchemaBuilder::build(state);
 
     let app = Router::new()
         .route("/", get(handle).post_service(GraphQL::new(schema)))
         .route("/health", get(health));
 
-    axum::serve(TcpListener::bind("127.0.0.1:8000").await?, app).await?;
+    let listener = tokio::net::TcpListener::bind(addr).await?;
+
+    let socket_addr = listener.local_addr()?;
+
+    info!(addr = ?socket_addr, "listening");
+
+    axum::serve(listener, app).await?;
 
     Ok(())
 }

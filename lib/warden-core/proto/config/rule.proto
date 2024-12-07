@@ -1,4 +1,4 @@
-syntax = "proto2";
+syntax = "proto3";
 
 package config;
 
@@ -6,28 +6,35 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
 
 message RuleConfig {
-  required string id = 1;
-  required string cfg = 2;
-  required string description = 3;
-  required Metadata config = 4;
-  required google.protobuf.Timestamp created_at = 5;
-  required google.protobuf.Timestamp updated_at = 6;
+  string id = 1;
+  string cfg = 2;
+  string description = 3;
+  Metadata config = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
 }
 
 message Metadata {
-  required google.protobuf.Any parameters = 1;
+  message Parameter {
+    oneof value {
+      string str_value = 1;
+      int64 int_value = 2;
+    }
+  }
+  map<string, Parameter> parameters = 1;
   repeated ExitCondition exit_conditions = 2;
   repeated Band bands = 3;
+
 }
 
 message ExitCondition {
-  required string sub_rule_ref = 1;
-  required string reason = 2;
+  string sub_rule_ref = 1;
+  string reason = 2;
 }
 
 message Band {
-  required string sub_rule_ref = 1;
-  required string reason = 2;
+  string sub_rule_ref = 1;
+  string reason = 2;
   optional int64 lower_limit = 3;
   optional int64 upper_limit = 4;
 }
