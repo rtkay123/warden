@@ -9,6 +9,7 @@ repository = "https://github.com/rtkay123/warden"
 
 [workspace.dependencies]
 anyhow = "1.0.94"
+async-nats = "0.38.0"
 axum = "0.7.9"
 bon = "3.2.0"
 clap = "4.5.23"

@@ -21,7 +21,7 @@ use thiserror::Error;
 
 #[derive(Debug, Clone)]
 #[cfg_attr(
-    any(feature = "postgres"),
+    any(feature = "postgres", feature = "nats"),
     derive(bon::Builder),
     builder(state_mod(vis = "pub(crate)"))
 )]
@@ -31,6 +31,14 @@ pub struct Services {
     #[cfg_attr(docsrs, doc(cfg(feature = "postgres")))]
     /// Postgres connection pool handle
     pub postgres: sqlx::PgPool,
+    #[cfg(feature = "nats-core")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "nats-core")))]
+    /// NATS connection handle
+    pub nats: async_nats::Client,
+    #[cfg(feature = "nats-jetstream")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "nats-jetstream")))]
+    /// NATS-Jetstream connection handle
+    pub jetstream: async_nats::jetstream::Context,
 }
 
 #[derive(Error, Debug)]
@@ -41,4 +49,8 @@ pub enum ServiceError {
     #[cfg_attr(docsrs, doc(cfg(feature = "postgres")))]
     /// Database Error
     Postgres(#[from] sqlx::Error),
+    #[cfg(feature = "nats")]
+    #[error(transparent)]
+    /// NATS error
+    Nats(#[from] async_nats::error::Error<async_nats::ConnectErrorKind>),
 }

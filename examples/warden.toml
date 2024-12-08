@@ -1,0 +1,27 @@
+environment = "development"
+port = 2210
+
+[database]
+pool_size = 100
+port = 5432
+name = "transaction_history"
+host = "localhost"
+user = "postgres"
+password = "password"
+
+[nats]
+hosts = ["nats://localhost:4222"]
+
+[[nats.jetstream]]
+name = "stream"
+subjects = ["test.>"]
+max_msgs = 1000
+max_bytes = 10485760
+
+[[nats.jetstream.consumers]]
+name = "consumer"
+dispatch = "pull"
+durable = true
+deliver_subject = "consumer.deliver"
+
+# vim:ft=toml

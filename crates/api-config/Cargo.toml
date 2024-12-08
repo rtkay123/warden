@@ -9,7 +9,7 @@ repository.workspace = true
 anyhow.workspace = true
 async-graphql = { version = "7.0.11", features = ["raw_value", "time"] }
 async-graphql-axum = "7.0.11"
-axum = { workspace = true, features = ["macros"] }
+axum = { workspace = true, features = ["http2", "macros"] }
 clap = { workspace = true, features = ["derive"] }
 config = { workspace = true, features = ["toml"] }
 serde = { workspace = true, features = ["derive"] }

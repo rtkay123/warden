@@ -13,6 +13,10 @@ pub struct Configuration {
     #[cfg_attr(docsrs, doc(cfg(feature = "api")))]
     ///
     pub port: u16,
+    #[cfg(feature = "nats")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "nats")))]
+    /// Nats config
+    pub nats: crate::services::nats::NatsConfig,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize)]

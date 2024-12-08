@@ -6,6 +6,7 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
+async-nats = { optional = true, workspace = true }
 bon = { optional = true, workspace = true }
 secrecy = { optional = true, workspace = true }
 serde = { workspace = true, features = ["derive", "rc"] }
@@ -17,6 +18,9 @@ tracing-subscriber = { version = "0.3.19", optional = true }
 [features]
 default = []
 api = []
+nats = ["bon", "dep:async-nats"]
+nats-core = ["nats"]
+nats-jetstream = ["nats"]
 postgres = ["bon", "secrecy/serde", "sqlx/postgres"]
 tracing = ["dep:tracing", "tracing-subscriber/env-filter"]
 
