@@ -1,0 +1,732 @@
+syntax = "proto3";
+package iso20022.pain013;
+
+message AccountIdentification4Choice {
+  string i_b_a_n = 1;
+  GenericAccountIdentification1 othr = 2;
+}
+message AccountSchemeName1Choice {
+  string cd = 1;
+  string prtry = 2;
+}
+message ActiveCurrencyAndAmount {
+  string ccy = 1;
+  // SimpleContent value of element
+  double value = 2;
+}
+message ActiveOrHistoricCurrencyAndAmount {
+  string ccy = 1;
+  // SimpleContent value of element
+  double value = 2;
+}
+enum AddressType2Code {
+  // Default
+  ADDRESS_TYPE2_CODE_UNSPECIFIED = 0;
+  ADDRESS_TYPE2_CODE_ADDR = 1;
+  ADDRESS_TYPE2_CODE_PBOX = 2;
+  ADDRESS_TYPE2_CODE_HOME = 3;
+  ADDRESS_TYPE2_CODE_BIZZ = 4;
+  ADDRESS_TYPE2_CODE_MLTO = 5;
+  ADDRESS_TYPE2_CODE_DLVY = 6;
+}
+message AddressType3Choice {
+  AddressType2Code cd = 1;
+  GenericIdentification30 prtry = 2;
+}
+message AdviceType1 {
+  AdviceType1Choice cdt_advc = 1;
+  AdviceType1Choice dbt_advc = 2;
+}
+message AdviceType1Choice {
+  AdviceType1Code cd = 1;
+  string prtry = 2;
+}
+enum AdviceType1Code {
+  // Default
+  ADVICE_TYPE1_CODE_UNSPECIFIED = 0;
+  ADVICE_TYPE1_CODE_ADWD = 1;
+  ADVICE_TYPE1_CODE_ADND = 2;
+}
+message AmountOrRate1Choice {
+  ActiveCurrencyAndAmount amt = 1;
+  double rate = 2;
+}
+message AmountType4Choice {
+  ActiveOrHistoricCurrencyAndAmount instd_amt = 1;
+  EquivalentAmount2 eqvt_amt = 2;
+}
+message BranchAndFinancialInstitutionIdentification8 {
+  FinancialInstitutionIdentification23 fin_instn_id = 1;
+  BranchData5 brnch_id = 2;
+}
+message BranchData5 {
+  string id = 1;
+  string l_e_i = 2;
+  string nm = 3;
+  PostalAddress27 pstl_adr = 4;
+}
+message CashAccount40 {
+  AccountIdentification4Choice id = 1;
+  CashAccountType2Choice tp = 2;
+  string ccy = 3;
+  string nm = 4;
+  ProxyAccountIdentification1 prxy = 5;
+}
+message CashAccountType2Choice {
+  string cd = 1;
+  string prtry = 2;
+}
+message CategoryPurpose1Choice {
+  string cd = 1;
+  string prtry = 2;
+}
+enum ChargeBearerType1Code {
+  // Default
+  CHARGE_BEARER_TYPE1_CODE_UNSPECIFIED = 0;
+  CHARGE_BEARER_TYPE1_CODE_DEBT = 1;
+  CHARGE_BEARER_TYPE1_CODE_CRED = 2;
+  CHARGE_BEARER_TYPE1_CODE_SHAR = 3;
+  CHARGE_BEARER_TYPE1_CODE_SLEV = 4;
+}
+message Cheque19 {
+  ChequeType2Code chq_tp = 1;
+  string chq_nb = 2;
+  NameAndAddress18 chq_fr = 3;
+  ChequeDeliveryMethod1Choice dlvry_mtd = 4;
+  NameAndAddress18 dlvr_to = 5;
+  Priority2Code instr_prty = 6;
+  uint32 chq_mtrty_dt = 7;
+  string frms_cd = 8;
+  repeated string memo_fld = 9;
+  string rgnl_clr_zone = 10;
+  string prt_lctn = 11;
+  repeated string sgntr = 12;
+}
+enum ChequeDelivery1Code {
+  // Default
+  CHEQUE_DELIVERY1_CODE_UNSPECIFIED = 0;
+  CHEQUE_DELIVERY1_CODE_MLDB = 1;
+  CHEQUE_DELIVERY1_CODE_MLCD = 2;
+  CHEQUE_DELIVERY1_CODE_MLFA = 3;
+  CHEQUE_DELIVERY1_CODE_CRDB = 4;
+  CHEQUE_DELIVERY1_CODE_CRCD = 5;
+  CHEQUE_DELIVERY1_CODE_CRFA = 6;
+  CHEQUE_DELIVERY1_CODE_PUDB = 7;
+  CHEQUE_DELIVERY1_CODE_PUCD = 8;
+  CHEQUE_DELIVERY1_CODE_PUFA = 9;
+  CHEQUE_DELIVERY1_CODE_RGDB = 10;
+  CHEQUE_DELIVERY1_CODE_RGCD = 11;
+  CHEQUE_DELIVERY1_CODE_RGFA = 12;
+}
+message ChequeDeliveryMethod1Choice {
+  ChequeDelivery1Code cd = 1;
+  string prtry = 2;
+}
+enum ChequeType2Code {
+  // Default
+  CHEQUE_TYPE2_CODE_UNSPECIFIED = 0;
+  CHEQUE_TYPE2_CODE_CCHQ = 1;
+  CHEQUE_TYPE2_CODE_CCCH = 2;
+  CHEQUE_TYPE2_CODE_BCHQ = 3;
+  CHEQUE_TYPE2_CODE_DRFT = 4;
+  CHEQUE_TYPE2_CODE_ELDR = 5;
+}
+message ClearingSystemIdentification2Choice {
+  string cd = 1;
+  string prtry = 2;
+}
+message ClearingSystemMemberIdentification2 {
+  ClearingSystemIdentification2Choice clr_sys_id = 1;
+  string mmb_id = 2;
+}
+message Contact13 {
+  NamePrefix2Code nm_prfx = 1;
+  string nm = 2;
+  string phne_nb = 3;
+  string mob_nb = 4;
+  string fax_nb = 5;
+  string u_r_l_adr = 6;
+  string email_adr = 7;
+  string email_purp = 8;
+  string job_titl = 9;
+  string rspnsblty = 10;
+  string dept = 11;
+  repeated OtherContact1 othr = 12;
+  PreferredContactMethod2Code prefrd_mtd = 13;
+}
+enum CreditDebitCode {
+  // Default
+  CREDIT_DEBIT_CODE_UNSPECIFIED = 0;
+  CREDIT_DEBIT_CODE_CRDT = 1;
+  CREDIT_DEBIT_CODE_DBIT = 2;
+}
+message CreditTransferMandateData1 {
+  string mndt_id = 1;
+  MandateTypeInformation2 tp = 2;
+  uint32 dt_of_sgntr = 3;
+  uint64 dt_of_vrfctn = 4;
+  bytes elctrnc_sgntr = 5;
+  uint32 frst_pmt_dt = 6;
+  uint32 fnl_pmt_dt = 7;
+  Frequency36Choice frqcy = 8;
+  MandateSetupReason1Choice rsn = 9;
+}
+message CreditTransferTransaction65 {
+  PaymentIdentification6 pmt_id = 1;
+  PaymentTypeInformation29 pmt_tp_inf = 2;
+  PaymentCondition2 pmt_cond = 3;
+  DateAndDateTime2Choice reqd_exctn_dt = 4;
+  AmountType4Choice amt = 5;
+  ChargeBearerType1Code chrg_br = 6;
+  CreditTransferMandateData1 mndt_rltd_inf = 7;
+  Cheque19 chq_instr = 8;
+  PartyIdentification272 ultmt_dbtr = 9;
+  BranchAndFinancialInstitutionIdentification8 intrmy_agt1 = 10;
+  BranchAndFinancialInstitutionIdentification8 intrmy_agt2 = 11;
+  BranchAndFinancialInstitutionIdentification8 intrmy_agt3 = 12;
+  BranchAndFinancialInstitutionIdentification8 cdtr_agt = 13;
+  CashAccount40 cdtr_agt_acct = 14;
+  PartyIdentification272 cdtr = 15;
+  CashAccount40 cdtr_acct = 16;
+  PartyIdentification272 ultmt_cdtr = 17;
+  repeated InstructionForCreditorAgent3 instr_for_cdtr_agt = 18;
+  Purpose2Choice purp = 19;
+  repeated RegulatoryReporting3 rgltry_rptg = 20;
+  TaxData1 tax = 21;
+  repeated RemittanceLocation8 rltd_rmt_inf = 22;
+  RemittanceInformation22 rmt_inf = 23;
+  repeated Document15 nclsd_file = 24;
+  repeated SupplementaryData1 splmtry_data = 25;
+}
+message CreditorPaymentActivationRequestV11 {
+  GroupHeader112 grp_hdr = 1;
+  repeated PaymentInstruction46 pmt_inf = 2;
+  repeated SupplementaryData1 splmtry_data = 3;
+}
+message CreditorReferenceInformation3 {
+  CreditorReferenceType3 tp = 1;
+  string ref = 2;
+}
+message CreditorReferenceType2Choice {
+  string cd = 1;
+  string prtry = 2;
+}
+message CreditorReferenceType3 {
+  CreditorReferenceType2Choice cd_or_prtry = 1;
+  string issr = 2;
+}
+message DateAndDateTime2Choice {
+  uint32 dt = 1;
+  uint64 dt_tm = 2;
+}
+message DateAndPlaceOfBirth1 {
+  uint32 birth_dt = 1;
+  string prvc_of_birth = 2;
+  string city_of_birth = 3;
+  string ctry_of_birth = 4;
+}
+message DateAndType1 {
+  DateType2Choice tp = 1;
+  uint32 dt = 2;
+}
+message DatePeriod2 {
+  uint32 fr_dt = 1;
+  uint32 to_dt = 2;
+}
+message DateType2Choice {
+  string cd = 1;
+  string prtry = 2;
+}
+message Document {
+  CreditorPaymentActivationRequestV11 cdtr_pmt_actvtn_req = 1;
+}
+message Document15 {
+  DocumentType1Choice tp = 1;
+  string id = 2;
+  DateAndDateTime2Choice isse_dt = 3;
+  string nm = 4;
+  string lang_cd = 5;
+  DocumentFormat1Choice frmt = 6;
+  string file_nm = 7;
+  PartyAndSignature4 dgtl_sgntr = 8;
+  bytes nclsr = 9;
+}
+message DocumentAdjustment1 {
+  ActiveOrHistoricCurrencyAndAmount amt = 1;
+  CreditDebitCode cdt_dbt_ind = 2;
+  string rsn = 3;
+  string addtl_inf = 4;
+}
+message DocumentAmount1 {
+  DocumentAmountType1Choice tp = 1;
+  ActiveOrHistoricCurrencyAndAmount amt = 2;
+}
+message DocumentAmountType1Choice {
+  string cd = 1;
+  string prtry = 2;
+}
+message DocumentFormat1Choice {
+  string cd = 1;
+  GenericIdentification1 prtry = 2;
+}
+message DocumentLineIdentification1 {
+  DocumentLineType1 tp = 1;
+  string nb = 2;
+  uint32 rltd_dt = 3;
+}
+message DocumentLineInformation2 {
+  repeated DocumentLineIdentification1 id = 1;
+  string desc = 2;
+  RemittanceAmount4 amt = 3;
+}
+message DocumentLineType1 {
+  DocumentLineType1Choice cd_or_prtry = 1;
+  string issr = 2;
+}
+message DocumentLineType1Choice {
+  string cd = 1;
+  string prtry = 2;
+}
+message DocumentType1 {
+  DocumentType2Choice cd_or_prtry = 1;
+  string issr = 2;
+}
+message DocumentType1Choice {
+  string cd = 1;
+  GenericIdentification1 prtry = 2;
+}
+message DocumentType2Choice {
+  string cd = 1;
+  string prtry = 2;
+}
+message EquivalentAmount2 {
+  ActiveOrHistoricCurrencyAndAmount amt = 1;
+  string ccy_of_trf = 2;
+}
+message FinancialIdentificationSchemeName1Choice {
+  string cd = 1;
+  string prtry = 2;
+}
+message FinancialInstitutionIdentification23 {
+  string b_i_c_f_i = 1;
+  ClearingSystemMemberIdentification2 clr_sys_mmb_id = 2;
+  string l_e_i = 3;
+  string nm = 4;
+  PostalAddress27 pstl_adr = 5;
+  GenericFinancialIdentification1 othr = 6;
+}
+message Frequency36Choice {
+  Frequency6Code tp = 1;
+  FrequencyPeriod1 prd = 2;
+  FrequencyAndMoment1 pt_in_tm = 3;
+}
+enum Frequency6Code {
+  // Default
+  FREQUENCY6_CODE_UNSPECIFIED = 0;
+  FREQUENCY6_CODE_YEAR = 1;
+  FREQUENCY6_CODE_MNTH = 2;
+  FREQUENCY6_CODE_QURT = 3;
+  FREQUENCY6_CODE_MIAN = 4;
+  FREQUENCY6_CODE_WEEK = 5;
+  FREQUENCY6_CODE_DAIL = 6;
+  FREQUENCY6_CODE_ADHO = 7;
+  FREQUENCY6_CODE_INDA = 8;
+  FREQUENCY6_CODE_FRTN = 9;
+}
+message FrequencyAndMoment1 {
+  Frequency6Code tp = 1;
+  string pt_in_tm = 2;
+}
+message FrequencyPeriod1 {
+  Frequency6Code tp = 1;
+  double cnt_per_prd = 2;
+}
+message Garnishment4 {
+  GarnishmentType1 tp = 1;
+  PartyIdentification272 grnshee = 2;
+  PartyIdentification272 grnshmt_admstr = 3;
+  string ref_nb = 4;
+  uint32 dt = 5;
+  ActiveOrHistoricCurrencyAndAmount rmtd_amt = 6;
+  bool fmly_mdcl_insrnc_ind = 7;
+  bool mplyee_termntn_ind = 8;
+}
+message GarnishmentType1 {
+  GarnishmentType1Choice cd_or_prtry = 1;
+  string issr = 2;
+}
+message GarnishmentType1Choice {
+  string cd = 1;
+  string prtry = 2;
+}
+message GenericAccountIdentification1 {
+  string id = 1;
+  AccountSchemeName1Choice schme_nm = 2;
+  string issr = 3;
+}
+message GenericFinancialIdentification1 {
+  string id = 1;
+  FinancialIdentificationSchemeName1Choice schme_nm = 2;
+  string issr = 3;
+}
+message GenericIdentification1 {
+  string id = 1;
+  string schme_nm = 2;
+  string issr = 3;
+}
+message GenericIdentification30 {
+  string id = 1;
+  string issr = 2;
+  string schme_nm = 3;
+}
+message GenericOrganisationIdentification3 {
+  string id = 1;
+  OrganisationIdentificationSchemeName1Choice schme_nm = 2;
+  string issr = 3;
+}
+message GenericPersonIdentification2 {
+  string id = 1;
+  PersonIdentificationSchemeName1Choice schme_nm = 2;
+  string issr = 3;
+}
+message GroupHeader112 {
+  string msg_id = 1;
+  uint64 cre_dt_tm = 2;
+  string nb_of_txs = 3;
+  double ctrl_sum = 4;
+  PartyIdentification272 initg_pty = 5;
+  BranchAndFinancialInstitutionIdentification8 fwdg_agt = 6;
+}
+message InstructionForCreditorAgent3 {
+  string cd = 1;
+  string instr_inf = 2;
+}
+message LocalInstrument2Choice {
+  string cd = 1;
+  string prtry = 2;
+}
+message MandateClassification1Choice {
+  MandateClassification1Code cd = 1;
+  string prtry = 2;
+}
+enum MandateClassification1Code {
+  // Default
+  MANDATE_CLASSIFICATION1_CODE_UNSPECIFIED = 0;
+  MANDATE_CLASSIFICATION1_CODE_FIXE = 1;
+  MANDATE_CLASSIFICATION1_CODE_USGB = 2;
+  MANDATE_CLASSIFICATION1_CODE_VARI = 3;
+}
+message MandateSetupReason1Choice {
+  string cd = 1;
+  string prtry = 2;
+}
+message MandateTypeInformation2 {
+  ServiceLevel8Choice svc_lvl = 1;
+  LocalInstrument2Choice lcl_instrm = 2;
+  CategoryPurpose1Choice ctgy_purp = 3;
+  MandateClassification1Choice clssfctn = 4;
+}
+message NameAndAddress18 {
+  string nm = 1;
+  PostalAddress27 adr = 2;
+}
+enum NamePrefix2Code {
+  // Default
+  NAME_PREFIX2_CODE_UNSPECIFIED = 0;
+  NAME_PREFIX2_CODE_DOCT = 1;
+  NAME_PREFIX2_CODE_MADM = 2;
+  NAME_PREFIX2_CODE_MISS = 3;
+  NAME_PREFIX2_CODE_MIST = 4;
+  NAME_PREFIX2_CODE_MIKS = 5;
+}
+message OrganisationIdentification39 {
+  string any_b_i_c = 1;
+  string l_e_i = 2;
+  repeated GenericOrganisationIdentification3 othr = 3;
+}
+message OrganisationIdentificationSchemeName1Choice {
+  string cd = 1;
+  string prtry = 2;
+}
+message OtherContact1 {
+  string chanl_tp = 1;
+  string id = 2;
+}
+message Party52Choice {
+  OrganisationIdentification39 org_id = 1;
+  PersonIdentification18 prvt_id = 2;
+}
+message PartyAndSignature4 {
+  PartyIdentification272 pty = 1;
+  SkipPayload sgntr = 2;
+}
+message PartyIdentification272 {
+  string nm = 1;
+  PostalAddress27 pstl_adr = 2;
+  Party52Choice id = 3;
+  string ctry_of_res = 4;
+  Contact13 ctct_dtls = 5;
+}
+message PaymentCondition2 {
+  bool amt_mod_allwd = 1;
+  bool early_pmt_allwd = 2;
+  string dely_pnlty = 3;
+  AmountOrRate1Choice imdt_pmt_rbt = 4;
+  bool grnted_pmt_reqd = 5;
+}
+message PaymentIdentification6 {
+  string instr_id = 1;
+  string end_to_end_id = 2;
+  string u_e_t_r = 3;
+}
+message PaymentInstruction46 {
+  string pmt_inf_id = 1;
+  PaymentMethod7Code pmt_mtd = 2;
+  AdviceType1 reqd_advc_tp = 3;
+  PaymentTypeInformation29 pmt_tp_inf = 4;
+  DateAndDateTime2Choice reqd_exctn_dt = 5;
+  DateAndDateTime2Choice xpry_dt = 6;
+  PaymentCondition2 pmt_cond = 7;
+  PartyIdentification272 dbtr = 8;
+  CashAccount40 dbtr_acct = 9;
+  BranchAndFinancialInstitutionIdentification8 dbtr_agt = 10;
+  CashAccount40 dbtr_agt_acct = 11;
+  PartyIdentification272 ultmt_dbtr = 12;
+  ChargeBearerType1Code chrg_br = 13;
+  repeated CreditTransferTransaction65 cdt_trf_tx = 14;
+}
+enum PaymentMethod7Code {
+  // Default
+  PAYMENT_METHOD7_CODE_UNSPECIFIED = 0;
+  PAYMENT_METHOD7_CODE_CHK = 1;
+  PAYMENT_METHOD7_CODE_TRF = 2;
+}
+message PaymentTypeInformation29 {
+  Priority2Code instr_prty = 1;
+  repeated ServiceLevel8Choice svc_lvl = 2;
+  LocalInstrument2Choice lcl_instrm = 3;
+  SequenceType3Code seq_tp = 4;
+  CategoryPurpose1Choice ctgy_purp = 5;
+}
+message PersonIdentification18 {
+  DateAndPlaceOfBirth1 dt_and_plc_of_birth = 1;
+  repeated GenericPersonIdentification2 othr = 2;
+}
+message PersonIdentificationSchemeName1Choice {
+  string cd = 1;
+  string prtry = 2;
+}
+message PostalAddress27 {
+  AddressType3Choice adr_tp = 1;
+  string care_of = 2;
+  string dept = 3;
+  string sub_dept = 4;
+  string strt_nm = 5;
+  string bldg_nb = 6;
+  string bldg_nm = 7;
+  string flr = 8;
+  string unit_nb = 9;
+  string pst_bx = 10;
+  string room = 11;
+  string pst_cd = 12;
+  string twn_nm = 13;
+  string twn_lctn_nm = 14;
+  string dstrct_nm = 15;
+  string ctry_sub_dvsn = 16;
+  string ctry = 17;
+  repeated string adr_line = 18;
+}
+enum PreferredContactMethod2Code {
+  // Default
+  PREFERRED_CONTACT_METHOD2_CODE_UNSPECIFIED = 0;
+  PREFERRED_CONTACT_METHOD2_CODE_MAIL = 1;
+  PREFERRED_CONTACT_METHOD2_CODE_FAXX = 2;
+  PREFERRED_CONTACT_METHOD2_CODE_LETT = 3;
+  PREFERRED_CONTACT_METHOD2_CODE_CELL = 4;
+  PREFERRED_CONTACT_METHOD2_CODE_ONLI = 5;
+  PREFERRED_CONTACT_METHOD2_CODE_PHON = 6;
+}
+enum Priority2Code {
+  // Default
+  PRIORITY2_CODE_UNSPECIFIED = 0;
+  PRIORITY2_CODE_HIGH = 1;
+  PRIORITY2_CODE_NORM = 2;
+}
+message ProxyAccountIdentification1 {
+  ProxyAccountType1Choice tp = 1;
+  string id = 2;
+}
+message ProxyAccountType1Choice {
+  string cd = 1;
+  string prtry = 2;
+}
+message Purpose2Choice {
+  string cd = 1;
+  string prtry = 2;
+}
+message ReferredDocumentInformation8 {
+  DocumentType1 tp = 1;
+  string nb = 2;
+  DateAndType1 rltd_dt = 3;
+  repeated DocumentLineInformation2 line_dtls = 4;
+}
+message RegulatoryAuthority2 {
+  string nm = 1;
+  string ctry = 2;
+}
+message RegulatoryReporting3 {
+  RegulatoryReportingType1Code dbt_cdt_rptg_ind = 1;
+  RegulatoryAuthority2 authrty = 2;
+  repeated StructuredRegulatoryReporting3 dtls = 3;
+}
+enum RegulatoryReportingType1Code {
+  // Default
+  REGULATORY_REPORTING_TYPE1_CODE_UNSPECIFIED = 0;
+  REGULATORY_REPORTING_TYPE1_CODE_CRED = 1;
+  REGULATORY_REPORTING_TYPE1_CODE_DEBT = 2;
+  REGULATORY_REPORTING_TYPE1_CODE_BOTH = 3;
+}
+message RemittanceAmount4 {
+  repeated DocumentAmount1 rmt_amt_and_tp = 1;
+  repeated DocumentAdjustment1 adjstmnt_amt_and_rsn = 2;
+}
+message RemittanceInformation22 {
+  repeated string ustrd = 1;
+  repeated StructuredRemittanceInformation18 strd = 2;
+}
+message RemittanceLocation8 {
+  string rmt_id = 1;
+  repeated RemittanceLocationData2 rmt_lctn_dtls = 2;
+}
+message RemittanceLocationData2 {
+  RemittanceLocationMethod2Code mtd = 1;
+  string elctrnc_adr = 2;
+  NameAndAddress18 pstl_adr = 3;
+}
+enum RemittanceLocationMethod2Code {
+  // Default
+  REMITTANCE_LOCATION_METHOD2_CODE_UNSPECIFIED = 0;
+  REMITTANCE_LOCATION_METHOD2_CODE_FAXI = 1;
+  REMITTANCE_LOCATION_METHOD2_CODE_EDIC = 2;
+  REMITTANCE_LOCATION_METHOD2_CODE_URID = 3;
+  REMITTANCE_LOCATION_METHOD2_CODE_EMAL = 4;
+  REMITTANCE_LOCATION_METHOD2_CODE_POST = 5;
+  REMITTANCE_LOCATION_METHOD2_CODE_SMSM = 6;
+}
+enum SequenceType3Code {
+  // Default
+  SEQUENCE_TYPE3_CODE_UNSPECIFIED = 0;
+  SEQUENCE_TYPE3_CODE_FRST = 1;
+  SEQUENCE_TYPE3_CODE_RCUR = 2;
+  SEQUENCE_TYPE3_CODE_FNAL = 3;
+  SEQUENCE_TYPE3_CODE_OOFF = 4;
+  SEQUENCE_TYPE3_CODE_RPRE = 5;
+}
+message ServiceLevel8Choice {
+  string cd = 1;
+  string prtry = 2;
+}
+message SkipPayload {
+  string any = 1;
+}
+message StructuredRegulatoryReporting3 {
+  string tp = 1;
+  uint32 dt = 2;
+  string ctry = 3;
+  string cd = 4;
+  ActiveOrHistoricCurrencyAndAmount amt = 5;
+  repeated string inf = 6;
+}
+message StructuredRemittanceInformation18 {
+  repeated ReferredDocumentInformation8 rfrd_doc_inf = 1;
+  RemittanceAmount4 rfrd_doc_amt = 2;
+  CreditorReferenceInformation3 cdtr_ref_inf = 3;
+  PartyIdentification272 invcr = 4;
+  PartyIdentification272 invcee = 5;
+  TaxData1 tax_rmt = 6;
+  Garnishment4 grnshmt_rmt = 7;
+  repeated string addtl_rmt_inf = 8;
+}
+message SupplementaryData1 {
+  string plc_and_nm = 1;
+  SupplementaryDataEnvelope1 envlp = 2;
+}
+message SupplementaryDataEnvelope1 {
+  string any = 1;
+}
+message TaxAmount3 {
+  double rate = 1;
+  ActiveOrHistoricCurrencyAndAmount taxbl_base_amt = 2;
+  ActiveOrHistoricCurrencyAndAmount ttl_amt = 3;
+  repeated TaxRecordDetails3 dtls = 4;
+}
+message TaxAuthorisation1 {
+  string titl = 1;
+  string nm = 2;
+}
+message TaxData1 {
+  TaxParty1 cdtr = 1;
+  TaxParty2 dbtr = 2;
+  TaxParty2 ultmt_dbtr = 3;
+  string admstn_zone = 4;
+  string ref_nb = 5;
+  string mtd = 6;
+  ActiveOrHistoricCurrencyAndAmount ttl_taxbl_base_amt = 7;
+  ActiveOrHistoricCurrencyAndAmount ttl_tax_amt = 8;
+  uint32 dt = 9;
+  double seq_nb = 10;
+  repeated TaxRecord3 rcrd = 11;
+}
+message TaxParty1 {
+  string tax_id = 1;
+  string regn_id = 2;
+  string tax_tp = 3;
+}
+message TaxParty2 {
+  string tax_id = 1;
+  string regn_id = 2;
+  string tax_tp = 3;
+  TaxAuthorisation1 authstn = 4;
+}
+message TaxPeriod3 {
+  uint32 yr = 1;
+  TaxRecordPeriod1Code tp = 2;
+  DatePeriod2 fr_to_dt = 3;
+}
+message TaxRecord3 {
+  string tp = 1;
+  string ctgy = 2;
+  string ctgy_dtls = 3;
+  string dbtr_sts = 4;
+  string cert_id = 5;
+  string frms_cd = 6;
+  TaxPeriod3 prd = 7;
+  TaxAmount3 tax_amt = 8;
+  string addtl_inf = 9;
+}
+message TaxRecordDetails3 {
+  TaxPeriod3 prd = 1;
+  ActiveOrHistoricCurrencyAndAmount amt = 2;
+}
+enum TaxRecordPeriod1Code {
+  // Default
+  TAX_RECORD_PERIOD1_CODE_UNSPECIFIED = 0;
+  TAX_RECORD_PERIOD1_CODE_M_M01 = 1;
+  TAX_RECORD_PERIOD1_CODE_M_M02 = 2;
+  TAX_RECORD_PERIOD1_CODE_M_M03 = 3;
+  TAX_RECORD_PERIOD1_CODE_M_M04 = 4;
+  TAX_RECORD_PERIOD1_CODE_M_M05 = 5;
+  TAX_RECORD_PERIOD1_CODE_M_M06 = 6;
+  TAX_RECORD_PERIOD1_CODE_M_M07 = 7;
+  TAX_RECORD_PERIOD1_CODE_M_M08 = 8;
+  TAX_RECORD_PERIOD1_CODE_M_M09 = 9;
+  TAX_RECORD_PERIOD1_CODE_M_M10 = 10;
+  TAX_RECORD_PERIOD1_CODE_M_M11 = 11;
+  TAX_RECORD_PERIOD1_CODE_M_M12 = 12;
+  TAX_RECORD_PERIOD1_CODE_Q_T_R1 = 13;
+  TAX_RECORD_PERIOD1_CODE_Q_T_R2 = 14;
+  TAX_RECORD_PERIOD1_CODE_Q_T_R3 = 15;
+  TAX_RECORD_PERIOD1_CODE_Q_T_R4 = 16;
+  TAX_RECORD_PERIOD1_CODE_H_L_F1 = 17;
+  TAX_RECORD_PERIOD1_CODE_H_L_F2 = 18;
+}

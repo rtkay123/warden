@@ -19,5 +19,9 @@ sqlx = { workspace = true, features = [
     "tls-rustls",
 ] }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "signal"] }
-warden-core = { workspace = true, features = ["serde", "time"] }
+tracing.workspace = true
+utoipa.workspace = true
+utoipa-axum = "0.1.2"
+utoipa-swagger-ui = { version = "8.0.3", features = ["axum"] }
+warden-core = { workspace = true, features = ["openapi", "serde", "time"] }
 warden-infra = { workspace = true, features = ["api", "nats-jetstream", "postgres", "tracing"] }
