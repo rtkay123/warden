@@ -2,11 +2,15 @@ use axum::Json;
 use utoipa_axum::{router::OpenApiRouter, routes};
 use warden_core::iso20022::pacs002::Pacs002Document;
 
+use crate::state::AppState;
+
 use super::PACS002;
 
 /// expose the Customer OpenAPI to parent module
-pub fn router() -> OpenApiRouter {
-    OpenApiRouter::new().routes(routes!(create_order))
+pub fn router(state: AppState) -> OpenApiRouter {
+    OpenApiRouter::new()
+        .routes(routes!(create_order))
+        .with_state(state)
 }
 
 /// Submit a pacs.002.001.12 transaction

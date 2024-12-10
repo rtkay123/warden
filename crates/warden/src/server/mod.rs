@@ -4,7 +4,7 @@ pub mod pain001;
 pub mod pain013;
 
 use anyhow::Result;
-use std::net::{Ipv6Addr, SocketAddr};
+use std::{net::{Ipv6Addr, SocketAddr}, sync::Arc};
 use tracing::info;
 use utoipa::OpenApi;
 use utoipa_axum::{router::OpenApiRouter, routes};
@@ -26,14 +26,15 @@ struct ApiDoc;
 
 pub async fn serve(state: AppState) -> Result<()> {
     let port = state.config.port;
+    let state = Arc::new(state);
     let addr = SocketAddr::from((Ipv6Addr::UNSPECIFIED, port));
 
     let (app, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
         .routes(routes!(health))
         //        .nest("/api/pain001", pain001::router())
         //        .nest("/api/pain013", pain013::router())
-        .nest("/api/pacs008", pacs008::router())
-        .nest("/api/pacs002", pacs002::router())
+        .nest("/api/pacs008", pacs008::router(state.clone()))
+        .nest("/api/pacs002", pacs002::router(state))
         .split_for_parts();
 
     let listener = tokio::net::TcpListener::bind(addr).await?;
