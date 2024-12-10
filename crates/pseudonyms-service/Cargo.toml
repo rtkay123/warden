@@ -1,0 +1,23 @@
+[package]
+name = "pseudonyms-service"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+config = { workspace = true, features = ["toml"] }
+sqlx = { workspace = true, features = [
+    "macros",
+        "migrate",
+        "postgres",
+        "runtime-tokio",
+        "time",
+        "tls-rustls",
+] }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "signal"] }
+tonic.workspace = true
+tracing.workspace = true
+warden-core = { workspace = true, features = ["server-pseudonyms", "serde", "time"] }
+warden-infra = { workspace = true, features = ["api", "postgres", "tracing"] }

@@ -1,0 +1,20 @@
+syntax = "proto2";
+
+package pseudonyms;
+
+import "google/protobuf/timestamp.proto";
+
+message TransactionRelationship {
+  required string from = 1;
+  required string to = 2;
+  optional double amt = 3;
+  optional string ccy = 4;
+  required google.protobuf.Timestamp cre_dt_tm = 5;
+  required string end_to_end_id = 6;
+  optional double lat = 7;
+  optional double long = 8;
+  required string msg_id = 9;
+  required string pmt_inf_id = 10;
+  required string tx_tp = 11;
+  optional string tx_sts = 12;
+}

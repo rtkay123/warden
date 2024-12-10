@@ -16,6 +16,8 @@ utoipa = { optional = true, workspace = true }
 [features]
 default = []
 serde = ["serde/derive"]
+server-pseudonyms = []
+client-pseudonyms = []
 time = ["dep:time"]
 openapi = ["dep:utoipa"]
 

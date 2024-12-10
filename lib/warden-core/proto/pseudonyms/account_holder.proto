@@ -1,0 +1,44 @@
+syntax = "proto2";
+
+package pseudonyms;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+message AccountHolder {
+  required string entity_id = 1;
+  required string account_id = 2;
+  required google.protobuf.Timestamp cre_dt_tm = 3;
+}
+
+message CreateAccountHolderRequest {
+  required AccountHolder account_holder = 1;
+}
+
+message GetAccountHolderRequest {
+  required string entity_id = 1;
+  required string account_id = 2;
+}
+
+message GetAccountHolderResponse {
+  required AccountHolder account_holder = 1;
+}
+
+message UpdateAccountHolderRequest {
+  required AccountHolder account_holder = 1;
+}
+
+message DeleteAccountHolderRequest {
+  required string entity_id = 1;
+  required string account_id = 2;
+}
+
+service AccountHolderService {
+  rpc CreateAccountHolder(CreateAccountHolderRequest) returns (google.protobuf.Empty);
+
+  rpc GetAccountHolder(GetAccountHolderRequest) returns (GetAccountHolderResponse);
+
+  rpc UpdateAccountHolder(UpdateAccountHolderRequest) returns (google.protobuf.Empty);
+
+  rpc DeleteAccountHolder(DeleteAccountHolderRequest) returns (google.protobuf.Empty);
+}

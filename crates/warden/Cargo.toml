@@ -23,5 +23,5 @@ tracing.workspace = true
 utoipa.workspace = true
 utoipa-axum = "0.1.2"
 utoipa-swagger-ui = { version = "8.0.3", features = ["axum"] }
-warden-core = { workspace = true, features = ["openapi", "serde", "time"] }
+warden-core = { workspace = true, features = ["client-pseudonyms", "openapi", "serde", "time"] }
 warden-infra = { workspace = true, features = ["api", "nats-jetstream", "postgres", "tracing"] }

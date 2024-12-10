@@ -2013,6 +2013,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "pseudonyms-service"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "config",
+ "sqlx",
+ "tokio",
+ "tonic",
+ "tracing",
+ "warden-core",
+ "warden-infra",
+]
+
+[[package]]
 name = "pulldown-cmark"
 version = "0.12.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"

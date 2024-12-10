@@ -8,5 +8,6 @@
 pub mod config;
 pub mod google;
 pub mod utils;
+pub mod pseudonyms;
 
 pub mod iso20022;

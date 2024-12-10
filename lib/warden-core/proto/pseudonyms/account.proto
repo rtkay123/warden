@@ -1,0 +1,7 @@
+syntax = "proto2";
+
+package pseudonyms;
+
+message Account {
+  required string id = 1;
+}

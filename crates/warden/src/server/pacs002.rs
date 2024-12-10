@@ -1,4 +1,6 @@
-use axum::Json;
+use std::sync::Arc;
+
+use axum::{Json, extract::State};
 use utoipa_axum::{router::OpenApiRouter, routes};
 use warden_core::iso20022::pacs002::Pacs002Document;
 
@@ -7,7 +9,7 @@ use crate::state::AppState;
 use super::PACS002;
 
 /// expose the Customer OpenAPI to parent module
-pub fn router(state: AppState) -> OpenApiRouter {
+pub fn router(state: Arc<AppState>) -> OpenApiRouter {
     OpenApiRouter::new()
         .routes(routes!(create_order))
         .with_state(state)
@@ -26,7 +28,10 @@ pub fn router(state: AppState) -> OpenApiRouter {
         content = Pacs002Document
     ))
 ]
-async fn create_order(Json(order): Json<Pacs002Document>) -> Json<Pacs002Document> {
+async fn create_order(
+    State(state): State<Arc<AppState>>,
+    Json(order): Json<Pacs002Document>,
+) -> Json<Pacs002Document> {
     let pacs = Pacs002Document::default();
     Json(pacs)
 }
