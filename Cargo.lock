@@ -3522,6 +3522,7 @@ dependencies = [
  "async-nats",
  "clap",
  "config",
+ "futures-util",
  "prost",
  "serde",
  "serde_json",

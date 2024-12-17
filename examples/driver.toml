@@ -1,5 +1,6 @@
 [application]
 environment = "development"
+log_level = "info"
 
 [cache]
 dsn = [ "redis://localhost:6379" ]

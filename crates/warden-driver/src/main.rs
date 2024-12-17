@@ -39,7 +39,5 @@ async fn main() -> Result<()> {
         .await?
         .build();
 
-    Ok(())
-//    warden_driver::serve(services, config).await
+    warden_driver::listen(services, config).await
 }
-

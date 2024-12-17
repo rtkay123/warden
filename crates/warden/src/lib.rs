@@ -14,6 +14,11 @@ pub async fn serve(services: Services, configuration: Configuration) -> anyhow::
         config: configuration,
         nats_subjects: nats_subs,
     };
+    state
+        .jetstream
+        .publish("transaction_history.hello", "data".into())
+        .await
+        .unwrap();
 
     api::serve(state).await
 }
