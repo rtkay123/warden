@@ -7,6 +7,8 @@
 )]
 /// Protobuf types
 pub mod google;
+/// Type conversion utils
+pub mod utils;
 
 /// ISO20022 messages
 #[allow(missing_docs)]

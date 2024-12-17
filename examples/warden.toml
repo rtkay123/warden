@@ -1,0 +1,10 @@
+[application]
+environment = "development"
+port = 2210
+
+[cache]
+dsn = [ "redis://localhost:6379" ]
+cluster = false
+
+# vim:ft=toml
+

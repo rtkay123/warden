@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["lib/*"]
+members = ["crates/*", "lib/*"]
 
 [workspace.package]
 edition = "2024"
@@ -8,9 +8,18 @@ license = "AGPL-3.0-only"
 repository = "https://github.com/rtkay123/warden"
 
 [workspace.dependencies]
+anyhow = "1.0.94"
+bon = "3.2.0"
+clap = "4.5.23"
+config = "0.14.1"
+log = "0.4.22"
 prost = "0.13.4"
 serde = "1.0.216"
+thiserror = "2.0.7"
 time = "0.3.37"
+tokio = "1.42.0"
 tonic = "0.12.3"
+url = "2.5.4"
 utoipa = "5.2.0"
 warden-core = { path = "lib/warden-core" }
+warden-infra = { path = "lib/warden-infra" }

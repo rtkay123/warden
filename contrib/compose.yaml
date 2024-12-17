@@ -1,0 +1,16 @@
+services:
+  valkey:
+    image: valkey/valkey:8.0.1-alpine3.20
+    command: "valkey-server --port 6379"
+    healthcheck:
+      test: ["CMD-SHELL", "valkey-cli -p 6379 ping | grep PONG"]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+    networks:
+      - warden
+    ports:
+      - "6379:6379"
+
+networks:
+  warden:

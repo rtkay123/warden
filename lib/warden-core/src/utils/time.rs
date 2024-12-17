@@ -24,7 +24,6 @@ impl TryFrom<Timestamp> for OffsetDateTime {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use crate::google::protobuf::Timestamp;
     use std::convert::TryFrom;
     use time::{Duration, OffsetDateTime};
