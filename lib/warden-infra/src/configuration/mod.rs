@@ -3,6 +3,11 @@
 /// Cache config
 pub mod cache;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "nats")))]
+#[cfg(feature = "nats")]
+/// Cache config
+pub mod nats;
+
 use serde::Deserialize;
 
 use std::{fmt::Display, sync::Arc};
@@ -16,6 +21,10 @@ pub struct Configuration {
     #[cfg_attr(docsrs, doc(cfg(feature = "cache")))]
     /// Cache configuration
     pub cache: cache::CacheConfig,
+    #[cfg(feature = "nats")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "nats")))]
+    /// Cache configuration
+    pub nats: nats::NatsConfig,
     #[serde(skip)]
     /// Read from cargo
     pub metadata: Metadata,

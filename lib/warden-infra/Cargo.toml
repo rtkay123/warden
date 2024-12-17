@@ -6,6 +6,7 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
+async-nats = { optional = true, workspace = true }
 bon = { optional = true, workspace = true }
 log.workspace = true
 redis = { version = "0.27.6", optional = true }
@@ -18,6 +19,9 @@ url = { workspace = true, optional = true }
 [features]
 default = []
 api = []
+nats = ["dep:bon", "dep:async-nats"]
+nats-core = ["nats"]
+nats-jetstream = ["nats"]
 cache = [
     "dep:redis",
     "redis/cluster-async",

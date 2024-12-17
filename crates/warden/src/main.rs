@@ -29,7 +29,12 @@ async fn main() -> Result<()> {
 
     let _tracing = TelemetryBuilder::new(config.application.log_level).build();
 
-    let services = Services::builder().with_cache(&config.cache).await?.build();
+    let services = Services::builder()
+        .with_nats_jetstream(&config.nats)
+        .await?
+        .with_cache(&config.cache)
+        .await?
+        .build();
 
     warden::serve(services, config).await
 }

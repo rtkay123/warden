@@ -7,6 +7,11 @@
 #[cfg(feature = "cache")]
 pub mod cache;
 
+/// NATS
+#[cfg_attr(docsrs, doc(cfg(feature = "nats")))]
+#[cfg(feature = "nats")]
+pub mod nats;
+
 /// Tracing
 #[cfg_attr(docsrs, doc(cfg(feature = "tracing")))]
 #[cfg(feature = "tracing")]
@@ -26,6 +31,10 @@ pub enum ServiceError {
     #[error("bad config")]
     /// Config error
     Config,
+    #[cfg(feature = "nats")]
+    #[error(transparent)]
+    /// NATS error
+    Nats(#[from] async_nats::error::Error<async_nats::ConnectErrorKind>),
 }
 
 use thiserror::Error;
@@ -41,4 +50,12 @@ pub struct Services {
     #[cfg_attr(docsrs, doc(cfg(feature = "cache")))]
     /// Cache connection handle
     pub cache: Option<cache::CacheService>,
+    #[cfg(feature = "nats-core")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "nats-core")))]
+    /// NATS connection handle
+    pub nats: Option<async_nats::Client>,
+    #[cfg(feature = "nats-jetstream")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "nats-jetstream")))]
+    /// NATS-Jetstream connection handle
+    pub jetstream: Option<async_nats::jetstream::Context>,
 }
