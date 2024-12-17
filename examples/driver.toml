@@ -1,0 +1,41 @@
+[application]
+environment = "development"
+
+[cache]
+dsn = [ "redis://localhost:6379" ]
+cluster = false
+
+[database.transaction_history]
+pool_size = 100
+port = 5432
+name = "transaction_history"
+host = "localhost"
+user = "postgres"
+password = "password"
+
+[nats]
+hosts = ["nats://localhost:4222"]
+
+[[nats.jetstream]]
+name = "TRANSACTIONS"
+subjects = ["transaction_history.>"]
+max_msgs = 1000
+max_bytes = 10485760
+
+[[nats.jetstream.consumers]]
+name = "tx_hist_consumer"
+dispatch = "push"
+durable = true
+deliver_subject = "tx.ack"
+
+[[nats.jetstream]]
+name = "PSEUDONYMS"
+subjects = ["pseudonyms.>"]
+max_msgs = 1000
+max_bytes = 10485760
+
+[[nats.jetstream.consumers]]
+name = "psdnms_hist_consumer"
+dispatch = "push"
+durable = true
+deliver_subject = "psdnms.ack"

@@ -17,6 +17,10 @@ pub mod nats;
 #[cfg(feature = "tracing")]
 pub mod tracing;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "postgres")))]
+#[cfg(feature = "postgres")]
+pub mod postgres;
+
 /// Configuration for services
 pub mod configuration;
 
@@ -35,7 +39,14 @@ pub enum ServiceError {
     #[error(transparent)]
     /// NATS error
     Nats(#[from] async_nats::error::Error<async_nats::ConnectErrorKind>),
+    #[error(transparent)]
+    #[cfg(feature = "postgres")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "postgres")))]
+    /// Database Error
+    Postgres(#[from] sqlx::Error),
 }
+
+use std::collections::HashMap;
 
 use thiserror::Error;
 #[derive(Clone)]
@@ -46,6 +57,11 @@ use thiserror::Error;
 )]
 ///
 pub struct Services {
+    #[cfg(feature = "postgres")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "postgres")))]
+    #[builder(default)]
+    /// Postgres connection pool handle
+    pub postgres: HashMap<postgres::Database, sqlx::PgPool>,
     #[cfg(feature = "cache")]
     #[cfg_attr(docsrs, doc(cfg(feature = "cache")))]
     /// Cache connection handle

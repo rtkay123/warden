@@ -1,4 +1,24 @@
 services:
+  warden-db:
+    image: postgres:17.2
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      PGDATA: /data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - warden
+    volumes:
+      - warden-db:/data/postgres
+      - ./init-db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      
   valkey:
     image: valkey/valkey:8.0.1-alpine3.20
     command: "valkey-server --port 6379"
@@ -26,6 +46,7 @@ services:
 
 volumes:
   nats-data:
+  warden-db:
 
 networks:
   warden:

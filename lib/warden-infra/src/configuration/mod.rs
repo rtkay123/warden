@@ -10,7 +10,7 @@ pub mod nats;
 
 use serde::Deserialize;
 
-use std::{fmt::Display, sync::Arc};
+use std::{collections::HashMap, fmt::Display, sync::Arc};
 
 #[derive(Clone, Debug, Deserialize)]
 /// Config Data
@@ -21,6 +21,10 @@ pub struct Configuration {
     #[cfg_attr(docsrs, doc(cfg(feature = "cache")))]
     /// Cache configuration
     pub cache: cache::CacheConfig,
+    #[cfg(feature = "postgres")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "postgres")))]
+    /// Databases
+    pub database: HashMap<crate::postgres::Database, crate::postgres::PgConfig>,
     #[cfg(feature = "nats")]
     #[cfg_attr(docsrs, doc(cfg(feature = "nats")))]
     /// Cache configuration
