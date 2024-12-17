@@ -1,0 +1,16 @@
+[workspace]
+resolver = "2"
+members = ["lib/*"]
+
+[workspace.package]
+edition = "2024"
+license = "AGPL-3.0-only"
+repository = "https://github.com/rtkay123/warden"
+
+[workspace.dependencies]
+prost = "0.13.4"
+serde = "1.0.216"
+time = "0.3.37"
+tonic = "0.12.3"
+utoipa = "5.2.0"
+warden-core = { path = "lib/warden-core" }
