@@ -1,6 +1,5 @@
 use anyhow::Result;
 use std::path::PathBuf;
-use tracing::info;
 
 use clap::Parser;
 use warden_infra::{Services, configuration::Configuration, tracing::TelemetryBuilder};
@@ -30,8 +29,7 @@ async fn main() -> Result<()> {
 
     let _tracing = TelemetryBuilder::new(config.application.log_level).build();
 
-    let _services = Services::builder().with_cache(&config.cache).await?.build();
-    info!("Hello, world!");
+    let services = Services::builder().with_cache(&config.cache).await?.build();
 
-    Ok(())
+    warden::serve(services, config).await
 }

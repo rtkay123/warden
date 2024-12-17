@@ -18,11 +18,7 @@ impl Entity {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("cargo:rerun-if-changed=proto");
 
-    let protos = vec![
-        Entity::Date,
-        Entity::Pacs008,
-        Entity::Pacs002,
-    ];
+    let protos = vec![Entity::Date, Entity::Pacs008, Entity::Pacs002];
 
     generate(&protos, None)?;
 
