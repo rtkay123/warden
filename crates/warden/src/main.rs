@@ -1,8 +1,9 @@
 use anyhow::Result;
 use std::path::PathBuf;
+use tracing::info;
 
 use clap::Parser;
-use warden_infra::{Services, configuration::Configuration};
+use warden_infra::{Services, configuration::Configuration, tracing::TelemetryBuilder};
 
 /// Warden API
 #[derive(Parser, Debug)]
@@ -27,8 +28,10 @@ async fn main() -> Result<()> {
         .build()?;
     let config = config.try_deserialize::<Configuration>()?;
 
-    let services = Services::builder().with_cache(&config.cache).await?.build();
-    println!("Hello, world!");
+    let _tracing = TelemetryBuilder::new(config.application.log_level).build();
+
+    let _services = Services::builder().with_cache(&config.cache).await?.build();
+    info!("Hello, world!");
 
     Ok(())
 }

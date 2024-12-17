@@ -10,4 +10,5 @@ anyhow.workspace = true
 clap = { workspace = true, features = ["derive"] }
 config = { workspace = true, features = ["toml"] }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "signal"] }
-warden-infra = { workspace = true, features = ["cache"] }
+tracing.workspace = true
+warden-infra = { workspace = true, features = ["cache", "tracing"] }

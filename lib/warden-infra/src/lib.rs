@@ -1,14 +1,16 @@
 //! Warden Infrastructure
 #![cfg_attr(docsrs, feature(doc_cfg))]
-#![warn(
-    missing_docs,
-    rustdoc::broken_intra_doc_links,
-)]
+#![warn(missing_docs, rustdoc::broken_intra_doc_links)]
 
 /// Cache
 #[cfg_attr(docsrs, doc(cfg(feature = "cache")))]
 #[cfg(feature = "cache")]
 pub mod cache;
+
+/// Tracing
+#[cfg_attr(docsrs, doc(cfg(feature = "tracing")))]
+#[cfg(feature = "tracing")]
+pub mod tracing;
 
 /// Configuration for services
 pub mod configuration;

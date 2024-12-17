@@ -49,6 +49,44 @@ pub struct App {
     #[cfg_attr(docsrs, doc(cfg(feature = "api")))]
     /// api port
     pub port: u16,
+    #[cfg(feature = "tracing")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "tracing")))]
+    /// Log level
+    #[serde(default)]
+    pub log_level: LogLevel,
+}
+
+#[derive(Copy, Clone, Debug, Deserialize, Default)]
+#[serde(rename_all = "lowercase")]
+#[cfg(feature = "tracing")]
+/// Log Level
+pub enum LogLevel {
+    /// trace
+    Trace,
+    /// debug
+    Debug,
+    /// info
+    #[default]
+    Info,
+    /// warn
+    Warn,
+    /// error
+    Error,
+}
+
+/// Log Level
+#[cfg(feature = "tracing")]
+impl From<LogLevel> for tracing_subscriber::EnvFilter {
+    fn from(value: LogLevel) -> Self {
+        match value {
+            LogLevel::Trace => "trace",
+            LogLevel::Debug => "debug",
+            LogLevel::Info => "info",
+            LogLevel::Warn => "warn",
+            LogLevel::Error => "error",
+        }
+        .into()
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Default)]

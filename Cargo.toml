@@ -19,6 +19,7 @@ thiserror = "2.0.7"
 time = "0.3.37"
 tokio = "1.42.0"
 tonic = "0.12.3"
+tracing = "0.1.41"
 url = "2.5.4"
 utoipa = "5.2.0"
 warden-core = { path = "lib/warden-core" }

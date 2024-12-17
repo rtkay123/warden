@@ -11,6 +11,8 @@ log.workspace = true
 redis = { version = "0.27.6", optional = true }
 serde = { workspace = true, features = ["derive", "rc"] }
 thiserror.workspace = true
+tracing = { optional = true, workspace = true }
+tracing-subscriber = { version = "0.3.19", optional = true }
 url = { workspace = true, optional = true }
 
 [features]
@@ -22,5 +24,6 @@ cache = [
     "redis/connection-manager",
     "redis/tokio-comp",
     "dep:bon",
-    "url/serde"
+    "url/serde",
 ]
+tracing = ["dep:tracing", "tracing-subscriber/env-filter"]
