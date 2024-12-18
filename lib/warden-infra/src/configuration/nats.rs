@@ -54,6 +54,9 @@ pub struct ConsumerConfig {
 
     /// The subject to deliver messages to. This is optional.
     pub deliver_subject: Option<Arc<str>>,
+
+    /// The queue group name used to distribute messages among subscribers.
+    pub deliver_group: Option<Arc<str>>,
 }
 
 impl NatsConfig {

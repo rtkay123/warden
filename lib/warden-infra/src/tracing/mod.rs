@@ -1,3 +1,7 @@
+#[cfg(feature = "opentelemetry")]
+/// Opentelemetry
+pub mod opentelemetry;
+
 use crate::configuration::LogLevel;
 use tracing_subscriber::{
     EnvFilter, Layer, Registry, layer::SubscriberExt, util::SubscriberInitExt,

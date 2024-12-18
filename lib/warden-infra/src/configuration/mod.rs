@@ -67,6 +67,10 @@ pub struct App {
     /// Log level
     #[serde(default)]
     pub log_level: LogLevel,
+    /// Opentelemetry
+    #[cfg(feature = "opentelemetry")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "opentelemetry")))]
+    pub opentelemetry_endpoint: String,
 }
 
 #[derive(Copy, Clone, Debug, Deserialize, Default)]
