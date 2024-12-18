@@ -1,6 +1,7 @@
 [application]
 environment = "development"
 log_level = "info"
+opentelemetry_endpoint = "http://localhost:4317"
 
 [cache]
 dsn = [ "redis://localhost:6379" ]
@@ -25,9 +26,9 @@ max_bytes = 10485760
 
 [[nats.jetstream.consumers]]
 name = "tx_hist_consumer"
-dispatch = "push"
-durable = true
+durable = "transaction_history"
 deliver_subject = "tx.ack"
+deliver_group = "transaction_history"
 
 [[nats.jetstream]]
 name = "PSEUDONYMS"
@@ -37,6 +38,6 @@ max_bytes = 10485760
 
 [[nats.jetstream.consumers]]
 name = "psdnms_hist_consumer"
-dispatch = "push"
-durable = true
-deliver_subject = "psdnms.ack"
+durable = "pseudonyms"
+deliver_subject = "ps.ack"
+deliver_group = "pseudonyms"

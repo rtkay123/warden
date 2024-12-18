@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+package pseudonyms.account;
+
+import "google/protobuf/timestamp.proto";
+
+message Account {
+  required string id = 1;
+}
+
+message CreateAccount {
+  required string id = 1;
+  required string account_id = 2;
+  required google.protobuf.Timestamp cre_dt_tm = 3;
+}

@@ -2,7 +2,11 @@ use anyhow::Result;
 use std::path::PathBuf;
 
 use clap::Parser;
-use warden_infra::{Services, configuration::Configuration, tracing::TelemetryBuilder};
+use warden_infra::{
+    Services,
+    configuration::{Configuration, Metadata},
+    tracing::TelemetryBuilder,
+};
 
 /// Warden API
 #[derive(Parser, Debug)]
@@ -25,9 +29,17 @@ async fn main() -> Result<()> {
             config::FileFormat::Toml,
         ))
         .build()?;
+
+    let metadata = Metadata {
+        name: env!("CARGO_PKG_NAME").into(),
+        version: env!("CARGO_PKG_VERSION").into(),
+    };
+
     let config = config.try_deserialize::<Configuration>()?;
 
-    let _tracing = TelemetryBuilder::new(config.application.log_level).build();
+    let _tracing = TelemetryBuilder::new(config.application.log_level)
+        .try_with_opentelemetry(&config.application, &metadata)?
+        .build();
 
     let services = Services::builder()
         .with_nats_jetstream(&config.nats)

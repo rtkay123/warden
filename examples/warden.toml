@@ -1,6 +1,8 @@
 [application]
 environment = "development"
 port = 2210
+log_level = "info"
+opentelemetry_endpoint = "http://localhost:4317"
 
 [cache]
 dsn = [ "redis://localhost:6379" ]

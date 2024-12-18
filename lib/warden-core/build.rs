@@ -2,6 +2,10 @@ enum Entity {
     Date,
     Pacs008,
     Pacs002,
+    TransactionRelationship,
+    Account,
+    Entity,
+    AccountHolder,
 }
 
 impl Entity {
@@ -10,6 +14,10 @@ impl Entity {
             Entity::Date => "proto/google/date.proto",
             Entity::Pacs008 => "proto/iso20022/pacs.008.001.12.proto",
             Entity::Pacs002 => "proto/iso20022/pacs.002.001.12.proto",
+            Entity::TransactionRelationship => "proto/pseudonyms/transaction_relationship.proto",
+            Entity::Account => "proto/pseudonyms/account.proto",
+            Entity::Entity => "proto/pseudonyms/entity.proto",
+            Entity::AccountHolder => "proto/pseudonyms/account_holder.proto",
         }
         .into()
     }
@@ -18,7 +26,15 @@ impl Entity {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("cargo:rerun-if-changed=proto");
 
-    let protos = vec![Entity::Date, Entity::Pacs008, Entity::Pacs002];
+    let protos = vec![
+        Entity::Date,
+        Entity::Pacs008,
+        Entity::Pacs002,
+        Entity::TransactionRelationship,
+        Entity::Account,
+        Entity::AccountHolder,
+        Entity::Entity,
+    ];
 
     generate(&protos, None)?;
 

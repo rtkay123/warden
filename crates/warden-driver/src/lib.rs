@@ -1,10 +1,25 @@
+pub mod state;
+
+use std::sync::Arc;
+
 use anyhow::Result;
 use async_nats::jetstream::Message;
-use futures_util::{StreamExt, future::join_all};
-use tracing::{debug, error};
-use warden_infra::{Services, configuration::Configuration};
+use futures_util::StreamExt;
+use opentelemetry::global;
+use state::DatabaseClients;
+use tracing::{Instrument, Span, debug, error, info_span};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
+use warden_infra::{
+    Services, configuration::Configuration, tracing::opentelemetry::NatsMetadataExtractor,
+};
 
 pub async fn listen(services: Services, config: Configuration) -> Result<()> {
+    let transaction_history_client = services.postgres.try_into().unwrap();
+
+    let clients = Arc::new(DatabaseClients {
+        transaction_history: transaction_history_client,
+    });
+
     let jetstream = services.jetstream.expect("nats not configured");
     let mut pull_consumers_config = vec![];
     let mut push_consumers_config = vec![];
@@ -28,16 +43,14 @@ pub async fn listen(services: Services, config: Configuration) -> Result<()> {
 
         for consumer in stream_config.consumers.as_ref() {
             let durable_name = consumer.durable.as_ref().map(|v| v.to_string());
-            let deliver_subject = consumer.deliver_subject.as_ref().map(|v| {
-                debug!("configuring push-based consumer = {}", consumer.name);
-                v.to_string()
-            });
 
-            match deliver_subject {
-                Some(deliver_subject) => {
+            match consumer.deliver_subject {
+                Some(ref sub) => {
+                    debug!("configuring push-based consumer = {}", consumer.name);
                     let cons = async_nats::jetstream::consumer::push::Config {
                         durable_name,
-                        deliver_subject,
+                        deliver_subject: sub.to_string(),
+                        deliver_group: consumer.deliver_group.as_ref().map(|f| f.to_string()),
                         ..Default::default()
                     };
                     push_consumers_config.push((consumer.name.clone(), cons));
@@ -52,31 +65,31 @@ pub async fn listen(services: Services, config: Configuration) -> Result<()> {
             }
         }
 
-        pull_consumers = Vec::with_capacity(pull_consumers.len());
         for (name, config) in pull_consumers_config.iter() {
             let consumer = stream.get_or_create_consumer(&name, config.clone()).await?;
             pull_consumers.push(consumer);
         }
 
-        push_consumers = Vec::with_capacity(push_consumers.len());
         for (name, config) in push_consumers_config.iter() {
             let consumer = stream.get_or_create_consumer(&name, config.clone()).await?;
             push_consumers.push(consumer);
         }
     }
 
-    let pushes = push_consumers
+    let mut pushes: Vec<_> = push_consumers
         .into_iter()
-        .map(|consumer| tokio::spawn(handle_message(consumer)));
+        .map(|consumer| tokio::spawn(handle_message(consumer, clients.clone()).in_current_span()))
+        .collect();
 
     let pulls = pull_consumers
         .into_iter()
-        .map(|consumer| tokio::spawn(handle_messages(consumer)));
+        .map(|consumer| tokio::spawn(handle_messages(consumer, clients.clone()).in_current_span()));
 
-    let _ = tokio::join!(
-        tokio::spawn(join_all(pushes)),
-        tokio::spawn(join_all(pulls))
-    );
+    pushes.extend(pulls);
+
+    futures_util::future::join_all(pushes)
+        .in_current_span()
+        .await;
 
     Ok(())
 }
@@ -85,24 +98,37 @@ async fn handle_messages(
     consumer: async_nats::jetstream::consumer::Consumer<
         async_nats::jetstream::consumer::pull::Config,
     >,
+    client: Arc<DatabaseClients>,
 ) -> anyhow::Result<()> {
     let mut messages = consumer.messages().await?;
-    debug!("consumer is ready to receive messages");
+    debug!("pull consumer is ready to receive messages");
 
     while let Some(Ok(message)) = messages.next().await {
-        process_message(message).await;
+        process_message(message, Arc::clone(&client)).await;
     }
 
     Ok(())
 }
 
-async fn process_message(message: Message) {
+async fn process_message(message: Message, client: Arc<DatabaseClients>) {
     let subject = message.subject.to_string();
+    let span = info_span!("processing");
 
-    debug!(
-        "subject: {subject} -- message: {:?}",
-        std::str::from_utf8(&message.message.payload)
-    );
+    message.headers.as_ref().map(|headers| {
+        let parent_context = global::get_text_map_propagator(|propagator| {
+            let extractor = NatsMetadataExtractor(headers);
+            propagator.extract(&extractor)
+        });
+        dbg!(&headers);
+
+        span.set_parent(parent_context);
+    });
+    let _ = span.enter();
+
+    debug!("subject: {subject} -- message");
+    tokio::time::sleep(std::time::Duration::from_millis(100))
+        .instrument(info_span!("working"))
+        .await;
     // acknowledge the message
     if let Err(e) = message.ack().await {
         error!("{e}");
@@ -113,12 +139,13 @@ async fn handle_message(
     consumer: async_nats::jetstream::consumer::Consumer<
         async_nats::jetstream::consumer::push::Config,
     >,
+    client: Arc<DatabaseClients>,
 ) -> Result<()> {
     let mut messages = consumer.messages().await?;
-    debug!("consumer is ready to receive messages");
+    debug!("push consumer is ready to receive messages");
 
     while let Some(Ok(message)) = messages.next().await {
-        process_message(message).await;
+        process_message(message, Arc::clone(&client)).await;
     }
 
     Ok(())

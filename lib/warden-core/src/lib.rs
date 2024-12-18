@@ -13,3 +13,7 @@ pub mod utils;
 /// ISO20022 messages
 #[allow(missing_docs)]
 pub mod iso20022;
+
+/// Pseudonyms entities
+#[allow(missing_docs)]
+pub mod pseudonyms;
