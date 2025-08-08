@@ -30,3 +30,20 @@ pub mod pacs008 {
 pub mod pacs002 {
     tonic::include_proto!("iso20022.pacs002");
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn display_pacs008() {
+        let t = TransactionType::PACS008;
+        assert_eq!(t.to_string(), "pacs.008.001.12");
+    }
+
+    #[test]
+    fn display_pacs002() {
+        let t = TransactionType::PACS002;
+        assert_eq!(t.to_string(), "pacs.002.001.12");
+    }
+}
