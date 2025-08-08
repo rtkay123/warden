@@ -9,4 +9,6 @@ documentation = "https://books.kanjala.com/warden"
 description = "A rule-based fraud detection platform"
 
 [workspace.dependencies]
+prost = "0.14.1"
+tonic = "0.14.0"
 warden-core = { path = "lib/warden-core" }
