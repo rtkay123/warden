@@ -1450,8 +1450,10 @@ dependencies = [
  "clap",
  "config",
  "serde",
+ "serde_json",
  "stack-up",
  "tokio",
+ "tower",
  "tracing",
  "warden-core",
 ]

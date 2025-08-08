@@ -1,7 +1,16 @@
-use anyhow::Result;
+mod cnfg;
+mod error;
+mod server;
+mod state;
+mod version;
+
+use std::net::{Ipv6Addr, SocketAddr};
+
 use clap::{Parser, command};
 use stack_up::{Configuration, tracing::Tracing};
 use tracing::info;
+
+use crate::state::AppState;
 
 /// warden
 #[derive(Parser, Debug)]
@@ -13,7 +22,7 @@ struct Args {
 }
 
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() -> Result<(), error::AppError> {
     let args = Args::parse();
     let config = include_str!("../warden.toml");
 
@@ -30,6 +39,14 @@ async fn main() -> Result<()> {
 
     let _tracing = Tracing::builder().build(&config.monitoring);
 
-    info!("Hello, world!");
+    let state = AppState::create(&config).await?;
+
+     let addr = SocketAddr::from((Ipv6Addr::UNSPECIFIED, config.application.port));
+
+    let listener = tokio::net::TcpListener::bind(addr).await?;
+    info!(port = addr.port(), "starting warden");
+
+    axum::serve(listener, server::router(state)).await?;
+
     Ok(())
 }

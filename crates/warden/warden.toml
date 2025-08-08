@@ -2,6 +2,9 @@
 env = "development"
 port = 2210
 
+[misc]
+cache-ttl = 1000
+
 [monitoring]
 log-level = "warden=trace,info"
 

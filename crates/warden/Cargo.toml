@@ -13,9 +13,13 @@ axum = { workspace = true, features = ["macros"] }
 clap = { workspace = true, features = ["derive"] }
 config = { workspace = true, features = ["convert-case", "toml"] }
 serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "signal"] }
 tracing.workspace = true
 warden-core = { workspace = true, features = ["iso20022"] }
+
+[dev-dependencies]
+tower = { workspace = true, features = ["util"] }
 
 [dependencies.stack-up]
 workspace = true
