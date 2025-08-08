@@ -1,11 +1,18 @@
-use axum::response::IntoResponse;
+pub mod processor;
 
-pub async fn health_check() -> impl IntoResponse {
-    let name = env!("CARGO_PKG_NAME");
-    let ver = env!("CARGO_PKG_VERSION");
+use utoipa::OpenApi;
 
-    format!("{name} v{ver} is live")
-}
+const PACS008_001_12: &str = "pacs.008.001.12";
+const PACS002_001_12: &str = "pacs.002.001.12";
+
+#[derive(OpenApi)]
+#[openapi(
+    tags(
+        (name = PACS008_001_12, description = "Submit a pacs.008.001.12 payload"),
+        (name = PACS002_001_12, description = "Submit a pacs.002.001.12 payload"),
+    )
+)]
+pub struct ApiDoc;
 
 #[cfg(test)]
 mod tests {

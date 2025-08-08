@@ -1,11 +1,56 @@
 mod routes;
 
-use axum::{Router, routing::get};
+use axum::Router;
+use utoipa::OpenApi;
+use utoipa_axum::{router::OpenApiRouter, routes};
 
-use crate::state::AppHandle;
+#[cfg(feature = "redoc")]
+use utoipa_redoc::Servable;
+#[cfg(feature = "scalar")]
+use utoipa_scalar::Servable as _;
+
+use crate::{server::routes::ApiDoc, state::AppHandle};
 
 pub fn router(state: AppHandle) -> Router {
-    Router::new().route("/", get(routes::health_check))
+    let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
+        .routes(routes!(health_check))
+        .nest("/api", routes::processor::router(state.clone()))
+        .split_for_parts();
+
+    #[cfg(feature = "swagger")]
+    let router = router.merge(
+        utoipa_swagger_ui::SwaggerUi::new("/swagger-ui")
+            .url("/api-docs/swaggerdoc.json", api.clone()),
+    );
+
+    #[cfg(feature = "redoc")]
+    let router = router.merge(utoipa_redoc::Redoc::with_url("/redoc", api.clone()));
+
+    #[cfg(feature = "rapidoc")]
+    let router = router.merge(
+        utoipa_rapidoc::RapiDoc::with_openapi("/api-docs/rapidoc.json", api.clone())
+            .path("/rapidoc"),
+    );
+
+    #[cfg(feature = "scalar")]
+    let router = router.merge(utoipa_scalar::Scalar::with_url("/scalar", api));
+
+    router
+}
+
+/// Get health of the API.
+#[utoipa::path(
+    method(get),
+    path = "/",
+    responses(
+        (status = OK, description = "Success", body = str, content_type = "text/plain")
+    )
+)]
+pub async fn health_check() -> impl axum::response::IntoResponse {
+    let name = env!("CARGO_PKG_NAME");
+    let ver = env!("CARGO_PKG_VERSION");
+
+    format!("{name} v{ver} is live")
 }
 
 #[cfg(test)]

@@ -16,7 +16,20 @@ serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "signal"] }
 tracing.workspace = true
-warden-core = { workspace = true, features = ["iso20022"] }
+utoipa = { workspace = true, features = ["axum_extras"] }
+utoipa-axum.workspace = true
+utoipa-rapidoc = { workspace = true, optional = true }
+utoipa-redoc = { workspace = true, optional = true }
+utoipa-scalar = { workspace = true, optional = true }
+utoipa-swagger-ui = { workspace = true, optional = true }
+warden-core = { workspace = true, features = ["iso20022", "openapi"] }
+
+[features]
+# default = []
+swagger = ["dep:utoipa-swagger-ui", "utoipa-swagger-ui/axum"]
+redoc = ["dep:utoipa-redoc", "utoipa-redoc/axum"]
+rapidoc = ["dep:utoipa-rapidoc", "utoipa-rapidoc/axum"]
+scalar = ["dep:utoipa-scalar", "utoipa-scalar/axum"]
 
 [dev-dependencies]
 tower = { workspace = true, features = ["util"] }
