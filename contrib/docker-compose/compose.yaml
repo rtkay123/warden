@@ -1,0 +1,28 @@
+name: warden
+
+services:
+  database:
+    image: postgres:17.5-alpine
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      PGDATA: /data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - warden
+    volumes:
+      - db:/data/postgres
+      - ./init-db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  db:
+
+networks:
+  warden:
