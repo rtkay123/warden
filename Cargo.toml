@@ -9,6 +9,14 @@ documentation = "https://books.kanjala.com/warden"
 description = "A rule-based fraud detection platform"
 
 [workspace.dependencies]
+anyhow = "1.0.98"
+axum = "0.8.4"
+clap = "4.5.43"
+config = { version = "0.15.13", default-features = false }
 prost = "0.14.1"
+serde = "1.0.219"
+stack-up = { git = "https://github.com/rtkay123/stack-up" }
+tokio = "1.47.1"
 tonic = "0.14.0"
+tracing = "0.1.41"
 warden-core = { path = "lib/warden-core" }

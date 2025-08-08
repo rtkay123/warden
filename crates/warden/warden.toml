@@ -1,0 +1,8 @@
+[application]
+env = "development"
+port = 2210
+
+[monitoring]
+log-level = "warden=trace,info"
+
+# vim:ft=toml
