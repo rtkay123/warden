@@ -1,14 +1,17 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+//! warden-core
+#![cfg_attr(docsrs, feature(doc_cfg))]
+#![warn(
+    missing_docs,
+    rustdoc::broken_intra_doc_links,
+    missing_debug_implementations
+)]
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+/// Google well known types
+#[allow(missing_docs)]
+#[cfg(feature = "iso20022")]
+pub mod google;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+/// ISO20022 messages
+#[allow(missing_docs)]
+#[cfg(feature = "iso20022")]
+pub mod iso20022;

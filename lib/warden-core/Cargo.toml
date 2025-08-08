@@ -17,7 +17,8 @@ tonic = { workspace = true, optional = true }
 tonic-types = { version = "0.14.0", optional = true }
 
 [features]
-default = ["dep:prost", "dep:tonic", "dep:tonic-types"]
+default = []
+iso20022 = ["dep:prost", "dep:tonic", "dep:tonic-types"]
 
 [build-dependencies]
 tonic-prost-build = { version = "0.14.0", features = ["cleanup-markdown"] }
