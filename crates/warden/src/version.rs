@@ -1,12 +1,16 @@
 use std::collections::HashMap;
 
-use axum::{extract::{FromRequestParts, Path}, http::{request::Parts, StatusCode}, response::{IntoResponse, Response}, RequestPartsExt};
+use axum::{
+    RequestPartsExt,
+    extract::{FromRequestParts, Path},
+    http::{StatusCode, request::Parts},
+    response::{IntoResponse, Response},
+};
 
 #[derive(Debug)]
 pub enum Version {
     V0,
 }
-
 
 impl<S> FromRequestParts<S> for Version
 where

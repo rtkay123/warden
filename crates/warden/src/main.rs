@@ -41,7 +41,7 @@ async fn main() -> Result<(), error::AppError> {
 
     let state = AppState::create(&config).await?;
 
-     let addr = SocketAddr::from((Ipv6Addr::UNSPECIFIED, config.application.port));
+    let addr = SocketAddr::from((Ipv6Addr::UNSPECIFIED, config.application.port));
 
     let listener = tokio::net::TcpListener::bind(addr).await?;
     info!(port = addr.port(), "starting warden");

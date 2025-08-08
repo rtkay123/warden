@@ -22,7 +22,7 @@ mod tests {
 
     #[tokio::test]
     async fn health_check() {
-        let state = AppState::create( &test_config()).await.unwrap();
+        let state = AppState::create(&test_config()).await.unwrap();
         let app = server::router(state);
 
         let response = app
@@ -33,4 +33,3 @@ mod tests {
         assert_eq!(response.status(), StatusCode::OK);
     }
 }
-

@@ -1,14 +1,12 @@
 mod routes;
 
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 
 use crate::state::AppHandle;
 
 pub fn router(state: AppHandle) -> Router {
-    Router::new()
-        .route("/", get(routes::health_check))
+    Router::new().route("/", get(routes::health_check))
 }
-
 
 #[cfg(test)]
 pub(crate) fn test_config() -> stack_up::Configuration {
