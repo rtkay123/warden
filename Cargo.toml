@@ -17,6 +17,7 @@ prost = "0.14.1"
 serde = "1.0.219"
 serde_json = "1.0.142"
 stack-up = { git = "https://github.com/rtkay123/stack-up" }
+time = "0.3.41"
 tokio = "1.47.1"
 tonic = "0.14.0"
 tower = "0.5.2"

@@ -15,3 +15,8 @@ pub mod google;
 #[allow(missing_docs)]
 #[cfg(feature = "iso20022")]
 pub mod iso20022;
+
+/// Message in transit
+#[allow(missing_docs)]
+#[cfg(feature = "iso20022")]
+pub mod message;

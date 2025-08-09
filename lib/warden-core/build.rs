@@ -14,6 +14,7 @@ impl Entity {
             vec![
                 "proto/iso20022/pacs_008_001_12.proto",
                 "proto/iso20022/pacs_002_001_12.proto",
+                "proto/warden_message.proto",
             ]
         }
 
@@ -78,10 +79,18 @@ fn build_proto(package: &str, entity: Entity) -> Result<(), Box<dyn std::error::
 
 #[cfg(all(feature = "serde", feature = "iso20022"))]
 fn add_serde(config: tonic_prost_build::Builder) -> tonic_prost_build::Builder {
-    config.type_attribute(
+    let config = config.type_attribute(
         ".",
         "#[derive(serde::Serialize, serde::Deserialize)] #[serde(rename_all = \"snake_case\")]",
-    )
+    );
+
+    #[cfg(feature = "time")]
+    let config = config.type_attribute(
+        ".google.protobuf.Timestamp",
+        "#[serde(try_from = \"time::OffsetDateTime\")] #[serde(into = \"String\")]",
+    );
+
+    config
 }
 
 #[cfg(all(feature = "openapi", feature = "iso20022"))]

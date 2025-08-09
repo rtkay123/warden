@@ -14,6 +14,7 @@ clap = { workspace = true, features = ["derive"] }
 config = { workspace = true, features = ["convert-case", "toml"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
+time.workspace = true
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "signal"] }
 tracing.workspace = true
 utoipa = { workspace = true, features = ["axum_extras"] }
@@ -22,10 +23,10 @@ utoipa-rapidoc = { workspace = true, optional = true }
 utoipa-redoc = { workspace = true, optional = true }
 utoipa-scalar = { workspace = true, optional = true }
 utoipa-swagger-ui = { workspace = true, optional = true }
-warden-core = { workspace = true, features = ["iso20022", "openapi"] }
+warden-core = { workspace = true, features = ["iso20022", "serde", "openapi"] }
 
 [features]
-# default = []
+default = []
 swagger = ["dep:utoipa-swagger-ui", "utoipa-swagger-ui/axum"]
 redoc = ["dep:utoipa-redoc", "utoipa-redoc/axum"]
 rapidoc = ["dep:utoipa-rapidoc", "utoipa-rapidoc/axum"]

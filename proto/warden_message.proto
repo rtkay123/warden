@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package message;
+
+import "proto/iso20022/pacs_008_001_12.proto";
+import "proto/iso20022/pacs_002_001_12.proto";
+import "google/protobuf/timestamp.proto";
+
+message Payload {
+  oneof transaction {
+    iso20022.pacs008.Pacs008Document pacs008 = 1;
+    iso20022.pacs002.Pacs002Document pacs002 = 2;
+  }
+  DataCache data_cache = 3;
+  string tx_tp = 4;
+}
+
+message DataCache {
+  string cdtr_id = 1;
+  string dbtr_id = 2;
+  string dbtr_acct_id = 3;
+  string cdtr_acct_id = 4;
+  google.protobuf.Timestamp cre_dt_tm = 5;
+  iso20022.pacs008.ActiveOrHistoricCurrencyAndAmount instd_amt = 6;
+  iso20022.pacs008.ActiveCurrencyAndAmount intr_bk_sttlm_amt = 7;
+  optional double xchg_rate = 8;
+}

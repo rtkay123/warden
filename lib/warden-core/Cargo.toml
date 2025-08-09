@@ -15,6 +15,7 @@ rustdoc-args = ["--cfg", "docsrs"]
 prost = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }
+time = { workspace = true, optional = true }
 tonic = { workspace = true, optional = true }
 tonic-types = { version = "0.14.0", optional = true }
 utoipa = { workspace = true, optional = true }
@@ -23,7 +24,17 @@ utoipa = { workspace = true, optional = true }
 default = []
 iso20022 = ["dep:prost", "dep:tonic", "dep:tonic-types"]
 serde = ["dep:serde", "serde/derive", "dep:serde_json"]
-openapi = ["dep:utoipa", "serde"]
+serde-time = [
+    "time",
+    "serde",
+    "time/serde",
+]
+time = [
+    "time/parsing",
+    "time/formatting",
+    "time/macros",
+]
+openapi = ["dep:utoipa", "serde-time", "utoipa/time"]
 
 [build-dependencies]
 tonic-prost-build = { version = "0.14.0", features = ["cleanup-markdown"] }
