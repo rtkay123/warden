@@ -42,7 +42,7 @@ async fn main() -> Result<(), error::AppError> {
         .loki(&config.application, &config.monitoring)?
         .build(&config.monitoring);
 
-      tokio::spawn(tracing.loki_task);
+    tokio::spawn(tracing.loki_task);
 
     let state = AppState::create(&config).await?;
 

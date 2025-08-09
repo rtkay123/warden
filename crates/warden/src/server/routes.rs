@@ -1,3 +1,4 @@
+pub mod metrics;
 pub mod processor;
 
 use utoipa::OpenApi;

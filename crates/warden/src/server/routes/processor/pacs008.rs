@@ -61,9 +61,7 @@ pub(super) async fn post_pacs008(
     let end_to_end_id = cdt_trf_tx_inf
         .as_ref()
         .map(|value| value.pmt_id.end_to_end_id.as_str())
-        .ok_or_else(|| {
-            anyhow::anyhow!("missing end_to_end_id id")
-        })?;
+        .ok_or_else(|| anyhow::anyhow!("missing end_to_end_id id"))?;
 
     Ok(String::default())
 }

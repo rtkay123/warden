@@ -1,3 +1,4 @@
+mod middleware;
 mod routes;
 
 use axum::Router;
@@ -9,10 +10,13 @@ use utoipa_redoc::Servable;
 #[cfg(feature = "scalar")]
 use utoipa_scalar::Servable as _;
 
-use crate::{server::routes::ApiDoc, state::AppHandle};
+use crate::{
+    server::routes::{ApiDoc, metrics::metrics_app},
+    state::AppHandle,
+};
 
 pub fn router(state: AppHandle) -> Router {
-    let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
+    let (router, _api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
         .routes(routes!(health_check))
         .nest("/api", routes::processor::router(state.clone()))
         .split_for_parts();
@@ -20,22 +24,22 @@ pub fn router(state: AppHandle) -> Router {
     #[cfg(feature = "swagger")]
     let router = router.merge(
         utoipa_swagger_ui::SwaggerUi::new("/swagger-ui")
-            .url("/api-docs/swaggerdoc.json", api.clone()),
+            .url("/api-docs/swaggerdoc.json", _api.clone()),
     );
 
     #[cfg(feature = "redoc")]
-    let router = router.merge(utoipa_redoc::Redoc::with_url("/redoc", api.clone()));
+    let router = router.merge(utoipa_redoc::Redoc::with_url("/redoc", _api.clone()));
 
     #[cfg(feature = "rapidoc")]
     let router = router.merge(
-        utoipa_rapidoc::RapiDoc::with_openapi("/api-docs/rapidoc.json", api.clone())
+        utoipa_rapidoc::RapiDoc::with_openapi("/api-docs/rapidoc.json", _api.clone())
             .path("/rapidoc"),
     );
 
     #[cfg(feature = "scalar")]
-    let router = router.merge(utoipa_scalar::Scalar::with_url("/scalar", api));
+    let router = router.merge(utoipa_scalar::Scalar::with_url("/scalar", _api));
 
-    router
+    middleware::apply(router).merge(metrics_app())
 }
 
 /// Get health of the API.

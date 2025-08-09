@@ -13,6 +13,8 @@ anyhow = "1.0.98"
 axum = "0.8.4"
 clap = "4.5.43"
 config = { version = "0.15.13", default-features = false }
+metrics = { version = "0.24.2", default-features = false }
+metrics-exporter-prometheus = { version = "0.17.2", default-features = false }
 prost = "0.14.1"
 serde = "1.0.219"
 serde_json = "1.0.142"
@@ -21,6 +23,7 @@ time = "0.3.41"
 tokio = "1.47.1"
 tonic = "0.14.0"
 tower = "0.5.2"
+tower-http = "0.6.6"
 tracing = "0.1.41"
 utoipa = "5.4.0"
 utoipa-axum = "0.2.0"
