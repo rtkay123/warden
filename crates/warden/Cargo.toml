@@ -37,4 +37,4 @@ tower = { workspace = true, features = ["util"] }
 
 [dependencies.stack-up]
 workspace = true
-features = ["api", "tracing"]
+features = ["api", "opentelemetry", "tracing-loki"]

@@ -37,7 +37,12 @@ async fn main() -> Result<(), error::AppError> {
     config.application.name = env!("CARGO_CRATE_NAME").into();
     config.application.version = env!("CARGO_PKG_VERSION").into();
 
-    let _tracing = Tracing::builder().build(&config.monitoring);
+    let tracing = Tracing::builder()
+        .opentelemetry(&config.application, &config.monitoring)?
+        .loki(&config.application, &config.monitoring)?
+        .build(&config.monitoring);
+
+      tokio::spawn(tracing.loki_task);
 
     let state = AppState::create(&config).await?;
 

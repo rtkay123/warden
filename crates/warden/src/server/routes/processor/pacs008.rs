@@ -1,5 +1,5 @@
 use axum::{extract::State, response::IntoResponse};
-use tracing::trace;
+use tracing::{error, trace, warn};
 use warden_core::{
     iso20022::{TransactionType, pacs008::Pacs008Document},
     message::DataCache,
@@ -36,6 +36,35 @@ pub(super) async fn post_pacs008(
     axum::Json(transaction): axum::Json<Pacs008Document>,
 ) -> Result<impl IntoResponse, AppError> {
     let tx_tp = TransactionType::PACS008;
+    let data_cache = build_data_cache(&transaction)?;
+
+    let tx_count = transaction.f_i_to_f_i_cstmr_cdt_trf.cdt_trf_tx_inf.len();
+    let msg_id = &transaction.f_i_to_f_i_cstmr_cdt_trf.grp_hdr.msg_id;
+
+    if transaction.f_i_to_f_i_cstmr_cdt_trf.cdt_trf_tx_inf.len() > 1 {
+        warn!(
+            msg_id,
+            tx_count,
+            "found more than 1 transaction for this message. Only the first will be evaluated"
+        );
+    }
+
+    // take the first
+    trace!("extracting first credit transfer transaction info");
+    let cdt_trf_tx_inf = transaction.f_i_to_f_i_cstmr_cdt_trf.cdt_trf_tx_inf.first();
+
+    let amount = cdt_trf_tx_inf.and_then(|value| value.instd_amt.as_ref().map(|value| value.value));
+
+    let ccy =
+        cdt_trf_tx_inf.and_then(|value| value.instd_amt.as_ref().map(|value| value.ccy.as_str()));
+
+    let end_to_end_id = cdt_trf_tx_inf
+        .as_ref()
+        .map(|value| value.pmt_id.end_to_end_id.as_str())
+        .ok_or_else(|| {
+            anyhow::anyhow!("missing end_to_end_id id")
+        })?;
+
     Ok(String::default())
 }
 

@@ -7,5 +7,7 @@ cache-ttl = 1000
 
 [monitoring]
 log-level = "warden=trace,info"
+opentelemetry-endpoint = "http://localhost:4317"
+loki-endpoint = "http://localhost:3100"
 
 # vim:ft=toml
