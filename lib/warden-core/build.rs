@@ -14,6 +14,7 @@ impl Entity {
             vec![
                 "proto/iso20022/pacs_008_001_12.proto",
                 "proto/iso20022/pacs_002_001_12.proto",
+                "proto/googleapis/google/type/money.proto",
                 "proto/warden_message.proto",
             ]
         }
@@ -84,7 +85,7 @@ fn add_serde(config: tonic_prost_build::Builder) -> tonic_prost_build::Builder {
         "#[derive(serde::Serialize, serde::Deserialize)] #[serde(rename_all = \"snake_case\")]",
     );
 
-    #[cfg(feature = "time")]
+    #[cfg(feature = "serde-time")]
     let config = config.type_attribute(
         ".google.protobuf.Timestamp",
         "#[serde(try_from = \"time::OffsetDateTime\")] #[serde(into = \"String\")]",

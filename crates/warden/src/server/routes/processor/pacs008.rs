@@ -1,6 +1,8 @@
 use axum::{extract::State, response::IntoResponse};
-use tracing::{error, trace, warn};
+use stack_up::tracing_opentelemetry::OpenTelemetrySpanExt;
+use tracing::{debug, error, trace, warn};
 use warden_core::{
+    google::r#type::Money,
     iso20022::{TransactionType, pacs008::Pacs008Document},
     message::DataCache,
 };
@@ -35,7 +37,8 @@ pub(super) async fn post_pacs008(
     State(state): State<AppHandle>,
     axum::Json(transaction): axum::Json<Pacs008Document>,
 ) -> Result<impl IntoResponse, AppError> {
-    let tx_tp = TransactionType::PACS008;
+    let tx_tp = TransactionType::PACS008.to_string();
+    tracing::Span::current().record("tx_tp", &tx_tp);
     let data_cache = build_data_cache(&transaction)?;
 
     let tx_count = transaction.f_i_to_f_i_cstmr_cdt_trf.cdt_trf_tx_inf.len();
@@ -62,6 +65,39 @@ pub(super) async fn post_pacs008(
         .as_ref()
         .map(|value| value.pmt_id.end_to_end_id.as_str())
         .ok_or_else(|| anyhow::anyhow!("missing end_to_end_id id"))?;
+
+    let ccy =
+        cdt_trf_tx_inf.and_then(|value| value.instd_amt.as_ref().map(|value| value.ccy.as_str()));
+
+    let end_to_end_id = cdt_trf_tx_inf
+        .as_ref()
+        .map(|value| value.pmt_id.end_to_end_id.as_str())
+        .ok_or_else(|| {
+            error!("missing end_to_end_id");
+            anyhow::anyhow!("missing end_to_end_id id")
+        })?;
+
+    tracing::Span::current().record("end_to_end_id", end_to_end_id);
+    let end_to_end_id = String::from(end_to_end_id);
+
+    let msg_id = &transaction.f_i_to_f_i_cstmr_cdt_trf.grp_hdr.msg_id;
+    tracing::Span::current().record("msg_id", msg_id);
+
+    let pmt_inf_id = cdt_trf_tx_inf
+        .and_then(|value| value.pmt_id.instr_id.as_ref())
+        .ok_or_else(|| {
+            error!("missing pmt_inf_id");
+            anyhow::anyhow!("missing pmt_inf_id id")
+        })?;
+
+    debug!(%msg_id, %end_to_end_id, "extracted transaction identifiers");
+
+    let money = if let (Some(amt), Some(ccy)) = (amount, ccy) {
+        Some(Money::try_from((amt, ccy)).map_err(|_e| anyhow::anyhow!("invalid currency"))?)
+    } else {
+        trace!(msg_id, "transaction has no amount or currency");
+        None
+    };
 
     Ok(String::default())
 }
