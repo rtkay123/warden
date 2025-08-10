@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "select id, document as \"document: sqlx::types::Json<serde_json::Value>\" from pacs008 where exists (\n            select 1\n            from jsonb_array_elements(document->'f_i_to_f_i_cstmr_cdt_trf'->'cdt_trf_tx_inf') as elem\n            where elem->'pmt_id'->>'end_to_end_id' = $1\n        ) limit 1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "document: sqlx::types::Json<serde_json::Value>",
+        "type_info": "Jsonb"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "dee04f022231e4b4b5b4a9941acf891583af2d241615045d788c7a54093f6091"
+}

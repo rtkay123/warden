@@ -21,16 +21,24 @@ mod tests {
         body::Body,
         http::{Request, StatusCode},
     };
+    use sqlx::PgPool;
     use tower::ServiceExt;
+    use warden_stack::cache::RedisManager;
 
     use crate::{
         server::{self, test_config},
-        state::AppState,
+        state::{AppState, Services},
     };
 
-    #[tokio::test]
-    async fn health_check() {
-        let state = AppState::create(&test_config()).await.unwrap();
+    #[sqlx::test]
+    async fn health_check(pool: PgPool) {
+        let config = test_config();
+
+        let cache = RedisManager::new(&config.cache).await.unwrap();
+        let client = async_nats::connect(&config.nats.hosts[0]).await.unwrap();
+        let jetstream = async_nats::jetstream::new(client);
+
+        let state = AppState::create(Services {postgres: pool,cache, jetstream}, &test_config()).await.unwrap();
         let app = server::router(state);
 
         let response = app
