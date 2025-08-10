@@ -58,7 +58,7 @@ opentelemetry = [
 ]
 postgres = ["sqlx/postgres", "url/serde", "secrecy/serde"]
 tracing = ["dep:tracing", "tracing-subscriber/env-filter"]
-opentelemetry-tonic = ["dep:tonic"]
+opentelemetry-tonic = ["dep:tonic", "opentelemetry"]
 tracing-loki = ["dep:tracing-loki", "tracing"]
 
 [[example]]

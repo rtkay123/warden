@@ -15,11 +15,20 @@ metrics.workspace = true
 metrics-exporter-prometheus.workspace = true
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
+sqlx = { workspace = true, features = [
+    "macros",
+    "migrate",
+    "postgres",
+    "runtime-tokio",
+    "time",
+    "tls-rustls",
+] }
 time.workspace = true
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "signal"] }
+tonic.workspace = true
 tracing.workspace = true
 warden-core = { workspace = true, features = ["pseudonyms", "serde-time"] }
 
 [dependencies.warden-stack]
 workspace = true
-features = ["api", "cache", "postgres", "opentelemetry", "tracing-loki"]
+features = ["api", "cache", "postgres", "opentelemetry-tonic", "tracing-loki"]

@@ -1,0 +1,25 @@
+[application]
+env = "development"
+port = 1610
+
+[monitoring]
+log-level = "warden_pseudonyms=trace,info"
+opentelemetry-endpoint = "http://localhost:4317"
+loki-endpoint = "http://localhost:3100"
+
+[misc]
+something = "http://localhost:8080"
+
+[database]
+pool_size = 100
+port = 5432
+name = "pseudonyms"
+host = "localhost"
+user = "postgres"
+password = "password"
+
+[cache]
+dsn = "redis://localhost:6379"
+pooled = true
+type = "non-clustered"         # clustered, non-clustered or sentinel
+max-connections = 100
