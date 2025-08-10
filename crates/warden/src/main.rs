@@ -51,6 +51,9 @@ async fn main() -> Result<(), error::AppError> {
         .cache(&config.cache)
         .await
         .inspect_err(|e| error!("cache: {e}"))?
+        .nats_jetstream(&config.nats)
+        .await
+        .inspect_err(|e| error!("nats: {e}"))?
         .build();
 
     let postgres = services
@@ -63,7 +66,16 @@ async fn main() -> Result<(), error::AppError> {
         .take()
         .ok_or_else(|| anyhow::anyhow!("cache is not ready"))?;
 
-    let services = state::Services { postgres, cache };
+    let jetstream = services
+        .jetstream
+        .take()
+        .ok_or_else(|| anyhow::anyhow!("cache is not ready"))?;
+
+    let services = state::Services {
+        postgres,
+        cache,
+        jetstream,
+    };
 
     let state = AppState::create(services, &config).await?;
 

@@ -6,6 +6,9 @@ port = 2210
 cache-ttl = 1000
 pseudonyms-endpoint = "http://localhost:1610"
 
+[misc.nats]
+subject = "iso20022"
+
 [monitoring]
 log-level = "warden=trace,info"
 opentelemetry-endpoint = "http://localhost:4317"
@@ -18,6 +21,9 @@ name = "transaction_history"
 host = "localhost"
 password = "password"
 user = "postgres"
+
+[nats]
+hosts = ["nats://localhost:4222"]
 
 [cache]
 dsn = "redis://localhost:6379"

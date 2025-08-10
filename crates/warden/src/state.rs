@@ -1,3 +1,4 @@
+use async_nats::jetstream::Context;
 use sqlx::PgPool;
 use std::{ops::Deref, sync::Arc};
 use tonic::transport::Endpoint;
@@ -26,6 +27,7 @@ impl Deref for AppHandle {
 pub struct Services {
     pub postgres: PgPool,
     pub cache: RedisManager,
+    pub jetstream: Context,
 }
 
 pub struct AppState {

@@ -3787,11 +3787,14 @@ name = "warden"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "async-nats",
  "axum",
  "clap",
  "config",
  "metrics",
  "metrics-exporter-prometheus",
+ "opentelemetry",
+ "opentelemetry-semantic-conventions",
  "prost 0.14.1",
  "serde",
  "serde_json",
@@ -3802,6 +3805,7 @@ dependencies = [
  "tower",
  "tower-http",
  "tracing",
+ "tracing-opentelemetry",
  "utoipa",
  "utoipa-axum",
  "utoipa-rapidoc",

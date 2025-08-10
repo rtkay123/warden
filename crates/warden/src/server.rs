@@ -1,5 +1,6 @@
 pub mod grpc;
 mod middleware;
+mod publish;
 mod routes;
 
 use axum::Router;

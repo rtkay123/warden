@@ -34,8 +34,21 @@ services:
       timeout: 3s
       retries: 5
 
+  nats:
+    image: nats:2.11-alpine
+    entrypoint: nats-server
+    command: ["--js", "-m", "8222"]
+    volumes:
+      - nats-data:/data
+    networks:
+      - warden
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+
 volumes:
   db:
+  nats-data:
 
 networks:
   warden:

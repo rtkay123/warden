@@ -9,11 +9,14 @@ description.workspace = true
 
 [dependencies]
 anyhow.workspace = true
+async-nats.workspace = true
 axum = { workspace = true, features = ["macros"] }
 clap = { workspace = true, features = ["derive"] }
 config = { workspace = true, features = ["convert-case", "toml"] }
 metrics.workspace = true
 metrics-exporter-prometheus.workspace = true
+opentelemetry.workspace = true
+opentelemetry-semantic-conventions.workspace = true
 prost.workspace = true
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
@@ -36,6 +39,7 @@ tower-http = { workspace = true, features = [
     "request-id",
 ] }
 tracing.workspace = true
+tracing-opentelemetry.workspace = true
 utoipa = { workspace = true, features = ["axum_extras"] }
 utoipa-axum.workspace = true
 utoipa-rapidoc = { workspace = true, optional = true }
@@ -57,4 +61,4 @@ tower = { workspace = true, features = ["util"] }
 
 [dependencies.warden-stack]
 workspace = true
-features = ["api", "cache", "opentelemetry", "postgres", "tracing-loki"]
+features = ["api", "cache", "nats-jetstream", "opentelemetry", "postgres", "tracing-loki"]

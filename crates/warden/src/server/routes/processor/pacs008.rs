@@ -1,6 +1,5 @@
 use axum::{extract::State, response::IntoResponse};
-use std::sync::Arc;
-use tracing::{Instrument, Span, debug, error, info_span, instrument, trace, warn};
+use tracing::{Instrument, Span, debug, error, info, info_span, instrument, trace, warn};
 use uuid::Uuid;
 use warden_core::{
     google::r#type::Money,
@@ -13,7 +12,12 @@ use warden_stack::{
     tracing_opentelemetry::OpenTelemetrySpanExt,
 };
 
-use crate::{error::AppError, server::routes::PACS008_001_12, state::AppHandle, version::Version};
+use crate::{
+    error::AppError,
+    server::{publish::publish_message, routes::PACS008_001_12},
+    state::AppHandle,
+    version::Version,
+};
 
 /// Submit a pacs.008.001.12 transaction
 #[utoipa::path(
@@ -167,7 +171,7 @@ pub(super) async fn post_pacs008(
     .execute(&state.services.postgres)
     .instrument(span)
     .await?;
-    debug!(%id, %msg_id, "transaction added to history");
+    info!(%id, %msg_id, "transaction added to history");
 
     let payload = warden_core::message::Payload {
         tx_tp: tx_tp.to_string(),
@@ -175,10 +179,12 @@ pub(super) async fn post_pacs008(
             transaction.clone(),
         )),
         data_cache: Some(data_cache),
-        ..Default::default()
     };
 
-    Ok(String::default())
+    publish_message(&state, payload, msg_id).await?;
+    trace!(%msg_id, "published transaction to stream");
+
+    Ok((axum::http::StatusCode::CREATED, axum::Json(transaction)))
 }
 
 pub fn build_data_cache(transaction: &Pacs008Document) -> anyhow::Result<DataCache> {
