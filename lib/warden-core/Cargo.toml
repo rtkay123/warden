@@ -17,12 +17,14 @@ serde = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }
 time = { workspace = true, optional = true }
 tonic = { workspace = true, optional = true }
+tonic-prost = { version = "0.14.1", optional = true }
 tonic-types = { version = "0.14.0", optional = true }
 utoipa = { workspace = true, optional = true }
 
 [features]
 default = []
-iso20022 = ["dep:prost", "dep:tonic", "dep:tonic-types"]
+message = ["dep:prost", "dep:tonic", "dep:tonic-types", "dep:tonic-prost"]
+pseudonyms = ["dep:prost", "dep:tonic", "dep:tonic-types", "dep:tonic-prost"]
 serde = ["dep:serde", "serde/derive", "dep:serde_json"]
 serde-time = [
     "time",

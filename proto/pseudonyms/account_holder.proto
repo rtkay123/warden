@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package pseudonyms.account_holder;
+
+import "google/protobuf/timestamp.proto";
+
+message AccountHolder {
+  string entity_id = 1;
+  string account_id = 2;
+  google.protobuf.Timestamp cre_dt_tm = 3;
+}

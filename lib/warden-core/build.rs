@@ -1,28 +1,47 @@
-#[cfg(feature = "iso20022")]
+#[cfg(any(feature = "message", feature = "pseudonyms"))]
 enum Entity {
-    #[cfg(feature = "iso20022")]
+    #[cfg(feature = "message")]
     ISO2022,
+    #[cfg(feature = "pseudonyms")]
+    Pseudonyms,
 }
 
-#[cfg(feature = "iso20022")]
+#[cfg(any(feature = "message", feature = "pseudonyms"))]
 impl Entity {
     fn protos(&self) -> Vec<&'static str> {
-        let mut res: Vec<&'static str> = vec![];
+        let mut res: Vec<&'static str> = vec![
+            // "proto/googleapis/google/type/date.proto",
+            // "proto/googleapis/google/type/money.proto",
+            // "proto/googleapis/google/type/latlng.proto",
+        ];
 
-        #[cfg(feature = "iso20022")]
+        #[cfg(feature = "message")]
         fn iso20022_protos() -> Vec<&'static str> {
             vec![
-                "proto/iso20022/pacs_008_001_12.proto",
-                "proto/iso20022/pacs_002_001_12.proto",
-                "proto/googleapis/google/type/money.proto",
+                // "proto/iso20022/pacs_008_001_12.proto",
+                // "proto/iso20022/pacs_002_001_12.proto",
                 "proto/warden_message.proto",
             ]
         }
 
+        #[cfg(feature = "pseudonyms")]
+        fn pseudonyms_protos() -> Vec<&'static str> {
+            vec![
+                "proto/pseudonyms/account.proto",
+                "proto/pseudonyms/entity.proto",
+                "proto/pseudonyms/account_holder.proto",
+                "proto/pseudonyms/transaction_relationship.proto",
+            ]
+        }
+
         match self {
-            #[cfg(feature = "iso20022")]
+            #[cfg(feature = "message")]
             Entity::ISO2022 => {
                 res.extend(iso20022_protos());
+            }
+            #[cfg(feature = "pseudonyms")]
+            Entity::Pseudonyms => {
+                res.extend(pseudonyms_protos());
             }
         }
         res
@@ -32,25 +51,26 @@ impl Entity {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("cargo:rerun-if-changed=../../proto");
 
-    #[cfg(feature = "iso20022")]
-    build_proto("iso20022", Entity::ISO2022)?;
+#[cfg(any(feature = "message", feature = "pseudonyms"))]
+    let mut protos: Vec<&'static str> = vec![];
+
+    #[cfg(feature = "message")]
+    protos.extend(Entity::ISO2022.protos());
+
+    #[cfg(feature = "pseudonyms")]
+    protos.extend(Entity::Pseudonyms.protos());
+
+#[cfg(any(feature = "message", feature = "pseudonyms"))]
+    build_proto(&protos)?;
 
     Ok(())
 }
 
-#[cfg(feature = "iso20022")]
-fn build_proto(package: &str, entity: Entity) -> Result<(), Box<dyn std::error::Error>> {
+#[cfg(any(feature = "message", feature = "pseudonyms"))]
+fn build_proto(protos: &[&str]) -> Result<(), Box<dyn std::error::Error>> {
     let out_dir = std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap());
 
-    let config = tonic_prost_build::configure()
-         .server_mod_attribute(
-                package,
-                format!("#[cfg(feature = \"rpc-server-{package}\")] #[cfg_attr(docsrs, doc(cfg(feature = \"rpc-server-{package}\")))]"),
-            )
-            .client_mod_attribute(
-                package,
-                format!("#[cfg(feature = \"rpc-client-{package}\")] #[cfg_attr(docsrs, doc(cfg(feature = \"rpc-client-{package}\")))]"),
-            );
+    let config = tonic_prost_build::configure();
 
     #[cfg(feature = "serde")]
     let config = add_serde(config);
@@ -59,26 +79,18 @@ fn build_proto(package: &str, entity: Entity) -> Result<(), Box<dyn std::error::
     let config = add_openapi(config);
 
     config
-        .file_descriptor_set_path(out_dir.join(format!("{package}_descriptor.bin")))
-            .server_mod_attribute(
-                package,
-                format!("#[cfg(feature = \"rpc-server-{package}\")] #[cfg_attr(docsrs, doc(cfg(feature = \"rpc-server-{package}\")))]"),
-            )
-            .client_mod_attribute(
-                package,
-                format!("#[cfg(feature = \"rpc-client-{package}\")] #[cfg_attr(docsrs, doc(cfg(feature = \"rpc-client-{package}\")))]"),
-            )
+        .file_descriptor_set_path(out_dir.join("warden_descriptor.bin"))
         .protoc_arg("-I=../..")
         .compile_well_known_types(true)
         .compile_protos(
-            &entity.protos(),
-            &["../../proto/googleapis", "../../proto"], // specify the root location to search proto dependencies
+            protos,
+            &["../../proto", "../../proto/googleapis"], // specify the root location to search proto dependencies
         )?;
 
     Ok(())
 }
 
-#[cfg(all(feature = "serde", feature = "iso20022"))]
+#[cfg(all(feature = "serde", any(feature = "pseudonyms", feature = "message")))]
 fn add_serde(config: tonic_prost_build::Builder) -> tonic_prost_build::Builder {
     let config = config.type_attribute(
         ".",
@@ -94,7 +106,7 @@ fn add_serde(config: tonic_prost_build::Builder) -> tonic_prost_build::Builder {
     config
 }
 
-#[cfg(all(feature = "openapi", feature = "iso20022"))]
+#[cfg(all(feature = "openapi", any(feature = "message", feature = "pseudonyms")))]
 fn add_openapi(config: tonic_prost_build::Builder) -> tonic_prost_build::Builder {
     config.type_attribute(".", "#[derive(utoipa::ToSchema)]")
 }

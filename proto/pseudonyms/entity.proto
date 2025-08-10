@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package pseudonyms.entity;
+
+import "google/protobuf/timestamp.proto";
+
+message Entity {
+  string id = 1;
+  google.protobuf.Timestamp cre_dt_tm = 2;
+}

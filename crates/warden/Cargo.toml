@@ -30,7 +30,7 @@ utoipa-rapidoc = { workspace = true, optional = true }
 utoipa-redoc = { workspace = true, optional = true }
 utoipa-scalar = { workspace = true, optional = true }
 utoipa-swagger-ui = { workspace = true, optional = true }
-warden-core = { workspace = true, features = ["iso20022", "serde", "openapi"] }
+warden-core = { workspace = true, features = ["message", "pseudonyms", "serde", "openapi"] }
 
 [features]
 default = []

@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package pseudonyms.transaction_relationship;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "google/type/money.proto";
+import "google/type/latlng.proto";
+
+// TransactionRelationship message definition
+message TransactionRelationship {
+  string from = 1;
+  string to = 2;
+  optional google.type.Money amt = 3;
+  google.protobuf.Timestamp cre_dt_tm = 4;
+  string end_to_end_id = 5;
+  optional google.type.LatLng latlng = 6;
+  string msg_id = 7;
+  string pmt_inf_id = 8;
+  string tx_tp = 9;
+  optional string tx_sts = 10;
+}
+
+message CreatePseudonymRequest {
+  TransactionRelationship transaction_relationship = 1;
+  string debtor_id = 2;
+  string debtor_account_id = 3;
+  string creditor_id = 4;
+  string creditor_account_id = 5;
+}
+
+service MutatePseudonym {
+  rpc CreatePseudonym(CreatePseudonymRequest) returns (google.protobuf.Empty);
+}

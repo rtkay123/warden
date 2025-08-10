@@ -17,10 +17,6 @@ impl std::fmt::Display for TransactionType {
     }
 }
 
-/// Pacs008 file descriptor
-pub const ISO20022_FILE_DESCRIPTOR_SET: &[u8] =
-    tonic::include_file_descriptor_set!("iso20022_descriptor");
-
 /// pacs.008.001.12
 pub mod pacs008 {
     tonic::include_proto!("iso20022.pacs008");
