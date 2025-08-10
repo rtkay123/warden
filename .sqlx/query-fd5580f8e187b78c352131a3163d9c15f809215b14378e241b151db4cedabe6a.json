@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "insert into entity (id, cre_dt_tm)\n            select * from unnest($1::text[], $2::timestamptz[])\n            on conflict (id)\n            do update set cre_dt_tm = excluded.cre_dt_tm\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "TextArray",
+        "TimestamptzArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "fd5580f8e187b78c352131a3163d9c15f809215b14378e241b151db4cedabe6a"
+}

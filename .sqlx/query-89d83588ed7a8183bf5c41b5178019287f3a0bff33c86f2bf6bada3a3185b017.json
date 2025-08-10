@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "insert into account (id)\n            select * from unnest($1::text[])\n            on conflict (id) do nothing",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "TextArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "89d83588ed7a8183bf5c41b5178019287f3a0bff33c86f2bf6bada3a3185b017"
+}
