@@ -61,11 +61,6 @@ tracing = ["dep:tracing", "tracing-subscriber/env-filter"]
 opentelemetry-tonic = ["dep:tonic", "opentelemetry"]
 tracing-loki = ["dep:tracing-loki", "tracing"]
 
-[[example]]
-name = "tracing"
-path = "examples/tracing.rs"
-required-features = ["tracing"]
-
 [dev-dependencies]
 tokio = { version = "*", features = ["macros", "rt"] }
 sqlx = { version = "*", features = ["runtime-tokio"] }
