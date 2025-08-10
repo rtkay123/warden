@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        crate: ["pseudonyms"]
+        crate: ["pseudonyms", "warden"]
     name: build / ${{ matrix.crate }}
     steps:
       - uses: actions/checkout@v4
@@ -23,7 +23,7 @@ jobs:
           submodules: true
       - name: set up docker buildx
         uses: docker/setup-buildx-action@v3
-      - name: build and push
+      - name: build # and push
         uses: docker/build-push-action@v6
         with:
           push: false
