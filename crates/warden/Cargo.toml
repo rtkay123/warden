@@ -61,4 +61,4 @@ tower = { workspace = true, features = ["util"] }
 
 [dependencies.warden-stack]
 workspace = true
-features = ["api", "cache", "nats-jetstream", "opentelemetry", "postgres", "tracing-loki"]
+features = ["api", "cache", "nats-jetstream", "opentelemetry-tonic", "postgres", "tracing-loki"]
