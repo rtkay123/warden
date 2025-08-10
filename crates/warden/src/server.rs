@@ -58,8 +58,8 @@ pub async fn health_check() -> impl axum::response::IntoResponse {
 }
 
 #[cfg(test)]
-pub(crate) fn test_config() -> stack_up::Configuration {
-    use stack_up::Configuration;
+pub(crate) fn test_config() -> warden_stack::Configuration {
+    use warden_stack::Configuration;
 
     let config_path = "warden.toml";
 

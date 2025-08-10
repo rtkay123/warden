@@ -1,4 +1,4 @@
-use stack_up::{Configuration, Environment};
+use warden_stack::{Configuration, Environment};
 use std::{ops::Deref, sync::Arc};
 
 use crate::{cnfg::LocalConfig, error::AppError};

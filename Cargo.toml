@@ -10,15 +10,27 @@ description = "A rule-based fraud detection platform"
 
 [workspace.dependencies]
 anyhow = "1.0.98"
+async-nats = "0.42.0"
 axum = "0.8.4"
+bon = "3.4.0"
 clap = "4.5.43"
 config = { version = "0.15.13", default-features = false }
 metrics = { version = "0.24.2", default-features = false }
 metrics-exporter-prometheus = { version = "0.17.2", default-features = false }
+opentelemetry = { version = "0.30.0", default-features = false }
+opentelemetry-http = "0.30.0"
+opentelemetry-otlp = { version = "0.30.0", default-features = false }
+opentelemetry-semantic-conventions = { version = "0.30.0", default-features = false }
+opentelemetry_sdk = { version = "0.30.0", default-features = false }
 prost = "0.14.1"
+redis = { version = "0.32.5", default-features = false }
+secrecy = "0.10.3"
 serde = "1.0.219"
 serde_json = "1.0.142"
-stack-up = { git = "https://github.com/rtkay123/stack-up" }
+sqlx = { version = "0.8.6", default-features = false }
+thiserror = "2.0.12"
+tracing-opentelemetry = "0.31.0"
+url = "2.5.4"
 time = "0.3.41"
 tokio = "1.47.1"
 tonic = "0.14.0"
@@ -32,3 +44,4 @@ utoipa-redoc = "6.0.0"
 utoipa-scalar = "0.3.0"
 utoipa-swagger-ui = "9.0.2"
 warden-core = { path = "lib/warden-core" }
+warden-stack = { path = "lib/warden-stack" }

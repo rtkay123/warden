@@ -42,6 +42,6 @@ scalar = ["dep:utoipa-scalar", "utoipa-scalar/axum"]
 [dev-dependencies]
 tower = { workspace = true, features = ["util"] }
 
-[dependencies.stack-up]
+[dependencies.warden-stack]
 workspace = true
 features = ["api", "opentelemetry", "tracing-loki"]

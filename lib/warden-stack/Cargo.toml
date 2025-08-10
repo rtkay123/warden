@@ -1,0 +1,75 @@
+[package]
+name = "warden-stack"
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+async-nats = { workspace = true, optional = true }
+bb8 = { version = "0.9.0", optional = true }
+bb8-redis = { version = "0.24.0", optional = true }
+bon.workspace = true
+opentelemetry = { workspace = true, optional = true }
+opentelemetry-http = { workspace = true, optional = true }
+opentelemetry-otlp = { workspace = true, optional = true }
+opentelemetry-semantic-conventions = { workspace = true, optional = true }
+opentelemetry_sdk = { workspace = true, optional = true }
+redis = { workspace = true, optional = true }
+secrecy = { workspace = true, optional = true }
+serde = { workspace = true, features = ["derive", "rc"] }
+serde_json.workspace = true
+sqlx = { workspace = true, optional = true }
+thiserror.workspace = true
+tokio = { workspace = true, optional = true }
+tonic = { workspace = true, optional = true }
+tracing = { workspace = true, optional = true }
+tracing-loki = { version = "0.2.6", optional = true, default-features = false, features = ["compat-0-2-1", "rustls"] }
+tracing-opentelemetry = { workspace = true, optional = true }
+tracing-subscriber = { version = "0.3.19", optional = true }
+url = { workspace = true, optional = true }
+
+[features]
+default = []
+api = []
+cache = [
+    "dep:redis",
+    "redis/cluster-async",
+    "redis/connection-manager",
+    "redis/tokio-comp",
+    "redis/sentinel",
+    "tokio/sync",
+    "dep:bb8",
+    "dep:bb8-redis",
+    "url/serde",
+]
+nats-core = ["dep:async-nats"]
+nats-jetstream = ["dep:async-nats"]
+opentelemetry = [
+    "dep:opentelemetry",
+    "dep:tracing-opentelemetry",
+    "tracing",
+    "opentelemetry_sdk/rt-tokio",
+    "opentelemetry_sdk/trace",
+    "opentelemetry/trace",
+    "opentelemetry-http",
+    "opentelemetry-otlp/grpc-tonic",
+    "opentelemetry-otlp/http-proto",
+    "opentelemetry-semantic-conventions/semconv_experimental",
+]
+postgres = ["sqlx/postgres", "url/serde", "secrecy/serde"]
+tracing = ["dep:tracing", "tracing-subscriber/env-filter"]
+opentelemetry-tonic = ["dep:tonic"]
+tracing-loki = ["dep:tracing-loki", "tracing"]
+
+[[example]]
+name = "tracing"
+path = "examples/tracing.rs"
+required-features = ["tracing"]
+
+[dev-dependencies]
+tokio = { version = "*", features = ["macros", "rt"] }
+sqlx = { version = "*", features = ["runtime-tokio"] }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

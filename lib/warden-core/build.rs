@@ -9,17 +9,11 @@ enum Entity {
 #[cfg(any(feature = "message", feature = "pseudonyms"))]
 impl Entity {
     fn protos(&self) -> Vec<&'static str> {
-        let mut res: Vec<&'static str> = vec![
-            // "proto/googleapis/google/type/date.proto",
-            // "proto/googleapis/google/type/money.proto",
-            // "proto/googleapis/google/type/latlng.proto",
-        ];
+        let mut res: Vec<&'static str> = vec![];
 
         #[cfg(feature = "message")]
         fn iso20022_protos() -> Vec<&'static str> {
             vec![
-                // "proto/iso20022/pacs_008_001_12.proto",
-                // "proto/iso20022/pacs_002_001_12.proto",
                 "proto/warden_message.proto",
             ]
         }
@@ -60,7 +54,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(feature = "pseudonyms")]
     protos.extend(Entity::Pseudonyms.protos());
 
-#[cfg(any(feature = "message", feature = "pseudonyms"))]
+    #[cfg(any(feature = "message", feature = "pseudonyms"))]
     build_proto(&protos)?;
 
     Ok(())

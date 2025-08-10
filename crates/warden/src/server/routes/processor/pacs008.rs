@@ -1,10 +1,10 @@
 use axum::{extract::State, response::IntoResponse};
-use stack_up::tracing_opentelemetry::OpenTelemetrySpanExt;
+use warden_stack::tracing_opentelemetry::OpenTelemetrySpanExt;
 use tracing::{debug, error, trace, warn};
 use warden_core::{
     google::r#type::Money,
-    iso20022::{TransactionType, pacs008::Pacs008Document},
-    message::DataCache,
+    iso20022::{pacs008::Pacs008Document, TransactionType},
+    message::DataCache, pseudonyms::transaction_relationship::{CreatePseudonymRequest, TransactionRelationship},
 };
 
 use crate::{error::AppError, server::routes::PACS008_001_12, state::AppHandle, version::Version};
@@ -98,6 +98,29 @@ pub(super) async fn post_pacs008(
         trace!(msg_id, "transaction has no amount or currency");
         None
     };
+
+    let transaction_relationship = TransactionRelationship {
+        from: data_cache.dbtr_acct_id.to_string(),
+        to: data_cache.cdtr_acct_id.to_string(),
+        amt: money,
+        cre_dt_tm: data_cache.cre_dt_tm,
+        end_to_end_id: end_to_end_id.to_string(),
+        msg_id: msg_id.to_string(),
+        pmt_inf_id: pmt_inf_id.into(),
+        tx_tp: tx_tp.to_owned(),
+        ..Default::default()
+    };
+
+   let request = CreatePseudonymRequest {
+        transaction_relationship: Some(transaction_relationship),
+        debtor_id: data_cache.dbtr_id.to_string(),
+        debtor_account_id: data_cache.dbtr_acct_id.to_string(),
+        creditor_id: data_cache.cdtr_id.to_string(),
+        creditor_account_id: data_cache.cdtr_acct_id.to_string(),
+    };
+
+
+    debug!(%msg_id, %end_to_end_id, "constructed transaction relationship");
 
     Ok(String::default())
 }

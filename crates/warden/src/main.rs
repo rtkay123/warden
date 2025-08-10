@@ -7,7 +7,7 @@ mod version;
 use std::net::{Ipv6Addr, SocketAddr};
 
 use clap::{Parser, command};
-use stack_up::{Configuration, tracing::Tracing};
+use warden_stack::{Configuration, tracing::Tracing};
 use tracing::info;
 
 use crate::state::AppState;
