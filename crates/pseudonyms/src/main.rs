@@ -1,8 +1,8 @@
 use clap::Parser;
-use warden_stack::{Configuration, Services, tracing::Tracing};
 use std::sync::Arc;
 use tracing::error;
 use warden_pseudonyms::state::{AppHandle, AppState};
+use warden_stack::{Configuration, Services, tracing::Tracing};
 
 /// warden-pseudonyms
 #[derive(Parser, Debug)]
@@ -47,18 +47,17 @@ async fn main() -> anyhow::Result<()> {
         .inspect_err(|e| error!("cache: {e}"))?
         .build();
 
-     let postgres = services
+    let postgres = services
         .postgres
         .take()
         .ok_or_else(|| anyhow::anyhow!("database is not ready"))?;
 
-     let cache = services
+    let cache = services
         .cache
         .take()
         .ok_or_else(|| anyhow::anyhow!("cache is not ready"))?;
 
-        let services = warden_pseudonyms::state::Services { postgres , cache};
-
+    let services = warden_pseudonyms::state::Services { postgres, cache };
 
     let state = AppState::new(services, config, Some(provider))?;
 

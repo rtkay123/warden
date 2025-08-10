@@ -1,3 +1,4 @@
+pub mod grpc;
 mod middleware;
 mod routes;
 

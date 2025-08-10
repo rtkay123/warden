@@ -43,5 +43,11 @@ utoipa-rapidoc = "6.0.0"
 utoipa-redoc = "6.0.0"
 utoipa-scalar = "0.3.0"
 utoipa-swagger-ui = "9.0.2"
+uuid = "1.17.0"
 warden-core = { path = "lib/warden-core" }
 warden-stack = { path = "lib/warden-stack" }
+
+[profile.release]
+lto = true
+strip = true
+codegen-units = 1

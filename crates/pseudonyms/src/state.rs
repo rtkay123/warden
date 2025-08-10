@@ -1,11 +1,13 @@
 mod mutate;
 
 use std::{
-    net::{Ipv6Addr, SocketAddr}, ops::Deref, sync::Arc
+    net::{Ipv6Addr, SocketAddr},
+    ops::Deref,
+    sync::Arc,
 };
 
 use sqlx::PgPool;
-use warden_stack::{cache::RedisManager, tracing::SdkTracerProvider, Configuration};
+use warden_stack::{Configuration, cache::RedisManager, tracing::SdkTracerProvider};
 
 use crate::AppConfig;
 

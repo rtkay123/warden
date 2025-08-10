@@ -13,9 +13,7 @@ impl Entity {
 
         #[cfg(feature = "message")]
         fn iso20022_protos() -> Vec<&'static str> {
-            vec![
-                "proto/warden_message.proto",
-            ]
+            vec!["proto/warden_message.proto"]
         }
 
         #[cfg(feature = "pseudonyms")]
@@ -45,7 +43,7 @@ impl Entity {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("cargo:rerun-if-changed=../../proto");
 
-#[cfg(any(feature = "message", feature = "pseudonyms"))]
+    #[cfg(any(feature = "message", feature = "pseudonyms"))]
     let mut protos: Vec<&'static str> = vec![];
 
     #[cfg(feature = "message")]

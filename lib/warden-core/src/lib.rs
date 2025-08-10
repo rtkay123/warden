@@ -8,8 +8,7 @@
 
 /// Type file descriptor
 #[cfg(any(feature = "message", feature = "pseudonyms"))]
-pub const FILE_DESCRIPTOR_SET: &[u8] =
-    tonic::include_file_descriptor_set!("warden_descriptor");
+pub const FILE_DESCRIPTOR_SET: &[u8] = tonic::include_file_descriptor_set!("warden_descriptor");
 
 /// Google well known types
 #[allow(missing_docs)]

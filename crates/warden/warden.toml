@@ -4,10 +4,33 @@ port = 2210
 
 [misc]
 cache-ttl = 1000
+pseudonyms-endpoint = "http://localhost:1610"
 
 [monitoring]
 log-level = "warden=trace,info"
 opentelemetry-endpoint = "http://localhost:4317"
 loki-endpoint = "http://localhost:3100"
+
+[database]
+pool_size = 100
+port = 5432
+name = "transaction_history"
+host = "localhost"
+password = "password"
+user = "postgres"
+
+[cache]
+dsn = "redis://localhost:6379"
+pooled = true
+type = "non-clustered"         # clustered, non-clustered or sentinel
+max-connections = 100
+
+[cache.sentinel]
+master-name = "mymaster"
+nodes = [
+    { host = "127.0.0.1", port = 26379 },
+    { host = "127.0.0.2", port = 26379 },
+    { host = "127.0.0.3", port = 26379 },
+]
 
 # vim:ft=toml

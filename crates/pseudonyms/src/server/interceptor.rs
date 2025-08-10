@@ -1,9 +1,9 @@
+use tonic::{Status, service::Interceptor};
+use tracing::Span;
 use warden_stack::{
     opentelemetry::global, tracing::telemetry::tonic::extractor,
     tracing_opentelemetry::OpenTelemetrySpanExt,
 };
-use tonic::{Status, service::Interceptor};
-use tracing::Span;
 
 #[derive(Clone, Copy)]
 pub struct MyInterceptor;

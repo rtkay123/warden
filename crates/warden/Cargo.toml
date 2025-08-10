@@ -14,10 +14,22 @@ clap = { workspace = true, features = ["derive"] }
 config = { workspace = true, features = ["convert-case", "toml"] }
 metrics.workspace = true
 metrics-exporter-prometheus.workspace = true
+prost.workspace = true
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
+sqlx = { workspace = true, features = [
+    "json",
+    "macros",
+    "migrate",
+    "postgres",
+    "runtime-tokio",
+    "time",
+    "tls-rustls",
+    "uuid",
+] }
 time.workspace = true
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "signal"] }
+tonic.workspace = true
 tower-http = { workspace = true, features = [
     "timeout",
     "trace",
@@ -30,6 +42,7 @@ utoipa-rapidoc = { workspace = true, optional = true }
 utoipa-redoc = { workspace = true, optional = true }
 utoipa-scalar = { workspace = true, optional = true }
 utoipa-swagger-ui = { workspace = true, optional = true }
+uuid = { workspace = true, features = ["v7"] }
 warden-core = { workspace = true, features = ["message", "pseudonyms", "serde", "openapi"] }
 
 [features]
@@ -44,4 +57,4 @@ tower = { workspace = true, features = ["util"] }
 
 [dependencies.warden-stack]
 workspace = true
-features = ["api", "opentelemetry", "tracing-loki"]
+features = ["api", "cache", "opentelemetry", "postgres", "tracing-loki"]

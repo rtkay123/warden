@@ -1,9 +1,9 @@
 use sqlx::PgPool;
-use warden_stack::{Configuration, cache::RedisManager};
 use tokio::sync::oneshot;
 use tonic::transport::Channel;
 use warden_core::pseudonyms::transaction_relationship::mutate_pseudonym_client::MutatePseudonymClient;
 use warden_pseudonyms::state::{AppHandle, AppState, Services};
+use warden_stack::{Configuration, cache::RedisManager};
 
 use std::sync::Arc;
 
@@ -34,7 +34,7 @@ impl TestApp {
             cache,
         };
 
-        let state =  AppHandle(Arc::new(AppState::new(services, config, None).unwrap()));
+        let state = AppHandle(Arc::new(AppState::new(services, config, None).unwrap()));
 
         dbg!(&state.addr.port());
 

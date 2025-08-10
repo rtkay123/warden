@@ -1,6 +1,3 @@
-use warden_stack::{
-    opentelemetry_semantic_conventions::attribute, tracing_opentelemetry::OpenTelemetrySpanExt,
-};
 use time::OffsetDateTime;
 use tonic::{Request, Response, Status};
 use tracing::{Instrument, info_span, instrument};
@@ -9,6 +6,9 @@ use warden_core::{
     pseudonyms::transaction_relationship::{
         CreatePseudonymRequest, mutate_pseudonym_server::MutatePseudonym,
     },
+};
+use warden_stack::{
+    opentelemetry_semantic_conventions::attribute, tracing_opentelemetry::OpenTelemetrySpanExt,
 };
 
 use crate::state::AppHandle;

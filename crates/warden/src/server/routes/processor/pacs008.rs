@@ -1,10 +1,16 @@
 use axum::{extract::State, response::IntoResponse};
-use warden_stack::tracing_opentelemetry::OpenTelemetrySpanExt;
-use tracing::{debug, error, trace, warn};
+use std::sync::Arc;
+use tracing::{Instrument, Span, debug, error, info_span, instrument, trace, warn};
+use uuid::Uuid;
 use warden_core::{
     google::r#type::Money,
-    iso20022::{pacs008::Pacs008Document, TransactionType},
-    message::DataCache, pseudonyms::transaction_relationship::{CreatePseudonymRequest, TransactionRelationship},
+    iso20022::{TransactionType, pacs008::Pacs008Document},
+    message::DataCache,
+    pseudonyms::transaction_relationship::{CreatePseudonymRequest, TransactionRelationship},
+};
+use warden_stack::{
+    opentelemetry_semantic_conventions::attribute, redis::AsyncCommands,
+    tracing_opentelemetry::OpenTelemetrySpanExt,
 };
 
 use crate::{error::AppError, server::routes::PACS008_001_12, state::AppHandle, version::Version};
@@ -111,7 +117,7 @@ pub(super) async fn post_pacs008(
         ..Default::default()
     };
 
-   let request = CreatePseudonymRequest {
+    let request = CreatePseudonymRequest {
         transaction_relationship: Some(transaction_relationship),
         debtor_id: data_cache.dbtr_id.to_string(),
         debtor_account_id: data_cache.dbtr_acct_id.to_string(),
@@ -119,8 +125,58 @@ pub(super) async fn post_pacs008(
         creditor_account_id: data_cache.cdtr_acct_id.to_string(),
     };
 
-
     debug!(%msg_id, %end_to_end_id, "constructed transaction relationship");
+
+    let mut pseudonyms_client = state.mutate_pseudonym_client.clone();
+
+    trace!("updating pseudonyms");
+
+    let pseudonyms_fut = async {
+        let span = info_span!("create.pseudonyms.account");
+        span.set_attribute(attribute::RPC_SERVICE, "pseudonyms");
+        pseudonyms_client
+            .create_pseudonym(request)
+            .instrument(span)
+            .await
+            .map_err(|e| {
+                error!(error = %e, "failed to create pseudonyms");
+                anyhow::anyhow!("could not create pseudonyms")
+            })
+    };
+
+    let (_, _) = tokio::try_join!(
+        pseudonyms_fut,
+        set_cache(&end_to_end_id, &state, &data_cache)
+    )?;
+    trace!("pseudonyms saved");
+
+    let id = Uuid::now_v7();
+    debug!(%id, "inserting transaction into history");
+
+    let span = info_span!("create.transaction_history.pacs008");
+    span.set_attribute(attribute::DB_SYSTEM_NAME, "postgres");
+    span.set_attribute(attribute::DB_OPERATION_NAME, "insert");
+    span.set_attribute(attribute::DB_COLLECTION_NAME, "pacs008");
+
+    trace!(id = ?id, "saving transaction history");
+    sqlx::query!(
+        "insert into pacs008 (id, document) values ($1, $2)",
+        id,
+        sqlx::types::Json(&transaction) as _
+    )
+    .execute(&state.services.postgres)
+    .instrument(span)
+    .await?;
+    debug!(%id, %msg_id, "transaction added to history");
+
+    let payload = warden_core::message::Payload {
+        tx_tp: tx_tp.to_string(),
+        transaction: Some(warden_core::message::payload::Transaction::Pacs008(
+            transaction.clone(),
+        )),
+        data_cache: Some(data_cache),
+        ..Default::default()
+    };
 
     Ok(String::default())
 }
@@ -229,4 +285,28 @@ pub fn build_data_cache(transaction: &Pacs008Document) -> anyhow::Result<DataCac
     };
 
     Ok(data_cache)
+}
+
+#[instrument(skip(state), fields(end_to_end_id = end_to_end_id))]
+pub async fn set_cache(
+    end_to_end_id: &str,
+    state: &AppHandle,
+    data_cache: &DataCache,
+) -> anyhow::Result<()> {
+    trace!("updating cache");
+    let span = Span::current();
+    span.set_attribute(attribute::DB_SYSTEM_NAME, "valkey");
+    span.set_attribute(attribute::DB_OPERATION_NAME, "set");
+    span.set_attribute(attribute::DB_OPERATION_PARAMETER, end_to_end_id.to_string());
+    let mut cache_update = state.services.cache.get().await?;
+    let bytes = prost::Message::encode_to_vec(data_cache);
+    cache_update
+        .set_ex::<_, _, ()>(&end_to_end_id, bytes, state.app_config.cache_ttl)
+        .await
+        .map_err(|e| {
+            error!("cache: {e}");
+            anyhow::anyhow!("internal server error")
+        })?;
+
+    Ok(())
 }

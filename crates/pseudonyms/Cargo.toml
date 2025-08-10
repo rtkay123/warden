@@ -32,8 +32,3 @@ warden-core = { workspace = true, features = ["pseudonyms", "serde-time"] }
 [dependencies.warden-stack]
 workspace = true
 features = ["api", "cache", "postgres", "opentelemetry-tonic", "tracing-loki"]
-
-[profile.release]
-lto = true
-strip = true
-codegen-units = 1

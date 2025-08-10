@@ -7,8 +7,8 @@ mod version;
 use std::net::{Ipv6Addr, SocketAddr};
 
 use clap::{Parser, command};
-use warden_stack::{Configuration, tracing::Tracing};
-use tracing::info;
+use tracing::{error, info};
+use warden_stack::{Configuration, Services, tracing::Tracing};
 
 use crate::state::AppState;
 
@@ -44,7 +44,28 @@ async fn main() -> Result<(), error::AppError> {
 
     tokio::spawn(tracing.loki_task);
 
-    let state = AppState::create(&config).await?;
+    let mut services = Services::builder()
+        .postgres(&config.database)
+        .await
+        .inspect_err(|e| error!("database: {e}"))?
+        .cache(&config.cache)
+        .await
+        .inspect_err(|e| error!("cache: {e}"))?
+        .build();
+
+    let postgres = services
+        .postgres
+        .take()
+        .ok_or_else(|| anyhow::anyhow!("database is not ready"))?;
+
+    let cache = services
+        .cache
+        .take()
+        .ok_or_else(|| anyhow::anyhow!("cache is not ready"))?;
+
+    let services = state::Services { postgres, cache };
+
+    let state = AppState::create(services, &config).await?;
 
     let addr = SocketAddr::from((Ipv6Addr::UNSPECIFIED, config.application.port));
 
