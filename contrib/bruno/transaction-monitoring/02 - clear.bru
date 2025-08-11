@@ -1,0 +1,164 @@
+meta {
+  name: 02 - clear
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{WARDEN_API_HOST}}/api/{{WARDEN_VERSION}}/pacs002
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "f_i_to_f_i_pmt_sts_rpt": {
+      "grp_hdr": {
+        "msg_id": "{{PACS002_MSG_ID}}",
+        "cre_dt_tm": "{{PACS002_CRE_DT_TM}}"
+      },
+      "orgnl_grp_inf_and_sts": [
+        {
+          "grp_sts": "ACCC",
+          "nb_of_txs_per_sts": [
+            {
+              "dtld_ctrl_sum": 1,
+              "dtld_nb_of_txs": "1",
+              "dtld_sts": "ACCC"
+            }
+          ],
+          "orgnl_cre_dt_tm": null,
+          "orgnl_ctrl_sum": 2,
+          "orgnl_msg_id": "ce569868c865-4986-94ac-906e46022617",
+          "orgnl_msg_nm_id": "pacs.008.001.10",
+          "orgnl_nb_of_txs": "1",
+          "sts_rsn_inf": [
+            {
+              "addtl_inf": [
+                "Transaction accepted and settled"
+              ],
+              "orgtr": null,
+              "rsn": null
+            }
+          ]
+        }
+      ],
+      "splmtry_data": [],
+      "tx_inf_and_sts": [
+        {
+          "orgnl_instr_id": "{{PACS008_INSTR_ID}}",
+          "orgnl_end_to_end_id": "{{END_TO_END_ID}}",
+          "tx_sts": "ACCC",
+          "sts_rsn_inf": [
+            {
+              "addtl_inf": [
+                "Transaction processed successfully"
+              ],
+              "orgtr": null,
+              "rsn": null
+            }
+          ],
+          "splmtry_data": [],
+          "chrgs_inf": [
+            {
+              "amt": {
+                "value": 0,
+                "ccy": "{{CCY}}"
+              },
+              "agt": {
+                "fin_instn_id": {
+                  "clr_sys_mmb_id": {
+                    "mmb_id": "{{DEBTOR_FSP}}"
+                  },
+                  "b_i_c_f_i": "BANKXXX",
+                  "l_e_i": "1234567890",
+                  "nm": "Bank"
+                }
+              }
+            },
+            {
+              "amt": {
+                "value": 0,
+                "ccy": "{{CCY}}"
+              },
+              "agt": {
+                "fin_instn_id": {
+                  "clr_sys_mmb_id": {
+                    "mmb_id": "{{DEBTOR_FSP}}"
+                  }
+                }
+              }
+            },
+            {
+              "amt": {
+                "value": 0,
+                "ccy": "{{CCY}}"
+              },
+              "agt": {
+                "fin_instn_id": {
+                  "clr_sys_mmb_id": {
+                    "mmb_id": "{{CREDITOR_FSP}}"
+                  }
+                }
+              }
+            }
+          ],
+          "accptnc_dt_tm": "2023-06-02T07:52:31.000Z",
+          "instg_agt": {
+            "fin_instn_id": {
+              "clr_sys_mmb_id": {
+                "mmb_id": "{{DEBTOR_FSP}}"
+              }
+            }
+          },
+          "instd_agt": {
+            "fin_instn_id": {
+              "clr_sys_mmb_id": {
+                "mmb_id": "{{CREDITOR_FSP}}"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+assert {
+  res.status: eq 201
+}
+
+script:pre-request {
+  const { nanoid } = require('nanoid');
+  
+  bru.setVar("PACS002_MSG_ID", nanoid())
+  bru.setVar("PACS002_CRE_DT_TM", new Date().toISOString())
+}
+
+script:post-response {
+  bru.deleteVar("PACS008_MSG_ID")
+  
+  bru.deleteVar("CREDITOR_FSP")
+  bru.deleteVar("DEBTOR_FSP")
+  bru.deleteVar("PACS008_INSTR_ID")
+  
+  bru.deleteVar("END_TO_END_ID")
+  bru.deleteVar("CCY")
+  
+  bru.deleteVar("DEBTOR_ID")
+  
+  bru.deleteVar("DEBTOR_ACCT_ID")
+  
+  bru.deleteVar("CREDITOR_ID")
+  
+  bru.deleteVar("CREDITOR_ACCT_ID")
+  bru.deleteVar("PACS002_MSG_ID")
+  bru.deleteVar("PACS002_CRE_DT_TM")
+  
+  
+  
+}
+
+settings {
+  encodeUrl: true
+}
