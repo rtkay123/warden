@@ -1,12 +1,14 @@
-#[cfg(any(feature = "message", feature = "pseudonyms"))]
+#[cfg(any(feature = "message", feature = "pseudonyms", feature = "configuration"))]
 enum Entity {
     #[cfg(feature = "message")]
     ISO2022,
     #[cfg(feature = "pseudonyms")]
     Pseudonyms,
+    #[cfg(feature = "configuration")]
+    Configuration,
 }
 
-#[cfg(any(feature = "message", feature = "pseudonyms"))]
+#[cfg(any(feature = "message", feature = "pseudonyms", feature = "configuration"))]
 impl Entity {
     fn protos(&self) -> Vec<&'static str> {
         let mut res: Vec<&'static str> = vec![];
@@ -14,6 +16,14 @@ impl Entity {
         #[cfg(feature = "message")]
         fn iso20022_protos() -> Vec<&'static str> {
             vec!["proto/warden_message.proto"]
+        }
+
+        
+        #[cfg(feature = "configuration")]
+        fn configuration_protos() -> Vec<&'static str> {
+            vec![
+                "proto/configuration/routing.proto",
+            ]
         }
 
         #[cfg(feature = "pseudonyms")]
@@ -35,6 +45,10 @@ impl Entity {
             Entity::Pseudonyms => {
                 res.extend(pseudonyms_protos());
             }
+            #[cfg(feature = "configuration")]
+            Entity::Configuration => {
+                res.extend(configuration_protos());
+            }
         }
         res
     }
@@ -43,7 +57,7 @@ impl Entity {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("cargo:rerun-if-changed=../../proto");
 
-    #[cfg(any(feature = "message", feature = "pseudonyms"))]
+    #[cfg(any(feature = "message", feature = "pseudonyms", feature = "configuration"))]
     let mut protos: Vec<&'static str> = vec![];
 
     #[cfg(feature = "message")]
@@ -52,13 +66,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(feature = "pseudonyms")]
     protos.extend(Entity::Pseudonyms.protos());
 
-    #[cfg(any(feature = "message", feature = "pseudonyms"))]
+    #[cfg(feature = "configuration")]
+    protos.extend(Entity::Configuration.protos());
+
+    #[cfg(any(feature = "message", feature = "pseudonyms", feature = "configuration"))]
     build_proto(&protos)?;
+
 
     Ok(())
 }
 
-#[cfg(any(feature = "message", feature = "pseudonyms"))]
+#[cfg(any(feature = "message", feature = "pseudonyms", feature = "configuration"))]
 fn build_proto(protos: &[&str]) -> Result<(), Box<dyn std::error::Error>> {
     let out_dir = std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap());
 
@@ -82,7 +100,7 @@ fn build_proto(protos: &[&str]) -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-#[cfg(all(feature = "serde", any(feature = "pseudonyms", feature = "message")))]
+#[cfg(all(feature = "serde", any(feature = "pseudonyms", feature = "message", feature = "configuration")))]
 fn add_serde(config: tonic_prost_build::Builder) -> tonic_prost_build::Builder {
     let config = config.type_attribute(
         ".",
@@ -98,7 +116,7 @@ fn add_serde(config: tonic_prost_build::Builder) -> tonic_prost_build::Builder {
     config
 }
 
-#[cfg(all(feature = "openapi", any(feature = "message", feature = "pseudonyms")))]
+#[cfg(all(feature = "openapi", any(feature = "message", feature = "pseudonyms", feature = "configuration")))]
 fn add_openapi(config: tonic_prost_build::Builder) -> tonic_prost_build::Builder {
     config.type_attribute(".", "#[derive(utoipa::ToSchema)]")
 }

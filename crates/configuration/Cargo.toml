@@ -1,0 +1,34 @@
+[package]
+name = "warden-config"
+version = "0.1.0"
+edition = "2024"
+license.workspace = true
+homepage.workspace = true
+documentation.workspace = true
+description.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+clap = { workspace = true, features = ["derive"] }
+config = { workspace = true, features = ["convert-case", "toml"] }
+metrics.workspace = true
+metrics-exporter-prometheus.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+sqlx = { workspace = true, features = [
+    "macros",
+    "migrate",
+    "postgres",
+    "runtime-tokio",
+    "time",
+    "tls-rustls",
+] }
+time.workspace = true
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "signal"] }
+tonic.workspace = true
+tracing.workspace = true
+warden-core = { workspace = true, features = ["configuration", "serde-time"] }
+
+[dependencies.warden-stack]
+workspace = true
+features = ["api", "cache", "postgres", "opentelemetry-tonic", "tracing-loki"]

@@ -7,12 +7,12 @@
 )]
 
 /// Type file descriptor
-#[cfg(any(feature = "message", feature = "pseudonyms"))]
+#[cfg(any(feature = "message", feature = "pseudonyms", feature = "configuration"))]
 pub const FILE_DESCRIPTOR_SET: &[u8] = tonic::include_file_descriptor_set!("warden_descriptor");
 
 /// Google well known types
 #[allow(missing_docs)]
-#[cfg(any(feature = "message", feature = "pseudonyms"))]
+#[cfg(any(feature = "message", feature = "pseudonyms", feature = "configuration"))]
 pub mod google;
 
 /// ISO20022 messages
@@ -29,3 +29,7 @@ pub mod message;
 #[allow(missing_docs)]
 #[cfg(feature = "pseudonyms")]
 pub mod pseudonyms;
+
+#[allow(missing_docs)]
+#[cfg(feature = "configuration")]
+pub mod configuration;

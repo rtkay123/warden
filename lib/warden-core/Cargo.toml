@@ -23,6 +23,7 @@ utoipa = { workspace = true, optional = true }
 
 [features]
 default = []
+configuration = ["dep:prost", "dep:tonic", "dep:tonic-types", "dep:tonic-prost"]
 message = ["dep:prost", "dep:tonic", "dep:tonic-types", "dep:tonic-prost"]
 pseudonyms = ["dep:prost", "dep:tonic", "dep:tonic-types", "dep:tonic-prost"]
 serde = ["dep:serde", "serde/derive", "dep:serde_json"]

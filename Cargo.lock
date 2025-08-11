@@ -3819,6 +3819,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "warden-config"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "config",
+ "metrics",
+ "metrics-exporter-prometheus",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "time",
+ "tokio",
+ "tonic 0.14.0",
+ "tracing",
+ "warden-core",
+ "warden-stack",
+]
+
+[[package]]
 name = "warden-core"
 version = "0.1.0"
 dependencies = [
