@@ -145,6 +145,7 @@ pub async fn post_pacs002(
     let pseudonyms_fut = async {
         debug!("creating pseudonyms");
         let span = info_span!("create.pseudonyms.account");
+        span.set_attribute("otel.kind", "client");
         span.set_attribute(attribute::RPC_SERVICE, "pseudonyms");
         pseudonyms_client
             .create_pseudonym(pseudonyms_request)
@@ -188,7 +189,6 @@ pub async fn post_pacs002(
         transaction: Some(warden_core::message::payload::Transaction::Pacs002(
             request.clone(),
         )),
-        ..Default::default()
     };
 
     publish_message(&state, payload, msg_id).await?;

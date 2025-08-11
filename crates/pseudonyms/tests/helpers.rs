@@ -8,7 +8,7 @@ use warden_stack::{Configuration, cache::RedisManager};
 use std::sync::Arc;
 
 pub struct TestApp {
-    state: AppHandle,
+    _state: AppHandle,
     pub mutate: MutatePseudonymClient<Channel>,
 }
 
@@ -23,6 +23,7 @@ impl TestApp {
             .add_source(config::File::new(config_path, config::FileFormat::Toml))
             .build()
             .unwrap();
+
 
         let mut config = config.try_deserialize::<Configuration>().unwrap();
         config.application.port = 0;
@@ -47,7 +48,7 @@ impl TestApp {
             .expect("expect server to be running");
 
         Self {
-            state,
+            _state: state,
             mutate: mutation_client,
         }
     }

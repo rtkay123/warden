@@ -99,7 +99,7 @@ impl<S: State> ServicesBuilder<S> {
     }
 }
 
-#[cfg(all(test, target_os = "linux"))]
+#[cfg(test)]
 mod test {
     use super::*;
     use crate::Services;
@@ -111,7 +111,7 @@ mod test {
         let host = "localhost";
         let user = user();
         let pool_size = default_pool_size();
-        let password = "postgres";
+        let password = "password";
 
         let config = PostgresConfig {
             pool_size,

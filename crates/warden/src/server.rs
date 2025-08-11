@@ -2,6 +2,7 @@ pub mod grpc;
 mod middleware;
 mod publish;
 mod routes;
+pub use routes::metrics::metrics_app;
 
 use axum::Router;
 use utoipa::OpenApi;
@@ -12,10 +13,7 @@ use utoipa_redoc::Servable;
 #[cfg(feature = "scalar")]
 use utoipa_scalar::Servable as _;
 
-use crate::{
-    server::routes::{ApiDoc, metrics::metrics_app},
-    state::AppHandle,
-};
+use crate::{server::routes::ApiDoc, state::AppHandle};
 
 pub fn router(state: AppHandle) -> Router {
     let (router, _api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
@@ -41,7 +39,7 @@ pub fn router(state: AppHandle) -> Router {
     #[cfg(feature = "scalar")]
     let router = router.merge(utoipa_scalar::Scalar::with_url("/scalar", _api));
 
-    middleware::apply(router).merge(metrics_app())
+    middleware::apply(router)
 }
 
 /// Get health of the API.

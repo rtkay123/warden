@@ -40,6 +40,7 @@ pub struct Configuration {
     #[cfg(feature = "tracing")]
     pub monitoring: Monitoring,
     #[cfg(any(feature = "nats-core", feature = "nats-jetstream"))]
+    #[serde(default)]
     pub nats: crate::nats::NatsConfig,
 }
 

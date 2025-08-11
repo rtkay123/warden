@@ -84,7 +84,8 @@ async fn main() -> Result<(), error::AppError> {
     let listener = tokio::net::TcpListener::bind(addr).await?;
     info!(port = addr.port(), "starting warden");
 
-    axum::serve(listener, server::router(state)).await?;
+    let router = server::router(state).merge(server::metrics_app());
+    axum::serve(listener, router).await?;
 
     Ok(())
 }

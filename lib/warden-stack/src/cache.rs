@@ -272,7 +272,7 @@ mod tests {
     // Ensure basic set/get works -- should test sharding as well:
     #[tokio::test]
     // run with `cargo test -- --ignored redis` only when redis is up and configured
-    #[ignore]
+    //#[ignore]
     async fn test_set_read_random_keys() {
         let config = CacheConfig {
             redis_dsn: "redis://localhost:6379".into(),
