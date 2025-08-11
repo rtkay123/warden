@@ -1,5 +1,5 @@
 #[cfg(feature = "time")]
-mod dt;
+pub mod dt;
 
 #[cfg(feature = "pseudonyms")]
 mod money;

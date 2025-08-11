@@ -4,7 +4,7 @@ use std::{ops::Deref, sync::Arc};
 use tonic::transport::Endpoint;
 use tracing::error;
 use warden_core::pseudonyms::transaction_relationship::mutate_pseudonym_client::MutatePseudonymClient;
-use warden_stack::{Configuration, Environment, cache::RedisManager};
+use warden_stack::{Configuration, cache::RedisManager};
 
 use crate::{
     cnfg::LocalConfig,
@@ -31,7 +31,6 @@ pub struct Services {
 }
 
 pub struct AppState {
-    pub environment: Environment,
     pub mutate_pseudonym_client: MutatePseudonymClient<Intercepted>,
     pub services: Services,
     pub app_config: LocalConfig,
@@ -53,7 +52,6 @@ impl AppState {
             MutatePseudonymClient::with_interceptor(channel, MyInterceptor);
 
         Ok(AppHandle(Arc::new(Self {
-            environment: configuration.application.env,
             mutate_pseudonym_client,
             services,
             app_config: local_config,

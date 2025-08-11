@@ -92,8 +92,8 @@ fn add_serde(config: tonic_prost_build::Builder) -> tonic_prost_build::Builder {
     #[cfg(feature = "serde-time")]
     let config = config.type_attribute(
         ".google.protobuf.Timestamp",
-        "#[serde(try_from = \"time::OffsetDateTime\")] #[serde(into = \"String\")]",
-    );
+        "#[serde(try_from = \"crate::google::parser::dt::DateItem\")] #[serde(into = \"String\")]",
+    ).type_attribute(".google.type.Date", "#[serde(try_from = \"crate::google::parser::dt::DateItem\")] #[serde(into = \"String\")]");
 
     config
 }

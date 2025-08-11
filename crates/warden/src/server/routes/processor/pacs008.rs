@@ -1,5 +1,5 @@
 use axum::{extract::State, response::IntoResponse};
-use tracing::{Instrument, Span, debug, error, info, info_span, instrument, trace, warn};
+use tracing::{Instrument, Span, debug, error, info, instrument, trace, trace_span, warn};
 use uuid::Uuid;
 use warden_core::{
     google::r#type::Money,
@@ -128,8 +128,11 @@ pub(super) async fn post_pacs008(
     trace!("updating pseudonyms");
 
     let pseudonyms_fut = async {
-        let span = info_span!("create.pseudonyms.account");
-        span.set_attribute(attribute::RPC_SERVICE, "pseudonyms");
+        let span = trace_span!(
+            "create.pseudonyms.account",
+            "otel.kind" = "client",
+            "rpc.service" = "pseudonyms"
+        );
         pseudonyms_client
             .create_pseudonym(request)
             .instrument(span)
@@ -149,8 +152,9 @@ pub(super) async fn post_pacs008(
     let id = Uuid::now_v7();
     debug!(%id, "inserting transaction into history");
 
-    let span = info_span!("create.transaction_history.pacs008");
+    let span = trace_span!("create.transaction_history.pacs008");
     span.set_attribute(attribute::DB_SYSTEM_NAME, "postgres");
+    span.set_attribute("otel.kind", "client");
     span.set_attribute(attribute::DB_OPERATION_NAME, "insert");
     span.set_attribute(attribute::DB_COLLECTION_NAME, "pacs008");
 

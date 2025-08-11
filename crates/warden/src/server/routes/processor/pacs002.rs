@@ -13,7 +13,18 @@ use warden_core::{
 };
 use warden_stack::redis::AsyncCommands;
 
-use crate::{error::AppError, server::{publish::publish_message, routes::{processor::pacs008::{build_data_cache, set_cache}, PACS002_001_12}}, state::AppHandle, version::Version};
+use crate::{
+    error::AppError,
+    server::{
+        publish::publish_message,
+        routes::{
+            PACS002_001_12,
+            processor::pacs008::{build_data_cache, set_cache},
+        },
+    },
+    state::AppHandle,
+    version::Version,
+};
 
 #[derive(Serialize)]
 struct Row {
@@ -73,12 +84,7 @@ pub async fn post_pacs002(
     let data_cache = match cache {
         Ok(Ok(data_cache)) => {
             debug!(end_to_end_id = end_to_end_id, "cache hit");
-            rebuild_entities(
-                end_to_end_id,
-                &state,
-                Some(data_cache),
-            )
-            .await?
+            rebuild_entities(end_to_end_id, &state, Some(data_cache)).await?
         }
         _ => {
             debug!(end_to_end_id = end_to_end_id, "cache miss");

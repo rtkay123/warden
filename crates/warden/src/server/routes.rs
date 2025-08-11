@@ -38,7 +38,16 @@ mod tests {
         let client = async_nats::connect(&config.nats.hosts[0]).await.unwrap();
         let jetstream = async_nats::jetstream::new(client);
 
-        let state = AppState::create(Services {postgres: pool,cache, jetstream}, &test_config()).await.unwrap();
+        let state = AppState::create(
+            Services {
+                postgres: pool,
+                cache,
+                jetstream,
+            },
+            &test_config(),
+        )
+        .await
+        .unwrap();
         let app = server::router(state);
 
         let response = app

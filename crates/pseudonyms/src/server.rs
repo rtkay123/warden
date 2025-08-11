@@ -21,8 +21,7 @@ pub async fn serve(state: AppHandle, tx: tokio::sync::oneshot::Sender<u16>) -> a
     info!(addr = ?socket_addr, "starting server");
 
     Server::builder()
-        .trace_fn(|_| tracing::info_span!(env!("CARGO_PKG_NAME")))
-        //        .add_service(QueryUsersServer::new(state.clone()))
+        .trace_fn(|_| tracing::trace_span!(env!("CARGO_PKG_NAME"), "otel.kind" = "server"))
         .add_service(MutatePseudonymServer::with_interceptor(
             state.clone(),
             MyInterceptor,

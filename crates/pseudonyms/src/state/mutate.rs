@@ -1,6 +1,6 @@
 use time::OffsetDateTime;
 use tonic::{Request, Response, Status};
-use tracing::{Instrument, info_span, instrument};
+use tracing::{Instrument, debug, info_span, instrument, trace};
 use warden_core::{
     google,
     pseudonyms::transaction_relationship::{
@@ -21,9 +21,12 @@ impl MutatePseudonym for AppHandle {
         request: Request<CreatePseudonymRequest>,
     ) -> Result<Response<google::protobuf::Empty>, Status> {
         let body = request.into_inner();
+        trace!("extracting transaction relationship");
         let transaction_relationship = body
             .transaction_relationship
             .ok_or_else(|| tonic::Status::data_loss("transaction_relationship"))?;
+
+        debug!("starting database transaction");
         let mut tx = self
             .services
             .postgres
@@ -41,6 +44,7 @@ impl MutatePseudonym for AppHandle {
             format!("{}{}", body.creditor_account_id, body.debtor_account_id),
         );
 
+        trace!("inserting account");
         sqlx::query!(
             "insert into account (id)
             select * from unnest($1::text[])
@@ -67,6 +71,7 @@ impl MutatePseudonym for AppHandle {
         let cre_dt_tm = transaction_relationship.cre_dt_tm.expect("cre_dt_tm");
         let cre_dt_tm = OffsetDateTime::try_from(cre_dt_tm).expect("offset date time conv");
 
+        trace!("inserting entity");
         sqlx::query!(
             "insert into entity (id, cre_dt_tm)
             select * from unnest($1::text[], $2::timestamptz[])
@@ -107,6 +112,7 @@ impl MutatePseudonym for AppHandle {
         span.set_attribute(attribute::DB_QUERY_TEXT, "insert into account_holder");
         span.set_attribute(attribute::DB_COLLECTION_NAME, "account_holder");
 
+        trace!("inserting account holders");
         sqlx::query!(
             "insert into account_holder (source, destination, cre_dt_tm)
             select * from unnest($1::text[], $2::text[], $3::timestamptz[])
@@ -126,6 +132,7 @@ impl MutatePseudonym for AppHandle {
             .latlng
             .map(|value| (value.latitude, value.longitude));
 
+        trace!("inserting transaction relationship");
         let span = info_span!("create.pseudonyms.transaction_relationship");
         span.set_attribute(attribute::DB_SYSTEM_NAME, "postgres");
         span.set_attribute(attribute::DB_OPERATION_NAME, "insert");
@@ -181,6 +188,7 @@ impl MutatePseudonym for AppHandle {
         span.set_attribute(attribute::DB_SYSTEM_NAME, "postgres");
         span.set_attribute(attribute::DB_OPERATION_NAME, "commit");
 
+        debug!("commiting transaction");
         tx.commit()
             .instrument(span)
             .await

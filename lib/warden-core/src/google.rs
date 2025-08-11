@@ -1,4 +1,4 @@
-mod parser;
+pub(crate) mod parser;
 
 /// Well known types
 pub mod protobuf {

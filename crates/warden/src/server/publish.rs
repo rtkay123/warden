@@ -22,6 +22,7 @@ pub async fn publish_message(state: &AppHandle, payload: Payload, msg_id: &str) 
     });
 
     let span = info_span!("nats.publish");
+    span.set_attribute("otel.kind", "producer");
     span.set_attribute(
         attribute::MESSAGING_DESTINATION_SUBSCRIPTION_NAME,
         subject.to_string(),
