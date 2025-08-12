@@ -2,9 +2,10 @@ syntax = "proto3";
 
 package message;
 
-import "proto/iso20022/pacs_008_001_12.proto";
-import "proto/iso20022/pacs_002_001_12.proto";
+import "configuration/routing.proto";
 import "google/protobuf/timestamp.proto";
+import "proto/iso20022/pacs_002_001_12.proto";
+import "proto/iso20022/pacs_008_001_12.proto";
 
 message Payload {
   oneof transaction {
@@ -13,6 +14,7 @@ message Payload {
   }
   DataCache data_cache = 3;
   string tx_tp = 4;
+  configuration.routing.RoutingConfiguration routing = 5;
 }
 
 message DataCache {

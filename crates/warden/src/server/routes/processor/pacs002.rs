@@ -189,6 +189,7 @@ pub async fn post_pacs002(
         transaction: Some(warden_core::message::payload::Transaction::Pacs002(
             request.clone(),
         )),
+        ..Default::default()
     };
 
     publish_message(&state, payload, msg_id).await?;

@@ -175,6 +175,7 @@ pub(super) async fn post_pacs008(
             transaction.clone(),
         )),
         data_cache: Some(data_cache),
+        ..Default::default()
     };
 
     publish_message(&state, payload, msg_id).await?;

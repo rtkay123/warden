@@ -20,10 +20,18 @@ impl Entity {
 
         #[cfg(feature = "configuration")]
         fn configuration_protos() -> Vec<&'static str> {
+            if cfg!(feature = "message") {
+                vec![
+                    "proto/configuration/reload_event.proto",
+                ]
+            } else {
             vec![
-                "proto/configuration/routing.proto",
+                    "proto/configuration/routing.proto",
                 "proto/configuration/reload_event.proto",
             ]
+
+            }
+
         }
 
         #[cfg(feature = "pseudonyms")]
