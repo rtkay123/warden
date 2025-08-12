@@ -8,7 +8,7 @@ use utoipa_redoc::Servable;
 #[cfg(feature = "scalar")]
 use utoipa_scalar::Servable as _;
 
-use crate::{server::http_svc, state::AppHandle};
+use crate::state::AppHandle;
 
 const TAG_ROUTING: &str = "Routing";
 

@@ -1,13 +1,13 @@
-mod error;
+pub mod error;
+pub mod grpc_svc;
 mod http_svc;
-mod interceptor;
+pub mod reload_stream;
 mod version;
 
-use axum::http::header::CONTENT_TYPE;
+use grpc_svc::interceptor::MyInterceptor;
 use http_svc::build_router;
-use interceptor::MyInterceptor;
 use tonic::service::Routes;
-use tower::{make::Shared, steer::Steer};
+use tower_http::trace::TraceLayer;
 use warden_core::{
     FILE_DESCRIPTOR_SET,
     configuration::routing::{
@@ -15,9 +15,9 @@ use warden_core::{
     },
 };
 
-use crate::state::AppHandle;
+use crate::{server::error::AppError, state::AppHandle};
 
-pub async fn serve<S>(state: AppHandle) -> anyhow::Result<Shared<S>> {
+pub fn serve(state: AppHandle) -> Result<(axum::Router, axum::Router), AppError> {
     let app = build_router(state.clone());
 
     let service = QueryRoutingServer::with_interceptor(state.clone(), MyInterceptor);
@@ -32,26 +32,14 @@ pub async fn serve<S>(state: AppHandle) -> anyhow::Result<Shared<S>> {
             MyInterceptor,
         ))
         .add_service(routing_reflector)
-        .into_axum_router();
+        .into_axum_router()
+        .layer(
+            TraceLayer::new_for_grpc().make_span_with(|request: &axum::http::Request<_>| {
+                tracing::trace_span!(env!("CARGO_PKG_NAME"), "otel.kind" = "server",
+                    headers = ?request.headers()
+                )
+            }),
+        );
 
-    let service = Steer::new(
-        vec![app, grpc_server],
-        |req: &axum::extract::Request, _services: &[_]| {
-            if req
-                .headers()
-                .get(CONTENT_TYPE)
-                .map(|content_type| content_type.as_bytes())
-                .filter(|content_type| content_type.starts_with(b"application/grpc"))
-                .is_some()
-            {
-                // grpc service
-                1
-            } else {
-                // http service
-                0
-            }
-        },
-    );
-
-    Ok(Shared::new(service))
+    Ok((app, grpc_server))
 }

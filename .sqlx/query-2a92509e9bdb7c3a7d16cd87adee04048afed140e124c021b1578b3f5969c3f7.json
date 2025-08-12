@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "select id, configuration as \"configuration: sqlx::types::Json<RoutingConfiguration>\" from routing where\n            configuration->>'active' = 'true'",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "configuration: sqlx::types::Json<RoutingConfiguration>",
+        "type_info": "Jsonb"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "2a92509e9bdb7c3a7d16cd87adee04048afed140e124c021b1578b3f5969c3f7"
+}

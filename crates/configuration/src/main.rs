@@ -2,9 +2,13 @@ mod cnfg;
 mod server;
 mod state;
 
+use std::net::{Ipv6Addr, SocketAddr};
+
+use crate::{server::error::AppError, state::AppState};
+use axum::http::header::CONTENT_TYPE;
 use clap::Parser;
-use tracing::error;
-use warden_config::state::AppState;
+use tower::{make::Shared, steer::Steer};
+use tracing::{error, info};
 use warden_stack::{Configuration, Services, tracing::Tracing};
 
 /// warden-config
@@ -17,7 +21,7 @@ struct Args {
 }
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() -> Result<(), AppError> {
     let args = Args::parse();
     let config = include_str!("../warden-config.toml");
 
@@ -41,7 +45,7 @@ async fn main() -> anyhow::Result<()> {
 
     tokio::spawn(tracing.loki_task);
 
-    let services = Services::builder()
+    let mut services = Services::builder()
         .postgres(&config.database)
         .await
         .inspect_err(|e| error!("database: {e}"))?
@@ -68,9 +72,43 @@ async fn main() -> anyhow::Result<()> {
         .take()
         .ok_or_else(|| anyhow::anyhow!("jetstream is not ready"))?;
 
-    let state = AppState::new(services, config, Some(provider))
-        .await
-        .inspect_err(|e| error!("{e}"))?;
+    let state = AppState::create(
+        crate::state::Services {
+            postgres,
+            cache,
+            jetstream,
+        },
+        &config,
+    )
+    .await?;
 
-    server::serve(state);
+    let (app, grpc_server) = server::serve(state)?;
+
+    let service = Steer::new(
+        vec![app, grpc_server],
+        |req: &axum::extract::Request, _services: &[_]| {
+            if req
+                .headers()
+                .get(CONTENT_TYPE)
+                .map(|content_type| content_type.as_bytes())
+                .filter(|content_type| content_type.starts_with(b"application/grpc"))
+                .is_some()
+            {
+                // grpc service
+                1
+            } else {
+                // http service
+                0
+            }
+        },
+    );
+
+    let addr = SocketAddr::from((Ipv6Addr::UNSPECIFIED, config.application.port));
+
+    let listener = tokio::net::TcpListener::bind(addr).await?;
+    info!(port = addr.port(), "starting config-api");
+
+    axum::serve(listener, Shared::new(service)).await?;
+
+    Ok(())
 }

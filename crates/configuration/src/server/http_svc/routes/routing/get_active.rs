@@ -1,5 +1,9 @@
 use axum::{extract::State, response::IntoResponse};
-use warden_core::configuration::routing::RoutingConfiguration;
+use tonic::IntoRequest;
+use warden_core::{
+    configuration::routing::{RoutingConfiguration, query_routing_server::QueryRouting},
+    google,
+};
 
 use crate::{
     server::{error::AppError, http_svc::TAG_ROUTING, version::Version},
@@ -22,9 +26,13 @@ use crate::{
 ]
 #[axum::debug_handler]
 #[tracing::instrument(skip(state), err(Debug), fields(method = "GET"))]
-pub(super) async fn active_routing(
+pub async fn active_routing(
     version: Version,
     State(state): State<AppHandle>,
 ) -> Result<impl IntoResponse, AppError> {
-    Ok(String::default().into_response())
+    let config = state
+        .get_active_routing_configuration(google::protobuf::Empty::default().into_request())
+        .await?
+        .into_inner();
+    Ok(axum::Json(config.configuration).into_response())
 }

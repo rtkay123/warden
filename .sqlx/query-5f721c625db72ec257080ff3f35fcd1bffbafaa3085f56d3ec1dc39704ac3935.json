@@ -1,0 +1,29 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                update routing\n                set configuration = $1\n                where id = $2\n                returning id, configuration as \"configuration: sqlx::types::Json<RoutingConfiguration>\"\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "configuration: sqlx::types::Json<RoutingConfiguration>",
+        "type_info": "Jsonb"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Jsonb",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "5f721c625db72ec257080ff3f35fcd1bffbafaa3085f56d3ec1dc39704ac3935"
+}

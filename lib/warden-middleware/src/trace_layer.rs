@@ -17,7 +17,8 @@ pub fn apply_trace_context_middleware<T: Clone + Send + Sync + 'static>(
             info_span!(
                 "http_request",
                 request_id = ?request_id,
-                headers = ?request.headers()
+                headers = ?request.headers(),
+                "otel.kind" = "server"
             )
         }),
     )
