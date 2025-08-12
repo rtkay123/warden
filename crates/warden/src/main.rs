@@ -69,7 +69,7 @@ async fn main() -> Result<(), error::AppError> {
     let jetstream = services
         .jetstream
         .take()
-        .ok_or_else(|| anyhow::anyhow!("cache is not ready"))?;
+        .ok_or_else(|| anyhow::anyhow!("jetstream is not ready"))?;
 
     let services = state::Services {
         postgres,

@@ -3379,6 +3379,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "tonic-reflection"
+version = "0.14.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0267a0073385cd94996197d12acb1856a3a0a2367482c726a48a769f6fed8a3a"
+dependencies = [
+ "prost 0.14.1",
+ "prost-types 0.14.1",
+ "tokio",
+ "tokio-stream",
+ "tonic 0.14.0",
+ "tonic-prost",
+]
+
+[[package]]
 name = "tonic-types"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3815,6 +3829,7 @@ dependencies = [
  "utoipa-swagger-ui",
  "uuid",
  "warden-core",
+ "warden-middleware",
  "warden-stack",
 ]
 
@@ -3823,18 +3838,33 @@ name = "warden-config"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "async-nats",
+ "axum",
  "clap",
  "config",
  "metrics",
  "metrics-exporter-prometheus",
+ "opentelemetry-semantic-conventions",
+ "prost 0.14.1",
  "serde",
  "serde_json",
  "sqlx",
  "time",
  "tokio",
  "tonic 0.14.0",
+ "tonic-reflection",
+ "tower",
  "tracing",
+ "tracing-opentelemetry",
+ "utoipa",
+ "utoipa-axum",
+ "utoipa-rapidoc",
+ "utoipa-redoc",
+ "utoipa-scalar",
+ "utoipa-swagger-ui",
+ "uuid",
  "warden-core",
+ "warden-middleware",
  "warden-stack",
 ]
 
@@ -3851,6 +3881,17 @@ dependencies = [
  "tonic-prost-build",
  "tonic-types",
  "utoipa",
+]
+
+[[package]]
+name = "warden-middleware"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "metrics",
+ "metrics-exporter-prometheus",
+ "tower-http",
+ "tracing",
 ]
 
 [[package]]

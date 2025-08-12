@@ -1,5 +1,4 @@
 pub mod grpc;
-mod middleware;
 mod publish;
 mod routes;
 pub use routes::metrics::metrics_app;
@@ -39,7 +38,7 @@ pub fn router(state: AppHandle) -> Router {
     #[cfg(feature = "scalar")]
     let router = router.merge(utoipa_scalar::Scalar::with_url("/scalar", _api));
 
-    middleware::apply(router)
+    warden_middleware::apply(router)
 }
 
 /// Get health of the API.

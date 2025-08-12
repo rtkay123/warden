@@ -24,7 +24,6 @@ impl TestApp {
             .build()
             .unwrap();
 
-
         let mut config = config.try_deserialize::<Configuration>().unwrap();
         config.application.port = 0;
 

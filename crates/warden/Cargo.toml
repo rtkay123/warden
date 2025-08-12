@@ -48,6 +48,7 @@ utoipa-scalar = { workspace = true, optional = true }
 utoipa-swagger-ui = { workspace = true, optional = true }
 uuid = { workspace = true, features = ["v7", "serde"] }
 warden-core = { workspace = true, features = ["message", "pseudonyms", "serde", "openapi"] }
+warden-middleware.workspace = true
 
 [features]
 default = []

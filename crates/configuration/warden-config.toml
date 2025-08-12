@@ -1,0 +1,40 @@
+[application]
+env = "development"
+port = 1304
+
+[monitoring]
+log-level = "warden_config=trace,info"
+opentelemetry-endpoint = "http://localhost:4317"
+loki-endpoint = "http://localhost:3100"
+
+[misc.nats]
+stream = "configuration"
+max-messages = 10000
+subject = "configuration.reload"
+
+[database]
+pool_size = 100
+port = 5432
+name = "configuration"
+host = "localhost"
+password = "password"
+user = "postgres"
+
+[nats]
+hosts = ["nats://localhost:4222"]
+
+[cache]
+dsn = "redis://localhost:6379"
+pooled = true
+type = "non-clustered"         # clustered, non-clustered or sentinel
+max-connections = 100
+
+[cache.sentinel]
+master-name = "mymaster"
+nodes = [
+    { host = "127.0.0.1", port = 26379 },
+    { host = "127.0.0.2", port = 26379 },
+    { host = "127.0.0.3", port = 26379 },
+]
+
+# vim:ft=toml

@@ -570,7 +570,8 @@ mod tests {
         });
         let body = serde_json::to_vec(&v).unwrap();
 
-        let response = app.clone()
+        let response = app
+            .clone()
             .oneshot(
                 Request::builder()
                     .method("POST")
@@ -592,7 +593,13 @@ mod tests {
         id.replace("-", "")
     }
 
-    async fn post_clearance(app: Router, end_to_end_id: &str, ccy: &str, debtor_fsp: &str, creditor_fsp: &str) {
+    async fn post_clearance(
+        app: Router,
+        end_to_end_id: &str,
+        ccy: &str,
+        debtor_fsp: &str,
+        creditor_fsp: &str,
+    ) {
         let msg_id = generate_id();
         let cre_dt_tm = OffsetDateTime::now_utc().format(&Rfc3339).unwrap();
 

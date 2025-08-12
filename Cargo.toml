@@ -34,6 +34,7 @@ url = "2.5.4"
 time = "0.3.41"
 tokio = "1.47.1"
 tonic = "0.14.0"
+tonic-reflection = "0.14.1"
 tower = "0.5.2"
 tower-http = "0.6.6"
 tracing = "0.1.41"
@@ -45,6 +46,7 @@ utoipa-scalar = "0.3.0"
 utoipa-swagger-ui = "9.0.2"
 uuid = "1.17.0"
 warden-core = { path = "lib/warden-core" }
+warden-middleware = { path = "lib/warden-middleware" }
 warden-stack = { path = "lib/warden-stack" }
 
 [profile.release]

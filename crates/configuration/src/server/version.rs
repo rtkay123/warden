@@ -1,0 +1,35 @@
+use std::collections::HashMap;
+
+use axum::{
+    RequestPartsExt,
+    extract::{FromRequestParts, Path},
+    http::{StatusCode, request::Parts},
+    response::{IntoResponse, Response},
+};
+use utoipa::ToSchema;
+
+#[derive(Debug, ToSchema)]
+pub enum Version {
+    V0,
+}
+
+impl<S> FromRequestParts<S> for Version
+where
+    S: Send + Sync,
+{
+    type Rejection = Response;
+
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
+        let params: Path<HashMap<String, String>> =
+            parts.extract().await.map_err(IntoResponse::into_response)?;
+
+        let version = params
+            .get("version")
+            .ok_or_else(|| (StatusCode::NOT_FOUND, "version param missing").into_response())?;
+
+        match version.as_str() {
+            "v0" => Ok(Version::V0),
+            _ => Err((StatusCode::NOT_FOUND, "unknown version").into_response()),
+        }
+    }
+}

@@ -18,12 +18,9 @@ impl Entity {
             vec!["proto/warden_message.proto"]
         }
 
-        
         #[cfg(feature = "configuration")]
         fn configuration_protos() -> Vec<&'static str> {
-            vec![
-                "proto/configuration/routing.proto",
-            ]
+            vec!["proto/configuration/routing.proto"]
         }
 
         #[cfg(feature = "pseudonyms")]
@@ -72,7 +69,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(any(feature = "message", feature = "pseudonyms", feature = "configuration"))]
     build_proto(&protos)?;
 
-
     Ok(())
 }
 
@@ -100,7 +96,10 @@ fn build_proto(protos: &[&str]) -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-#[cfg(all(feature = "serde", any(feature = "pseudonyms", feature = "message", feature = "configuration")))]
+#[cfg(all(
+    feature = "serde",
+    any(feature = "pseudonyms", feature = "message", feature = "configuration")
+))]
 fn add_serde(config: tonic_prost_build::Builder) -> tonic_prost_build::Builder {
     let config = config.type_attribute(
         ".",
@@ -116,7 +115,10 @@ fn add_serde(config: tonic_prost_build::Builder) -> tonic_prost_build::Builder {
     config
 }
 
-#[cfg(all(feature = "openapi", any(feature = "message", feature = "pseudonyms", feature = "configuration")))]
+#[cfg(all(
+    feature = "openapi",
+    any(feature = "message", feature = "pseudonyms", feature = "configuration")
+))]
 fn add_openapi(config: tonic_prost_build::Builder) -> tonic_prost_build::Builder {
     config.type_attribute(".", "#[derive(utoipa::ToSchema)]")
 }
