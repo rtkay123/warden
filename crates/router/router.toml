@@ -1,0 +1,26 @@
+[application]
+env = "development"
+
+[monitoring]
+log-level = "warden_router=trace,info"
+opentelemetry-endpoint = "http://localhost:4317"
+loki-endpoint = "http://localhost:3100"
+
+[misc]
+config-endpoint = "http://localhost:1304"
+
+[misc.nats]
+stream-name = "iso20022"
+subjects = ["iso20022.>"]
+destination-prefix = "rule"
+max-messages = 10000
+durable-name = "iso20022"
+
+[misc.nats.config]
+stream = "configuration"
+reload-subject = "configuration.reload"
+
+[nats]
+hosts = ["nats://localhost:4222"]
+
+# vim:ft=toml
