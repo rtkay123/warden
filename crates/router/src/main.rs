@@ -52,9 +52,7 @@ async fn main() -> Result<()> {
         .take()
         .ok_or_else(|| anyhow::anyhow!("jetstream is not ready"))?;
 
-    let services = state::Services {
-        jetstream,
-    };
+    let services = state::Services { jetstream };
 
     processor::serve(services, config, provider)
         .await

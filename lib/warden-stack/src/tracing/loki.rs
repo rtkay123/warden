@@ -14,7 +14,7 @@ impl<S: State> TracingBuilder<S> {
         S::LokiTask: IsUnset,
     {
         use std::str::FromStr;
-        let url = FromStr::from_str(&monitoring.loki_endpoint.as_ref())
+        let url = FromStr::from_str(monitoring.loki_endpoint.as_ref())
             .map_err(|_e| crate::ServiceError::Unknown)?;
 
         let (layer, task) = tracing_loki::builder()

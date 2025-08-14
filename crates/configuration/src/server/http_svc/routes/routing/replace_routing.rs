@@ -27,6 +27,7 @@ use crate::{
 #[axum::debug_handler]
 #[tracing::instrument(skip(state))]
 pub async fn replace(
+    version: Version,
     State(state): State<AppHandle>,
     Path(id): Path<String>,
     axum::Json(body): axum::Json<RoutingConfiguration>,

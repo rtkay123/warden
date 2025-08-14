@@ -20,18 +20,16 @@ impl Entity {
 
         #[cfg(feature = "configuration")]
         fn configuration_protos() -> Vec<&'static str> {
-            if cfg!(feature = "message") {
-                vec![
-                    "proto/configuration/reload_event.proto",
-                ]
-            } else {
-            vec![
-                    "proto/configuration/routing.proto",
+            let mut base = vec![
                 "proto/configuration/reload_event.proto",
-            ]
-
+                "proto/configuration/rule.proto",
+            ];
+            if cfg!(feature = "message") {
+                base
+            } else {
+                base.extend(["proto/configuration/routing.proto"]);
+                base
             }
-
         }
 
         #[cfg(feature = "pseudonyms")]
@@ -131,5 +129,14 @@ fn add_serde(config: tonic_prost_build::Builder) -> tonic_prost_build::Builder {
     any(feature = "message", feature = "pseudonyms", feature = "configuration")
 ))]
 fn add_openapi(config: tonic_prost_build::Builder) -> tonic_prost_build::Builder {
-    config.type_attribute(".", "#[derive(utoipa::ToSchema)]")
+    config
+        .type_attribute(".", "#[derive(utoipa::ToSchema)]")
+        .type_attribute(
+            ".configuration.rule.RuleConfigurationRequest",
+            "#[derive(utoipa::IntoParams)]",
+        )
+        .type_attribute(
+            ".configuration.rule.DeleteRuleConfigurationRequest",
+            "#[derive(utoipa::IntoParams)]",
+        )
 }

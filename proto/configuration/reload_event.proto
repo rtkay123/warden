@@ -4,4 +4,5 @@ package configuration;
 
 enum ReloadEvent {
   ROUTING = 0;
+  RULE = 1;
 }

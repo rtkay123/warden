@@ -11,6 +11,7 @@ use utoipa_scalar::Servable as _;
 use crate::state::AppHandle;
 
 const TAG_ROUTING: &str = "Routing";
+const TAG_RULES: &str = "Rules";
 
 #[derive(OpenApi)]
 #[openapi(

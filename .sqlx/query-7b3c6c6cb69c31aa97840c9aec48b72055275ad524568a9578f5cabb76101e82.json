@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                update rule\n                set configuration = $1\n                where id = $2 and version = $3\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Jsonb",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "7b3c6c6cb69c31aa97840c9aec48b72055275ad524568a9578f5cabb76101e82"
+}

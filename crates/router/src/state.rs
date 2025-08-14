@@ -8,7 +8,7 @@ use tracing::error;
 use warden_core::configuration::routing::{
     RoutingConfiguration, query_routing_client::QueryRoutingClient,
 };
-use warden_stack::{Configuration};
+use warden_stack::Configuration;
 
 use crate::{
     cnfg::LocalConfig,

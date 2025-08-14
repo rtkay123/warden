@@ -1,7 +1,7 @@
 use opentelemetry_semantic_conventions::attribute;
-use tracing_opentelemetry::OpenTelemetrySpanExt;
 use tracing::{Instrument, debug, info, info_span, instrument, warn};
-use warden_core::{configuration::routing::RoutingConfiguration, google };
+use tracing_opentelemetry::OpenTelemetrySpanExt;
+use warden_core::{configuration::routing::RoutingConfiguration, google};
 
 use crate::{cnfg::CACHE_KEY, state::AppHandle};
 

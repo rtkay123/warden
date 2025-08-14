@@ -1,20 +1,25 @@
 pub mod grpc;
+mod load;
+mod publish;
 mod reload;
 mod route;
-mod publish;
-mod load;
 
 use std::sync::Arc;
 
 use anyhow::Result;
-use async_nats::jetstream::{consumer::{pull, Consumer}, Context};
+use async_nats::jetstream::{
+    Context,
+    consumer::{Consumer, pull},
+};
+use futures_util::StreamExt;
 use tokio::signal;
 use tracing::{error, trace};
 use warden_stack::{Configuration, tracing::SdkTracerProvider};
-use futures_util::StreamExt;
 
-use crate::{cnfg::Nats, state::{AppHandle, AppState, Services}};
-
+use crate::{
+    cnfg::Nats,
+    state::{AppHandle, AppState, Services},
+};
 
 pub async fn serve(
     services: Services,
@@ -30,7 +35,6 @@ pub async fn serve(
 
     Ok(())
 }
-
 
 async fn run(state: AppHandle) -> anyhow::Result<()> {
     let config = Arc::clone(&state);
@@ -76,7 +80,6 @@ async fn get_or_create_stream(
         )
         .await?)
 }
-
 
 async fn shutdown_signal(provider: SdkTracerProvider) -> Result<()> {
     let ctrl_c = async {

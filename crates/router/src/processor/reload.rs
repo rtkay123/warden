@@ -1,6 +1,6 @@
-use futures_util::StreamExt;
 use async_nats::jetstream::consumer;
-use tracing::{trace, debug, error, info};
+use futures_util::StreamExt;
+use tracing::{debug, error, info, trace};
 use uuid::Uuid;
 use warden_core::configuration::ReloadEvent;
 

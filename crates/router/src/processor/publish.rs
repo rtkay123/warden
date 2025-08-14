@@ -1,7 +1,7 @@
-use opentelemetry::global; 
+use opentelemetry::global;
 use opentelemetry_semantic_conventions::attribute;
-use tracing_opentelemetry::OpenTelemetrySpanExt;
 use tracing::{Instrument, Span, debug, info, info_span, warn};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 use warden_core::{configuration::routing::RoutingConfiguration, message::Payload};
 use warden_stack::tracing::telemetry::nats::injector;
 

@@ -3,7 +3,7 @@ use std::{collections::HashSet, sync::Arc};
 
 use opentelemetry::global;
 use prost::Message;
-use tracing::{info_span, instrument, trace, trace_span, warn, Instrument, Span};
+use tracing::{Instrument, Span, info_span, instrument, trace, trace_span, warn};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 use warden_core::{google, message::Payload};
 use warden_stack::tracing::telemetry::nats;

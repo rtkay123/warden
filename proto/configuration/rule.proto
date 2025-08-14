@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package configuration.rule;
+
+import "google/protobuf/struct.proto";
+
+message Timeframe {
+  double threshold = 1;
+}
+
+message OutcomeResult {
+  string sub_rule_ref = 1;
+  string reason = 2;
+}
+
+message Band {
+  string sub_rule_ref = 1;
+  string reason = 2;
+  optional double lower_limit = 3;
+  optional double upper_limit = 4;
+}
+
+message Case {
+  string sub_rule_ref = 1;
+  string reason = 2;
+  double value = 3;
+}
+
+message Config {
+  optional google.protobuf.Value parameters = 1;
+  repeated OutcomeResult exit_conditions = 2;
+  repeated Band bands = 3;
+  repeated Case cases = 4;
+  repeated Timeframe time_frames = 5;
+}
+
+message RuleConfiguration {
+  string id = 1;
+  string version = 2;
+  Config configuration = 3;
+  string description = 4;
+}
+
+message RuleConfigurationRequest {
+  string id = 1;
+  string version = 2;
+}
+
+message DeleteRuleConfigurationRequest {
+  string id = 1;
+  string version = 2;
+}
+
+message UpdateRuleRequest {
+  RuleConfiguration configuration = 1;
+}
+
+message GetRuleConfigResponse {
+  optional RuleConfiguration configuration = 1;
+}
+
+service QueryRuleConfiguration {
+  rpc GetRuleConfiguration (RuleConfigurationRequest) returns (GetRuleConfigResponse);
+}
+
+service MutateRuleConfiguration {
+  rpc CreateRuleConfiguration (RuleConfiguration) returns (RuleConfiguration);
+  rpc UpdateRuleConfiguration (UpdateRuleRequest) returns (RuleConfiguration);
+  rpc DeleteRuleConfiguration (DeleteRuleConfigurationRequest) returns (RuleConfiguration);
+}
