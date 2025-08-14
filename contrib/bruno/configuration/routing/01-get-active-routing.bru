@@ -1,0 +1,19 @@
+meta {
+  name: 01-get-active-routing
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{WARDEN_CFG_HOST}}/api/{{WARDEN_CFG_VERSION}}/routing
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+}
+
+settings {
+  encodeUrl: true
+}
