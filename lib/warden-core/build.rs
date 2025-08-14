@@ -121,6 +121,18 @@ fn add_serde(config: tonic_prost_build::Builder) -> tonic_prost_build::Builder {
         "#[serde(try_from = \"crate::google::parser::dt::DateItem\")] #[serde(into = \"String\")]",
     ).type_attribute(".google.type.Date", "#[serde(try_from = \"crate::google::parser::dt::DateItem\")] #[serde(into = \"String\")]");
 
+    #[cfg(feature = "configuration")]
+    let config = config
+            .field_attribute(".configuration.rule.Config.cases", "#[serde(default)]")
+            .field_attribute(
+                ".configuration.rule.Config.time_frames",
+                "#[serde(default)]",
+            )
+            .type_attribute(
+                ".google.protobuf.Value",
+                "#[serde(try_from = \"serde_json::Value\")] #[serde(into = \"crate::configuration::conv::GenericParameter\")]",
+            );
+
     config
 }
 

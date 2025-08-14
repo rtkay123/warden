@@ -1,3 +1,5 @@
+pub(crate) mod conv;
+
 tonic::include_proto!("configuration");
 
 pub mod routing {
