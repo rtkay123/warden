@@ -1,0 +1,52 @@
+meta {
+  name: 01-create
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{WARDEN_CFG_HOST}}/api/{{WARDEN_CFG_VERSION}}/rule
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "id": "901",
+    "version": "1.0.0",
+    "description": "Number of outgoing transactions - debtor",
+    "configuration": {
+      "parameters": {
+        "max_query_range": 86400000
+      },
+      "exit_conditions": [
+        {
+          "sub_rule_ref": ".x00",
+          "reason": "Incoming transaction is unsuccessful"
+        }
+      ],
+      "bands": [
+        {
+          "sub_rule_ref": ".01",
+          "upper_limit": 2,
+          "reason": "The debtor has performed one transaction to date"
+        },
+        {
+          "sub_rule_ref": ".02",
+          "lower_limit": 2,
+          "upper_limit": 3,
+          "reason": "The debtor has performed two transactions to date"
+        },
+        {
+          "sub_rule_ref": ".03",
+          "lower_limit": 3,
+          "reason": "The debtor has performed three or more transactions to date"
+        }
+      ]
+    }
+  }
+}
+
+settings {
+  encodeUrl: true
+}
