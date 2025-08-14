@@ -1,0 +1,23 @@
+meta {
+  name: 03-update-routing
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{WARDEN_CFG_HOST}}/api/{{WARDEN_CFG_VERSION}}/routing/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 
+}
+
+assert {
+  res.status: eq 201
+}
+
+settings {
+  encodeUrl: true
+}

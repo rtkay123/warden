@@ -1,0 +1,23 @@
+meta {
+  name: 04-delete-routing
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{WARDEN_CFG_HOST}}/api/{{WARDEN_CFG_VERSION}}/routing/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 
+}
+
+assert {
+  res.status: eq 200
+}
+
+settings {
+  encodeUrl: true
+}
