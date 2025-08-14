@@ -10,6 +10,7 @@ use crate::{
     state::AppHandle,
 };
 
+/// Get active routing configuration
 #[utoipa::path(
     get,
     responses((

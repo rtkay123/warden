@@ -1,5 +1,6 @@
 mod cache_key;
 mod routing;
+mod rule;
 
 use async_nats::jetstream::Context;
 use sqlx::PgPool;
@@ -43,6 +44,13 @@ impl AppState {
         configuration: &Configuration,
     ) -> Result<AppHandle, AppError> {
         let local_config: LocalConfig = serde_json::from_value(configuration.misc.clone())?;
+
+        local_config
+            .nats
+            .subject
+            .split(".")
+            .next()
+            .ok_or_else(|| anyhow::anyhow!("expected a dot separated config for nats subjects"))?;
 
         create_stream(&services.jetstream, &local_config.nats).await?;
 

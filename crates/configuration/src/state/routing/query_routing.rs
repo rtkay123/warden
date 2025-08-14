@@ -38,6 +38,8 @@ impl QueryRouting for AppHandle {
         span.set_attribute(attribute::DB_SYSTEM_NAME, "valkey");
         span.set_attribute(attribute::DB_OPERATION_NAME, "get");
         span.set_attribute(attribute::DB_OPERATION_PARAMETER, "active");
+        span.set_attribute("otel.kind", "client");
+
         let routing_config = cache
             .get::<_, Vec<u8>>(CacheKey::ActiveRouting)
             .instrument(span)
@@ -50,12 +52,12 @@ impl QueryRouting for AppHandle {
                 }
             });
 
-        if let Ok(Some(routing_config)) = routing_config {
-            if routing_config.active {
-                return Ok(tonic::Response::new(GetActiveRoutingResponse {
-                    configuration: Some(routing_config),
-                }));
-            }
+        if let Ok(Some(routing_config)) = routing_config
+            && routing_config.active
+        {
+            return Ok(tonic::Response::new(GetActiveRoutingResponse {
+                configuration: Some(routing_config),
+            }));
         }
 
         let span = info_span!("db.get.routing.active");
@@ -63,6 +65,7 @@ impl QueryRouting for AppHandle {
         span.set_attribute(attribute::DB_OPERATION_NAME, "select");
         span.set_attribute(attribute::DB_COLLECTION_NAME, "routing");
         span.set_attribute(attribute::DB_OPERATION_PARAMETER, "active");
+        span.set_attribute("otel.kind", "client");
 
         let config = sqlx::query_as!(
             RoutingRow,
@@ -85,6 +88,7 @@ impl QueryRouting for AppHandle {
                 span.set_attribute(attribute::DB_SYSTEM_NAME, "valkey");
                 span.set_attribute(attribute::DB_OPERATION_NAME, "set");
                 span.set_attribute(attribute::DB_OPERATION_PARAMETER, "routing.active");
+                span.set_attribute("otel.kind", "client");
 
                 if let Err(e) = cache
                     .set::<_, _, ()>(CacheKey::ActiveRouting, bytes)

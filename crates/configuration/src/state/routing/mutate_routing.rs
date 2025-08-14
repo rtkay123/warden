@@ -1,6 +1,6 @@
 use opentelemetry_semantic_conventions::attribute;
 use tonic::{Request, Response, Status, async_trait};
-use tracing::{Instrument, error, info_span, instrument};
+use tracing::{Instrument, error, info_span, instrument, trace};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 use uuid::Uuid;
 use warden_core::configuration::{
@@ -26,11 +26,14 @@ impl MutateRouting for AppHandle {
         &self,
         request: Request<RoutingConfiguration>,
     ) -> Result<Response<RoutingConfiguration>, Status> {
+        trace!("creating routing configuration");
+
         let request = request.into_inner();
         let span = info_span!("create.configuration.routing");
         span.set_attribute(attribute::DB_SYSTEM_NAME, "postgres");
         span.set_attribute(attribute::DB_OPERATION_NAME, "insert");
         span.set_attribute(attribute::DB_COLLECTION_NAME, "routing");
+        span.set_attribute("otel.kind", "client");
 
         sqlx::query!(
             "insert into routing (id, configuration) values ($1, $2)",
@@ -42,8 +45,9 @@ impl MutateRouting for AppHandle {
         .await
         .map_err(|e| {
             error!("{e}");
-            tonic::Status::internal(e.to_string())
+            tonic::Status::internal("database error")
         })?;
+        trace!("configuration created");
 
         Ok(tonic::Response::new(request))
     }
@@ -58,7 +62,7 @@ impl MutateRouting for AppHandle {
             .subject
             .split(".")
             .next()
-            .expect("bad config");
+            .expect("checked on startup");
 
         let request = request.into_inner();
         let id = Uuid::parse_str(&request.id)
@@ -70,6 +74,9 @@ impl MutateRouting for AppHandle {
         span.set_attribute(attribute::DB_SYSTEM_NAME, "postgres");
         span.set_attribute(attribute::DB_OPERATION_NAME, "update");
         span.set_attribute(attribute::DB_COLLECTION_NAME, "routing");
+        span.set_attribute("otel.kind", "client");
+
+        trace!("updating configuration");
 
         let updated = sqlx::query_as!(
             RoutingRow,
@@ -87,8 +94,9 @@ impl MutateRouting for AppHandle {
         .await
         .map_err(|e| {
             error!("{e}");
-            tonic::Status::internal(e.to_string())
+            tonic::Status::internal("database is not ready")
         })?;
+        trace!("configuration updated");
 
         let (_del_result, _publish_result) = tokio::try_join!(
             invalidate_cache(self, CacheKey::Routing(&id)),
@@ -110,7 +118,7 @@ impl MutateRouting for AppHandle {
             .subject
             .split(".")
             .next()
-            .expect("bad config");
+            .expect("checked on startup");
 
         let request = request.into_inner();
         let id = Uuid::parse_str(&request.id)
@@ -120,6 +128,8 @@ impl MutateRouting for AppHandle {
         span.set_attribute(attribute::DB_SYSTEM_NAME, "postgres");
         span.set_attribute(attribute::DB_OPERATION_NAME, "delete");
         span.set_attribute(attribute::DB_COLLECTION_NAME, "routing");
+        span.set_attribute("otel.kind", "client");
+        trace!("deleting configuration");
 
         let updated = sqlx::query_as!(
             RoutingRow,
@@ -135,8 +145,9 @@ impl MutateRouting for AppHandle {
         .await
         .map_err(|e| {
             error!("{e}");
-            tonic::Status::internal(e.to_string())
+            tonic::Status::internal("database is not ready")
         })?;
+        trace!("configuration deleted");
 
         let (_del_result, _publish_result) = tokio::try_join!(
             invalidate_cache(self, CacheKey::Routing(&id)),

@@ -6,6 +6,9 @@ use crate::state::AppHandle;
 
 pub fn router(store: AppHandle) -> OpenApiRouter {
     OpenApiRouter::new()
-        .routes(routes!(routing::get_active::active_routing))
+        .routes(routes!(
+            routing::get_active::active_routing,
+            routing::post_routing::post_routing
+        ))
         .with_state(store)
 }

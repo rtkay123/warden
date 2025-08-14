@@ -10,8 +10,14 @@ use tonic::service::Routes;
 use tower_http::trace::TraceLayer;
 use warden_core::{
     FILE_DESCRIPTOR_SET,
-    configuration::routing::{
-        mutate_routing_server::MutateRoutingServer, query_routing_server::QueryRoutingServer,
+    configuration::{
+        routing::{
+            mutate_routing_server::MutateRoutingServer, query_routing_server::QueryRoutingServer,
+        },
+        rule::{
+            mutate_rule_configuration_server::MutateRuleConfigurationServer,
+            query_rule_configuration_server::QueryRuleConfigurationServer,
+        },
     },
 };
 
@@ -28,6 +34,14 @@ pub fn serve(state: AppHandle) -> Result<(axum::Router, axum::Router), AppError>
 
     let grpc_server = Routes::new(service)
         .add_service(MutateRoutingServer::with_interceptor(
+            state.clone(),
+            MyInterceptor,
+        ))
+        .add_service(MutateRuleConfigurationServer::with_interceptor(
+            state.clone(),
+            MyInterceptor,
+        ))
+        .add_service(QueryRuleConfigurationServer::with_interceptor(
             state.clone(),
             MyInterceptor,
         ))
