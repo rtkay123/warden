@@ -1,0 +1,46 @@
+meta {
+  name: 02-post-routing
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WARDEN_CFG_HOST}}/api/{{WARDEN_CFG_VERSION}}/routing
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "active": true,
+    "name": "Public Network Map",
+    "version": "1.0.0",
+    "messages": [
+      {
+        "id": "004",
+        "version": "1.0.0",
+        "tx_tp": "pacs.002.001.12",
+        "typologies": [
+          {
+            "id": "999",
+            "version": "1.0.0",
+            "rules": [
+              {
+                "id": "901",
+                "version": "1.0.0"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+
+assert {
+  res.status: eq 201
+}
+
+settings {
+  encodeUrl: true
+}
