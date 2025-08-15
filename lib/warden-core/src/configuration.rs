@@ -1,3 +1,4 @@
+#[cfg(feature = "serde")]
 pub(crate) mod conv;
 
 tonic::include_proto!("configuration");
