@@ -4,7 +4,7 @@ use tracing::{Instrument, error, info_span, instrument, trace};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 use uuid::Uuid;
 use warden_core::configuration::{
-    ReloadEvent,
+    ConfigKind, ReloadEvent,
     routing::{
         DeleteConfigurationRequest, RoutingConfiguration, UpdateRoutingRequest,
         mutate_routing_server::MutateRouting,
@@ -100,7 +100,14 @@ impl MutateRouting for AppHandle {
 
         let (_del_result, _publish_result) = tokio::try_join!(
             invalidate_cache(self, CacheKey::Routing(&id)),
-            publish_reload(self, conf, ReloadEvent::Routing)
+            publish_reload(
+                self,
+                conf,
+                ReloadEvent {
+                    kind: ConfigKind::Routing.into(),
+                    ..Default::default()
+                }
+            )
         )?;
 
         let res = updated.configuration.0;
@@ -151,7 +158,14 @@ impl MutateRouting for AppHandle {
 
         let (_del_result, _publish_result) = tokio::try_join!(
             invalidate_cache(self, CacheKey::Routing(&id)),
-            publish_reload(self, conf, ReloadEvent::Routing)
+            publish_reload(
+                self,
+                conf,
+                ReloadEvent {
+                    kind: ConfigKind::Routing.into(),
+                    ..Default::default()
+                }
+            )
         )?;
 
         let res = updated.configuration.0;

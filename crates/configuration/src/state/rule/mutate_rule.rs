@@ -4,7 +4,7 @@ use tracing::{Instrument, error, info_span};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 use uuid::Uuid;
 use warden_core::configuration::{
-    ReloadEvent,
+    ConfigKind, ReloadEvent,
     rule::{
         DeleteRuleConfigurationRequest, RuleConfiguration, UpdateRuleRequest,
         mutate_rule_configuration_server::MutateRuleConfiguration,
@@ -92,7 +92,15 @@ impl MutateRuleConfiguration for AppHandle {
                     version: &config.version,
                 }
             ),
-            publish_reload(self, conf, ReloadEvent::Rule)
+            publish_reload(
+                self,
+                conf,
+                ReloadEvent {
+                    kind: ConfigKind::Rule.into(),
+                    id: Some(config.id.to_owned()),
+                    version: Some(config.version.to_owned()),
+                }
+            )
         )?;
 
         Ok(Response::new(config))
@@ -144,7 +152,15 @@ impl MutateRuleConfiguration for AppHandle {
                     version: &request.version,
                 }
             ),
-            publish_reload(self, conf, ReloadEvent::Rule)
+            publish_reload(
+                self,
+                conf,
+                ReloadEvent {
+                    kind: ConfigKind::Rule.into(),
+                    id: Some(request.id.to_owned()),
+                    version: Some(request.version.to_owned()),
+                }
+            )
         )?;
 
         let res = updated.configuration.0;

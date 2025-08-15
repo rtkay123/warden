@@ -2,7 +2,13 @@ syntax = "proto3";
 
 package configuration;
 
-enum ReloadEvent {
+enum ConfigKind {
   ROUTING = 0;
   RULE = 1;
+}
+
+message ReloadEvent {
+  ConfigKind kind = 1;
+  optional string id = 2;
+  optional string version = 3;
 }

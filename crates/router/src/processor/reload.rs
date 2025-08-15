@@ -1,8 +1,9 @@
 use async_nats::jetstream::consumer;
 use futures_util::StreamExt;
-use tracing::{debug, error, info, trace};
+use prost::Message as _;
+use tracing::{error, info, trace};
 use uuid::Uuid;
-use warden_core::configuration::ReloadEvent;
+use warden_core::configuration::{ConfigKind, ReloadEvent};
 
 use crate::state::AppHandle;
 
@@ -31,18 +32,19 @@ pub async fn reload(state: AppHandle) -> anyhow::Result<()> {
     while let Some(value) = messages.next().await {
         match value {
             Ok(message) => {
-                trace!("got reload cache event",);
-                if let Ok(Some(event)) = String::from_utf8(message.payload.to_vec())
-                    .map(|value| ReloadEvent::from_str_name(&value))
+                trace!("got reload cache event");
+                if let Ok(res) = ReloadEvent::decode(message.payload.as_ref())
+                    && let Ok(kind) = ConfigKind::try_from(res.kind)
                 {
-                    match event {
-                        ReloadEvent::Routing => {
+                    match kind {
+                        ConfigKind::Routing => {
+                            trace!("update triggered, invalidating active routing config");
                             let local_cache = state.local_cache.write().await;
                             local_cache.invalidate_all();
                             let _ = message.ack().await.inspect_err(|e| error!("{e}"));
                         }
-                        _ => {
-                            debug!(event = ?event, "detected reload event, acknowledging");
+                        ConfigKind::Rule => {
+                            trace!(kind = ?kind, "detected reload event, nothing to do here, acknowledging");
                             let _ = message.ack().await.inspect_err(|e| error!("{e}"));
                         }
                     }

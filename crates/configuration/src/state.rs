@@ -4,6 +4,7 @@ mod rule;
 
 use async_nats::jetstream::Context;
 use opentelemetry_semantic_conventions::attribute;
+use prost::Message;
 use sqlx::PgPool;
 use std::{ops::Deref, sync::Arc};
 use tracing::{Instrument, info_span, instrument, trace};
@@ -91,10 +92,11 @@ pub async fn publish_reload(
     span.set_attribute(attribute::MESSAGING_SYSTEM, "nats");
     span.set_attribute("otel.kind", "producer");
 
+    let bytes = event.encode_to_vec();
     state
         .services
         .jetstream
-        .publish(format!("{prefix}.reload"), event.as_str_name().into())
+        .publish(format!("{prefix}.reload"), bytes.into())
         .instrument(span)
         .await
         .map_err(|e| tonic::Status::internal(e.to_string()))?;
