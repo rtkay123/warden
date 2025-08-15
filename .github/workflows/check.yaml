@@ -10,6 +10,33 @@ concurrency:
   cancel-in-progress: true
 name: check
 jobs:
+  dockerfile:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        crate:
+          - pseudonyms
+          - warden
+          - configuration
+          - router
+          - rule-executor
+    name: dockerfile / ${{ matrix.crate }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: set up docker buildx
+        uses: docker/setup-buildx-action@v3
+      - name: build # and push
+        uses: docker/build-push-action@v6
+        with:
+          push: false
+          context: .
+          file: crates/${{ matrix.crate }}/Dockerfile
+          tags: warden/${{ matrix.crate }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
   msrv:
     runs-on: ubuntu-latest
     strategy:
