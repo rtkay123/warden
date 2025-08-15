@@ -103,7 +103,7 @@ impl serde::Serialize for GenericParameter {
     where
         S: serde::Serializer,
     {
-        let json = serde_json::Value::from(self.0.clone());
+        let json = self.0.clone();
         json.serialize(serializer)
     }
 }

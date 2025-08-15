@@ -1,3 +1,4 @@
+pub mod grpc;
 mod metrics;
 mod trace_layer;
 

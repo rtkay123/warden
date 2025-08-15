@@ -1,7 +1,6 @@
-mod load;
 mod publish;
 mod reload;
-mod route;
+mod rule;
 
 use std::sync::Arc;
 
@@ -10,9 +9,9 @@ use async_nats::jetstream::{
     Context,
     consumer::{Consumer, pull},
 };
-use futures_util::{StreamExt, future};
+use futures_util::{future, StreamExt};
 use tokio::signal;
-use tracing::{error, trace};
+use tracing::trace;
 use warden_stack::{Configuration, tracing::SdkTracerProvider};
 
 use crate::{
@@ -37,14 +36,7 @@ pub async fn serve(
 
 async fn run(state: AppHandle) -> anyhow::Result<()> {
     let config = Arc::clone(&state);
-    let (consumer, _) = tokio::join!(
-        get_or_create_stream(&state.services.jetstream, &state.config.nats),
-        load::get_routing_config(Arc::clone(&config))
-    );
-
-    let consumer = consumer?;
-
-    // Consume messages from the consumer
+    let consumer = get_or_create_stream(&state.services.jetstream, &state.config.nats).await?;
 
     let limit = None;
 
@@ -53,13 +45,13 @@ async fn run(state: AppHandle) -> anyhow::Result<()> {
         .await?
         .for_each_concurrent(limit, |message| {
             let state = Arc::clone(&state);
-            tokio::spawn(async move {
-                if let Ok(message) = message
-                    && let Err(e) = route::route(message, Arc::clone(&state)).await
-                {
-                    error!("{}", e.to_string());
-                }
-            });
+            // tokio::spawn(async move {
+            //     if let Ok(message) = message
+            //         && let Err(e) = route::route(message, Arc::clone(&state)).await
+            //     {
+            //         error!("{}", e.to_string());
+            //     }
+            // });
             future::ready(())
         })
         .await;
@@ -74,9 +66,8 @@ async fn get_or_create_stream(
     trace!(name = ?nats.name, "getting or creating stream");
     let stream = jetstream
         .get_or_create_stream(async_nats::jetstream::stream::Config {
-            name: nats.name.to_string(),
+            name: format!("{}.v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION")),
             subjects: nats.subjects.iter().map(Into::into).collect(),
-            max_messages: nats.max_messages,
             ..Default::default()
         })
         .await?;

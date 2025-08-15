@@ -1,10 +1,8 @@
 pub mod error;
-pub mod grpc_svc;
 mod http_svc;
 pub mod reload_stream;
 mod version;
 
-use grpc_svc::interceptor::MyInterceptor;
 use http_svc::build_router;
 use tonic::service::Routes;
 use tower_http::trace::TraceLayer;
@@ -20,6 +18,7 @@ use warden_core::{
         },
     },
 };
+use warden_middleware::grpc::interceptor::MyInterceptor;
 
 use crate::{server::error::AppError, state::AppHandle};
 

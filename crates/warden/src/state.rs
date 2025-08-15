@@ -6,11 +6,8 @@ use tracing::error;
 use warden_core::pseudonyms::transaction_relationship::mutate_pseudonym_client::MutatePseudonymClient;
 use warden_stack::{Configuration, cache::RedisManager};
 
-use crate::{
-    cnfg::LocalConfig,
-    error::AppError,
-    server::grpc::interceptor::{Intercepted, MyInterceptor},
-};
+use crate::{cnfg::LocalConfig, error::AppError};
+use warden_middleware::grpc::interceptor::{Intercepted, MyInterceptor};
 
 #[derive(Clone)]
 pub struct AppHandle(Arc<AppState>);

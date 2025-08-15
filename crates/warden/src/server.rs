@@ -1,4 +1,3 @@
-pub mod grpc;
 mod publish;
 mod routes;
 pub use routes::metrics::metrics_app;

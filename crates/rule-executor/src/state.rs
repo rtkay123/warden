@@ -5,13 +5,14 @@ use moka::future::Cache;
 use tokio::sync::RwLock;
 use tonic::transport::Endpoint;
 use tracing::error;
-use warden_core::configuration::routing::{
-    RoutingConfiguration, query_routing_client::QueryRoutingClient,
+use warden_core::configuration::{
+    routing::{RoutingConfiguration, query_routing_client::QueryRoutingClient},
+    rule::RuleConfigurationRequest,
 };
-use warden_middleware::grpc::interceptor::{Intercepted, MyInterceptor};
 use warden_stack::Configuration;
 
 use crate::cnfg::LocalConfig;
+use warden_middleware::grpc::interceptor::{Intercepted, MyInterceptor};
 
 #[derive(Clone)]
 pub struct Services {
@@ -23,7 +24,7 @@ pub type AppHandle = Arc<AppState>;
 #[derive(Clone)]
 pub struct AppState {
     pub services: Services,
-    pub local_cache: Arc<RwLock<Cache<i32, RoutingConfiguration>>>,
+    pub local_cache: Arc<RwLock<Cache<RuleConfigurationRequest, RoutingConfiguration>>>,
     pub config: LocalConfig,
     pub query_routing_client: QueryRoutingClient<Intercepted>,
 }

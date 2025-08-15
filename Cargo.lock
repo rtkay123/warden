@@ -2449,6 +2449,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "rule-executor"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-nats",
+ "clap",
+ "config",
+ "futures-util",
+ "moka",
+ "opentelemetry",
+ "opentelemetry-semantic-conventions",
+ "prost 0.14.1",
+ "serde",
+ "serde_json",
+ "time",
+ "tokio",
+ "tonic 0.14.1",
+ "tracing",
+ "tracing-opentelemetry",
+ "uuid",
+ "warden-core",
+ "warden-middleware",
+ "warden-stack",
+]
+
+[[package]]
 name = "rust-embed"
 version = "8.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3994,8 +4020,10 @@ dependencies = [
  "axum",
  "metrics",
  "metrics-exporter-prometheus",
+ "tonic 0.14.1",
  "tower-http",
  "tracing",
+ "warden-stack",
 ]
 
 [[package]]
@@ -4040,6 +4068,7 @@ dependencies = [
  "tracing-opentelemetry",
  "uuid",
  "warden-core",
+ "warden-middleware",
  "warden-stack",
 ]
 

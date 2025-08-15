@@ -1,5 +1,5 @@
 [package]
-name = "warden-router"
+name = "rule-executor"
 version = "0.1.0"
 edition = "2024"
 license.workspace = true
@@ -10,7 +10,6 @@ description.workspace = true
 [dependencies]
 anyhow.workspace = true
 async-nats.workspace = true
-bytes = "1.10.1"
 clap = { workspace = true, features = ["derive"] }
 config = { workspace = true, features = ["convert-case", "toml"] }
 futures-util.workspace = true
@@ -18,8 +17,9 @@ moka = { workspace = true, features = ["future"] }
 opentelemetry.workspace = true
 opentelemetry-semantic-conventions.workspace = true
 prost.workspace = true
-serde = { workspace = true, features = ["derive", "rc"] }
+serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
+time = { workspace = true, features = ["serde"] }
 tokio = { workspace = true, features = [
     "macros",
     "rt-multi-thread",
@@ -32,14 +32,14 @@ uuid = { workspace = true, features = ["v7"] }
 warden-core = { workspace = true, features = [
     "message",
     "configuration",
-    "serde-time"
+    "serde",
+    "time",
 ] }
-warden-middleware.workspace = true
-
-[dependencies.warden-stack]
-workspace = true
-features = [
+warden-stack = { workspace = true, features = [
     "nats-jetstream",
+    "opentelemetry",
+    "postgres",
     "opentelemetry-tonic",
     "tracing-loki",
-]
+] }
+warden-middleware.workspace = true

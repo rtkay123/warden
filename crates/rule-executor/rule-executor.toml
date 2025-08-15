@@ -1,0 +1,33 @@
+[application]
+env = "development"
+
+[monitoring]
+log-level = "warden_rule=trace,info"
+opentelemetry-endpoint = "http://localhost:4317"
+loki-endpoint = "http://localhost:3100"
+
+[misc]
+config-endpoint = "http://localhost:1304"
+
+[misc.nats]
+stream-name = "rules"
+subjects = ["rule.>"]
+durable-name = "rules"
+destination-prefix = "typology-rule"
+
+[misc.nats.config]
+stream = "configuration"
+reload-subject = "configuration.reload"
+
+[database]
+pool_size = 100
+port = 5432
+name = "pseudonyms"
+host = "localhost"
+password = "password"
+user = "postgres"
+
+[nats]
+hosts = ["nats://localhost:4222"]
+
+# vim:ft=toml

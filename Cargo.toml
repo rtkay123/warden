@@ -18,6 +18,7 @@ config = { version = "0.15.13", default-features = false }
 futures-util = { version = "0.3.31", default-features = false }
 metrics = { version = "0.24.2", default-features = false }
 metrics-exporter-prometheus = { version = "0.17.2", default-features = false }
+moka = "0.12.10"
 opentelemetry = { version = "0.30.0", default-features = false }
 opentelemetry-http = "0.30.0"
 opentelemetry-otlp = { version = "0.30.0", default-features = false }
