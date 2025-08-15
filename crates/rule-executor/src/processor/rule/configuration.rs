@@ -10,8 +10,10 @@ pub(super) async fn get_configuration(
     state: AppHandle,
 ) -> Result<RuleConfiguration> {
     trace!("checking cache for rule configuration");
-    let cache = state.local_cache.read().await;
-    let config = cache.get(&request).await;
+    let config = {
+        let cache = state.local_cache.read().await;
+        cache.get(&request).await
+    };
     if let Some(config) = config {
         trace!("cache hit");
         return Ok(config);
@@ -35,8 +37,10 @@ pub(super) async fn get_configuration(
         .configuration
         .ok_or_else(|| anyhow!("missing configuration"))?;
 
-    let mut cache = state.local_cache.write().await;
+    println!("inserting");
+    let cache = state.local_cache.write().await;
     cache.insert(request, config.clone()).await;
+    println!("inserted");
 
     Ok(config)
 }
