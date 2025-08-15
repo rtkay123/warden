@@ -2,7 +2,7 @@
 env = "development"
 
 [monitoring]
-log-level = "warden_rule=trace,info"
+log-level = "rule_executor=trace,info"
 opentelemetry-endpoint = "http://localhost:4317"
 loki-endpoint = "http://localhost:3100"
 

@@ -32,11 +32,13 @@ pub(crate) async fn to_rule(
         propagator.inject_context(&cx, &mut injector::HeaderMap(&mut headers))
     });
 
-    let span = info_span!("nats.publish");
+    let span = info_span!("nats.publish", "otel.kind" = "producer");
     span.set_attribute(
         attribute::MESSAGING_DESTINATION_SUBSCRIPTION_NAME,
         subject.to_string(),
     );
+    span.set_attribute(attribute::MESSAGING_SYSTEM, "nats");
+
     state
         .services
         .jetstream

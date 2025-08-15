@@ -15,7 +15,12 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        crate: ["pseudonyms", "warden", "configuration", "router"]
+        crate:
+          - pseudonyms
+          - warden
+          - configuration
+          - router
+          - rule-executor
     name: build / ${{ matrix.crate }}
     steps:
       - uses: actions/checkout@v4

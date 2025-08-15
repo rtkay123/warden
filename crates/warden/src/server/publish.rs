@@ -27,6 +27,12 @@ pub async fn publish_message(state: &AppHandle, payload: Payload, msg_id: &str) 
         attribute::MESSAGING_DESTINATION_SUBSCRIPTION_NAME,
         subject.to_string(),
     );
+    span.set_attribute(
+        attribute::MESSAGING_DESTINATION_SUBSCRIPTION_NAME,
+        subject.to_string(),
+    );
+    span.set_attribute(attribute::MESSAGING_SYSTEM, "nats");
+
     trace!(%msg_id, "publishing message");
 
     state

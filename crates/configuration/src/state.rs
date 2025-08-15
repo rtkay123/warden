@@ -3,9 +3,11 @@ mod routing;
 mod rule;
 
 use async_nats::jetstream::Context;
+use opentelemetry_semantic_conventions::attribute;
 use sqlx::PgPool;
 use std::{ops::Deref, sync::Arc};
-use tracing::{instrument, trace};
+use tracing::{Instrument, info_span, instrument, trace};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 use warden_core::configuration::ReloadEvent;
 use warden_stack::{Configuration, cache::RedisManager, redis::AsyncCommands};
 
@@ -84,10 +86,16 @@ pub async fn publish_reload(
     event: ReloadEvent,
 ) -> Result<(), tonic::Status> {
     trace!("publishing reload event");
+
+    let span = info_span!("reload config");
+    span.set_attribute(attribute::MESSAGING_SYSTEM, "nats");
+    span.set_attribute("otel.kind", "producer");
+
     state
         .services
         .jetstream
         .publish(format!("{prefix}.reload"), event.as_str_name().into())
+        .instrument(span)
         .await
         .map_err(|e| tonic::Status::internal(e.to_string()))?;
 

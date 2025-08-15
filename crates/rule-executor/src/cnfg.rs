@@ -12,7 +12,6 @@ pub struct LocalConfig {
 #[derive(Deserialize, Clone)]
 #[serde(rename_all = "kebab-case")]
 pub struct Nats {
-    pub name: Arc<str>,
     pub subjects: Arc<[String]>,
     pub durable_name: Arc<str>,
     pub destination_prefix: Arc<str>,
@@ -20,6 +19,7 @@ pub struct Nats {
 }
 
 #[derive(Deserialize, Clone)]
+#[serde(rename_all = "kebab-case")]
 pub struct ConfigNats {
     pub stream: Arc<str>,
     pub reload_subject: Arc<str>,
