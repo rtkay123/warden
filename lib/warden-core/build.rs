@@ -134,6 +134,10 @@ fn add_serde(config: tonic_prost_build::Builder) -> tonic_prost_build::Builder {
             .type_attribute(
                 ".google.protobuf.Value",
                 "#[serde(try_from = \"serde_json::Value\")] #[serde(into = \"crate::configuration::conv::GenericParameter\")]",
+            )
+            .field_attribute(
+                ".configuration.typology.Expression.operator",
+                "#[serde(with = \"crate::configuration::conv::operator_serde\")]",
             );
 
     config
