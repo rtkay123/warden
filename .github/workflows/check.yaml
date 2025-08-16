@@ -69,7 +69,7 @@ jobs:
   integration:
     runs-on: ubuntu-latest
     needs: dockerfile
-    name: integration
+    name: http
     steps:
       - uses: actions/checkout@v5
         with:
@@ -106,7 +106,8 @@ jobs:
       - name: run api tests
         run: |
           cd contrib/bruno
-          bru run configuration/routing/02-post-routing.bru \
+          bru run configuration/health-check.bru \
+            configuration/routing/02-post-routing.bru \
             configuration/rule/01-create.bru \
             configuration/typology/01-create.bru \
             --env warden --reporter-html results.html
@@ -118,6 +119,6 @@ jobs:
       - name: Tear down
         if: always()
         run: |
-          docker compose -f contrib/docker-compose/compose.yml down -v
+          docker compose -f contrib/docker-compose/compose.yaml down -v
           docker stop $(docker ps -aq) || true
           docker rm $(docker ps -aq) || true
