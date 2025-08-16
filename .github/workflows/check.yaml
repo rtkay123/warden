@@ -125,6 +125,11 @@ jobs:
         uses: arduino/setup-protoc@v3
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: prepare env
+        run: |
+          for processor in warden pseudonyms aggregator configuration; do
+            cp crates/$processor/.env.example crates/$processor/.env
+          done
       - name: cargo test --locked
         run:  cargo nextest run --locked --all-features --all-targets --workspace
       - name: tear down
