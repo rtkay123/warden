@@ -84,12 +84,7 @@ jobs:
           node-version: '20'
       - name: install bruno cli
         run: npm install -g @usebruno/cli
-      - name: download pseudonyms
-        uses: actions/download-artifact@v4
-        with:
-          name: pseudonyms
-          path: /tmp
-      - name: download pseudonyms
+      - name: download artifacts
         uses: actions/download-artifact@v5
         with:
           path: warden-images
