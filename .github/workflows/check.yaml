@@ -76,8 +76,6 @@ jobs:
           submodules: true
       - name: start stack
         run: docker compose -f contrib/docker-compose/compose.yaml up -d
-      - name: Install stable
-        uses: dtolnay/rust-toolchain@stable
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
@@ -116,8 +114,19 @@ jobs:
         with:
           name: test-results
           path: contrib/bruno/results.html
+      - name: install stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: install cargo-nextest
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-nextest
+      - uses: Swatinem/rust-cache@v2
+      - name: install protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: cargo test --locked
-        run: cargo test --locked --all-features --all-targets --workspace
+        run:  cargo nextest run --locked --all-features --all-targets --workspace
       - name: tear down
         if: always()
         run: |
