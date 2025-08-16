@@ -5,6 +5,7 @@ pub enum CacheKey<'a> {
     ActiveRouting,
     Routing(&'a uuid::Uuid),
     Rule { id: &'a str, version: &'a str },
+    Typology { id: &'a str, version: &'a str },
 }
 
 impl ToRedisArgs for CacheKey<'_> {
@@ -16,6 +17,7 @@ impl ToRedisArgs for CacheKey<'_> {
             CacheKey::ActiveRouting => "routing.active".into(),
             CacheKey::Routing(uuid) => format!("routing.{uuid}"),
             CacheKey::Rule { id, version } => format!("rule.{id}.{version}"),
+            CacheKey::Typology { id, version } => format!("typology.{id}.{version}"),
         };
 
         out.write_arg(value.as_bytes());

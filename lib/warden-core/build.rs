@@ -151,6 +151,14 @@ fn add_openapi(config: tonic_prost_build::Builder) -> tonic_prost_build::Builder
             "#[derive(utoipa::IntoParams)]",
         )
         .type_attribute(
+            ".configuration.typology.TypologyConfigurationRequest",
+            "#[derive(utoipa::IntoParams)]",
+        )
+        .type_attribute(
+            ".configuration.typology.DeleteTypologyConfigurationRequest",
+            "#[derive(utoipa::IntoParams)]",
+        )
+        .type_attribute(
             ".configuration.rule.DeleteRuleConfigurationRequest",
             "#[derive(utoipa::IntoParams)]",
         )

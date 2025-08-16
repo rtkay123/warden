@@ -5,6 +5,7 @@ package configuration;
 enum ConfigKind {
   ROUTING = 0;
   RULE = 1;
+  TYPOLOGY = 2;
 }
 
 message ReloadEvent {

@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "select configuration as \"configuration: sqlx::types::Json<TypologyConfiguration>\" from typology where\n            id = $1 and version = $2",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "configuration: sqlx::types::Json<TypologyConfiguration>",
+        "type_info": "Jsonb"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "47b9a7ea1656863a4a43df1692c619ed2b3ac48806182089214c22d4d7771cd5"
+}

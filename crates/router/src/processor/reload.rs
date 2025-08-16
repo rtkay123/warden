@@ -43,7 +43,7 @@ pub async fn reload(state: AppHandle) -> anyhow::Result<()> {
                             local_cache.invalidate_all();
                             let _ = message.ack().await.inspect_err(|e| error!("{e}"));
                         }
-                        ConfigKind::Rule => {
+                        _ => {
                             trace!(kind = ?kind, "detected reload event, nothing to do here, acknowledging");
                             let _ = message.ack().await.inspect_err(|e| error!("{e}"));
                         }

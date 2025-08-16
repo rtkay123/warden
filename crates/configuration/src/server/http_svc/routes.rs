@@ -1,5 +1,6 @@
 mod routing;
 mod rule;
+mod typology;
 
 use utoipa_axum::{router::OpenApiRouter, routes};
 
@@ -20,6 +21,13 @@ pub fn router(store: AppHandle) -> OpenApiRouter {
             rule::update::update_rule_config,
             rule::delete::delete_rule_config,
             rule::get::get_rule,
+        ))
+        .routes(routes!(
+            /* typology */
+            typology::get_typology::get_typology,
+            typology::post_typology::update,
+            typology::delete_typology::delete_typology,
+            typology::create_typology::create_typology,
         ))
         .with_state(store)
 }

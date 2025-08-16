@@ -12,6 +12,7 @@ use crate::state::AppHandle;
 
 const TAG_ROUTING: &str = "Routing";
 const TAG_RULES: &str = "Rules";
+const TAG_TYPOLOGIES: &str = "Typologies";
 
 #[derive(OpenApi)]
 #[openapi(

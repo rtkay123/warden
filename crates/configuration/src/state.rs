@@ -1,6 +1,7 @@
 mod cache_key;
 mod routing;
 mod rule;
+mod typology;
 
 use async_nats::jetstream::Context;
 use opentelemetry_semantic_conventions::attribute;

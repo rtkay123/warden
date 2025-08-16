@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                update typology\n                set configuration = $1\n                where id = $2 and version = $3\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Jsonb",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "809ad829886f53723bce30cd68c5b38083c83414be91b1bc52abfd200838a40f"
+}

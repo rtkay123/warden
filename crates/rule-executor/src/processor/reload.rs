@@ -37,10 +37,6 @@ pub async fn reload(state: AppHandle) -> anyhow::Result<()> {
                     && let Ok(kind) = ConfigKind::try_from(res.kind)
                 {
                     match kind {
-                        ConfigKind::Routing => {
-                            trace!(kind = ?kind, "detected reload event, nothing to do here, acknowledging");
-                            let _ = message.ack().await.inspect_err(|e| error!("{e}"));
-                        }
                         ConfigKind::Rule => {
                             let local_cache = state.local_cache.write().await;
                             let id = res.id();
@@ -56,6 +52,10 @@ pub async fn reload(state: AppHandle) -> anyhow::Result<()> {
                             };
 
                             local_cache.invalidate(&key).await;
+                            let _ = message.ack().await.inspect_err(|e| error!("{e}"));
+                        }
+                        _ => {
+                            trace!(kind = ?kind, "detected reload event, nothing to do here, acknowledging");
                             let _ = message.ack().await.inspect_err(|e| error!("{e}"));
                         }
                     }
