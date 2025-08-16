@@ -93,9 +93,10 @@ jobs:
           dir="warden-images"
           for file in "$dir"/*.tar; do
             if [ -f "$file" ]; then
-              docker load --input $file
-              base="${file%.tar}"
-              docker run --rm -d --network host $base warden/$base:latest
+              echo "Loading tar: $file"
+              image_name=$(docker load --input "$file" | awk '/Loaded image:/ {print $3}')
+              echo "Running image: $image_name"
+              docker run --rm -d --network host "$image_name"
             fi
           done
           echo "images loaded"
@@ -117,6 +118,6 @@ jobs:
       - name: Tear down
         if: always()
         run: |
-          docker-compose -f contrib/docker-compose/compose.yml down -v
+          docker compose -f contrib/docker-compose/compose.yml down -v
           docker stop $(docker ps -aq) || true
           docker rm $(docker ps -aq) || true
