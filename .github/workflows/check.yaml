@@ -82,8 +82,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: install bruno cli
-        run: npm install -g @usebruno/cli
       - name: download artifacts
         uses: actions/download-artifact@v5
         with:
@@ -93,29 +91,32 @@ jobs:
       - name: load docker images
         run: |
           dir="warden-images"
-          ls -al $dir
-          echo "Iterating through files in $dir"
-          for file in "$dir"/*; do
+          for file in "$dir"/*.tar; do
             if [ -f "$file" ]; then
               docker load --input $file
+              base="${file%.tar}"
+              docker run --rm -d --network host $base warden/$base:latest
             fi
           done
+          echo "images loaded"
           docker image ls -a
-      # - name: run api tests
-      #   run: |
-      #     cd contrib/bruno
-      #     bru run configuration/routing/02-post-routing.bru \
-      #       configuration/rule/01-create.bru \
-      #       configuration/typology/01-create.bru \
-      #       --env warden --reporter-html results.html
-      # - name: upload test results
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: test-results
-      #     path: results.html
-      # - name: Tear down
-      #   if: always()
-      #   run: |
-      #     docker-compose -f contrib/docker-compose/compose.yml down -v
-      #     docker stop $(docker ps -aq) || true
-      #     docker rm $(docker ps -aq) || true
+      - name: install bruno cli
+        run: npm install -g @usebruno/cli
+      - name: run api tests
+        run: |
+          cd contrib/bruno
+          bru run configuration/routing/02-post-routing.bru \
+            configuration/rule/01-create.bru \
+            configuration/typology/01-create.bru \
+            --env warden --reporter-html results.html
+      - name: upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: results.html
+      - name: Tear down
+        if: always()
+        run: |
+          docker-compose -f contrib/docker-compose/compose.yml down -v
+          docker stop $(docker ps -aq) || true
+          docker rm $(docker ps -aq) || true
