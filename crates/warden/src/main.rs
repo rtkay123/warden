@@ -7,7 +7,7 @@ mod version;
 use std::net::{Ipv6Addr, SocketAddr};
 
 use clap::{Parser, command};
-use tracing::{error, info};
+use tracing::{error, info, trace};
 use warden_stack::{Configuration, Services, tracing::Tracing};
 
 use crate::state::AppState;
@@ -78,6 +78,12 @@ async fn main() -> Result<(), error::AppError> {
     };
 
     let state = AppState::create(services, &config).await?;
+
+    trace!("running migrations");
+    sqlx::migrate!("./migrations")
+        .run(&state.services.postgres)
+        .await?;
+    trace!("migrations updated");
 
     let addr = SocketAddr::from((Ipv6Addr::UNSPECIFIED, config.application.port));
 

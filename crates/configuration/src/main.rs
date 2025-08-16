@@ -8,7 +8,7 @@ use crate::{server::error::AppError, state::AppState};
 use axum::http::header::CONTENT_TYPE;
 use clap::Parser;
 use tower::{make::Shared, steer::Steer};
-use tracing::{error, info};
+use tracing::{error, info, trace};
 use warden_stack::{Configuration, Services, tracing::Tracing};
 
 /// warden-config
@@ -81,6 +81,12 @@ async fn main() -> Result<(), AppError> {
         &config,
     )
     .await?;
+
+    trace!("running migrations");
+    sqlx::migrate!("./migrations")
+        .run(&state.services.postgres)
+        .await?;
+    trace!("migrations updated");
 
     let (app, grpc_server) = server::serve(state)?;
 
