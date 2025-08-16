@@ -1,0 +1,51 @@
+[package]
+name = "warden-aggregator"
+version = "0.1.0"
+edition = "2024"
+license.workspace = true
+homepage.workspace = true
+documentation.workspace = true
+description.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+async-nats.workspace = true
+clap = { workspace = true, features = ["derive"] }
+config = { workspace = true, features = ["toml"] }
+futures-util.workspace = true
+opentelemetry.workspace = true
+opentelemetry-semantic-conventions.workspace = true
+prost.workspace = true
+serde = { workspace = true, features = ["derive", "rc"] }
+serde_json.workspace = true
+sqlx = { workspace = true, features = [
+    "json",
+    "macros",
+    "migrate",
+    "postgres",
+    "runtime-tokio",
+    "time",
+    "tls-rustls",
+    "uuid",
+] }
+tokio = { workspace = true, features = [
+    "macros",
+    "rt-multi-thread",
+    "signal",
+] }
+tonic.workspace = true
+tracing.workspace = true
+tracing-opentelemetry.workspace = true
+uuid = { workspace = true, features = ["v7"] }
+warden-core = { workspace = true, features = [
+    "message",
+    "serde",
+    "time",
+] }
+warden-stack = { workspace = true, features = [
+    "cache",
+    "nats-jetstream",
+    "opentelemetry",
+    "postgres",
+    "tracing-loki",
+] }

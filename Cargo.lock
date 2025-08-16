@@ -3966,6 +3966,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "warden-aggregator"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-nats",
+ "clap",
+ "config",
+ "futures-util",
+ "opentelemetry",
+ "opentelemetry-semantic-conventions",
+ "prost 0.14.1",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tokio",
+ "tonic 0.14.1",
+ "tracing",
+ "tracing-opentelemetry",
+ "uuid",
+ "warden-core",
+ "warden-stack",
+]
+
+[[package]]
 name = "warden-config"
 version = "0.1.0"
 dependencies = [

@@ -18,26 +18,27 @@ message Payload {
   configuration.routing.RoutingConfiguration routing = 5;
   RuleResult rule_result = 6;
   TypologyResult typology_result = 7;
+  AggregationResult aggregation_result = 8;
 }
 
 message RuleResult {
-   string id = 1;
-   string version = 2;
-   string sub_rule_ref = 3;
-   string reason = 4;
-   string desc = 5;
-   double wght = 6;
+  string id = 1;
+  string version = 2;
+  string sub_rule_ref = 3;
+  string reason = 4;
+  string desc = 5;
+  double wght = 6;
 }
 
 message TypologyResult {
-   string id = 1;
-   string version = 2;
-   string desc = 3;
-   double result = 4;
-   double threshold = 5;
-   repeated RuleResult rule_results = 6;
-   bool review = 7;
-   configuration.typology.Workflow workflow = 8;
+  string id = 1;
+  string version = 2;
+  string desc = 3;
+  double result = 4;
+  double threshold = 5;
+  repeated RuleResult rule_results = 6;
+  bool review = 7;
+  configuration.typology.Workflow workflow = 8;
 }
 
 
@@ -50,4 +51,11 @@ message DataCache {
   iso20022.pacs008.ActiveOrHistoricCurrencyAndAmount instd_amt = 6;
   iso20022.pacs008.ActiveCurrencyAndAmount intr_bk_sttlm_amt = 7;
   optional double xchg_rate = 8;
+}
+
+message AggregationResult {
+  string id = 1;
+  string version = 2;
+  repeated TypologyResult typology_results = 3;
+  bool review = 4;
 }

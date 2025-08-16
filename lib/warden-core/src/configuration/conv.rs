@@ -1,4 +1,7 @@
-use crate::{configuration::typology::Operator, google::protobuf::{value, ListValue, NullValue, Struct, Value}};
+use crate::{
+    configuration::typology::Operator,
+    google::protobuf::{ListValue, NullValue, Struct, Value, value},
+};
 
 #[derive(Debug)]
 /// Generic JSON value
@@ -109,8 +112,8 @@ impl serde::Serialize for GenericParameter {
 }
 
 pub(crate) mod operator_serde {
-    use serde::{self, Deserialize, Deserializer, Serializer};
     use super::Operator;
+    use serde::{self, Deserialize, Deserializer, Serializer};
 
     pub fn serialize<S>(operator: &i32, s: S) -> Result<S::Ok, S::Error>
     where

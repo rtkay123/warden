@@ -21,6 +21,7 @@ jobs:
           - configuration
           - router
           - rule-executor
+          - aggregator
     name: dockerfile / ${{ matrix.crate }}
     steps:
       - uses: actions/checkout@v4
