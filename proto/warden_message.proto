@@ -3,6 +3,7 @@ syntax = "proto3";
 package message;
 
 import "configuration/routing.proto";
+import "configuration/typology.proto";
 import "google/protobuf/timestamp.proto";
 import "proto/iso20022/pacs_002_001_12.proto";
 import "proto/iso20022/pacs_008_001_12.proto";
@@ -15,7 +16,30 @@ message Payload {
   DataCache data_cache = 3;
   string tx_tp = 4;
   configuration.routing.RoutingConfiguration routing = 5;
+  RuleResult rule_result = 6;
+  TypologyResult typology_result = 7;
 }
+
+message RuleResult {
+   string id = 1;
+   string version = 2;
+   string sub_rule_ref = 3;
+   string reason = 4;
+   string desc = 5;
+   double wght = 6;
+}
+
+message TypologyResult {
+   string id = 1;
+   string version = 2;
+   string desc = 3;
+   double result = 4;
+   double threshold = 5;
+   repeated RuleResult rule_results = 6;
+   bool review = 7;
+   configuration.typology.Workflow workflow = 8;
+}
+
 
 message DataCache {
   string cdtr_id = 1;

@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package configuration.typology;
+
+message Workflow {
+  double alert_threshold = 1;
+  optional double interdiction_threshold = 2;
+}
+
+message TypologyRuleWeight {
+  string ref = 1;
+  double wght = 2;
+}
+
+message TypologyRule {
+  string id = 1;
+  string version = 2;
+  repeated TypologyRuleWeight wghts = 3;
+}
+
+message TypologyConfiguration {
+  string id = 1;
+  string description = 2;
+  string version = 3;
+  Workflow workflow = 4;
+  repeated TypologyRule rules = 5;
+  Expression expression = 6;
+}
+
+enum Operator {
+  ADD = 0;
+  MULTIPLY = 1;
+  SUBTRACT = 2;
+  DIVIDE = 3;
+}
+
+message Term {
+  string id = 1;
+  string version = 2;
+}
+
+message Expression {
+  Operator operator = 1;
+  repeated Term terms = 2;
+}
+
+message TypologyConfigurationRequest {
+  string id = 1;
+  string version = 2;
+}
+
+message DeleteTypologyConfigurationRequest {
+  string id = 1;
+  string version = 2;
+}
+
+message GetTypologyConfigResponse {
+  optional TypologyConfiguration configuration = 1;
+}
+
+message UpdateTypologyConfigRequest {
+  TypologyConfiguration configuration = 1;
+}
+
+service QueryTypologies {
+  rpc GetTypologyConfiguration (TypologyConfigurationRequest) returns (GetTypologyConfigResponse);
+}
+
+service MutateTypologies {
+  rpc CreateTypologyConfiguration (TypologyConfiguration) returns (TypologyConfiguration);
+  rpc UpdateTypologyConfiguration (UpdateTypologyConfigRequest) returns (TypologyConfiguration);
+  rpc DeleteTypologyConfiguration (DeleteTypologyConfigurationRequest) returns (TypologyConfiguration);
+}

@@ -10,3 +10,7 @@ pub mod routing {
 pub mod rule {
     tonic::include_proto!("configuration.rule");
 }
+
+pub mod typology {
+    tonic::include_proto!("configuration.typology");
+}

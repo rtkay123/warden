@@ -27,7 +27,10 @@ impl Entity {
             if cfg!(feature = "message") {
                 base
             } else {
-                base.extend(["proto/configuration/routing.proto"]);
+                base.extend([
+                    "proto/configuration/routing.proto",
+                    "proto/configuration/typology.proto",
+                ]);
                 base
             }
         }
