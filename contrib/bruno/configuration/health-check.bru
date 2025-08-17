@@ -1,0 +1,19 @@
+meta {
+  name: health-check
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{WARDEN_CFG_HOST}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+}
+
+settings {
+  encodeUrl: true
+}

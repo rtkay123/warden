@@ -1,0 +1,187 @@
+permissions:
+  contents: read
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+name: ci
+
+jobs:
+  os-check:
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.os }} / stable
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+      - name: Install stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install cargo-nextest
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-nextest
+      - uses: Swatinem/rust-cache@v2
+      - name: cargo test --workspace
+        run: cargo nextest run --no-run --workspace --locked --all-features --all-targets
+      - name: cargo build
+        run: cargo build --workspace --locked --all-features --all-targets
+
+  dockerfile:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        crate:
+          - pseudonyms
+          - warden
+          - configuration
+          - router
+          - rule-executor
+          - aggregator
+    name: dockerfile / ${{ matrix.crate }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+      - name: Set up docker buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build # and push
+        uses: docker/build-push-action@v6
+        with:
+          push: false
+          context: .
+          file: crates/${{ matrix.crate }}/Dockerfile
+          tags: warden/${{ matrix.crate }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          outputs: type=docker,dest=/tmp/${{ matrix.crate }}.tar
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: warden-${{ matrix.crate }}
+          path: /tmp/${{ matrix.crate }}.tar
+
+  msrv:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        msrv: ["1.89.0"]
+    name: msrv / ${{ matrix.msrv }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+      - name: Install ${{ matrix.msrv }}
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.msrv }}
+      - name: Install protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: cargo install cargo-hack
+        uses: taiki-e/install-action@cargo-hack
+      - name: cargo hack +${{ matrix.msrv }} 
+        run: cargo hack --clean-per-run --feature-powerset check
+
+  test:
+    runs-on: ubuntu-latest
+    needs:
+      - dockerfile
+      - os-check
+    name: test / workspace
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+      - name: Start stack
+        run: docker compose -f contrib/docker-compose/compose.yaml up -d
+      - name: Setup node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Download artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: warden-images
+          pattern: warden-*
+          merge-multiple: true
+      - name: Load docker images
+        run: |
+          dir="warden-images"
+          for file in "$dir"/*.tar; do
+            if [ -f "$file" ]; then
+              echo "Loading tar: $file"
+              image_name=$(docker load --input "$file" | awk '/Loaded image:/ {print $3}')
+              echo "Running image: $image_name"
+              docker run --rm -d --network host "$image_name"
+            fi
+          done
+          echo "images loaded"
+          docker image ls -a
+      - name: Install bruno cli
+        run: npm install -g @usebruno/cli
+      - name: Run HTTP-api tests
+        run: |
+          cd contrib/bruno
+          bru run configuration/health-check.bru \
+            configuration/routing/02-post-routing.bru \
+            configuration/rule/01-create.bru \
+            configuration/typology/01-create.bru \
+            --env warden --reporter-html results.html
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: contrib/bruno/results.html
+      - name: Install stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+      - uses: taiki-e/install-action@cargo-llvm-cov
+      - name: Install cargo-nextest
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-nextest
+      - uses: Swatinem/rust-cache@v2
+      - name: Install protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Prepare environment for tests
+        run: |
+          for processor in warden pseudonyms aggregator configuration; do
+            cp crates/$processor/.env.example crates/$processor/.env
+          done
+      - name: Collect coverage data
+        # Generate separate reports for nextest and doctests, and combine them.
+        run: |
+          cargo llvm-cov nextest --workspace --locked --all-features --lcov --output-path lcov.info
+          # switch to nightly
+          # cargo llvm-cov --no-report nextest
+          # cargo llvm-cov --no-report --doc
+          # cargo llvm-cov report --doctests --lcov --output-path lcov.info
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: lcov.info
+      - name: Stop stack
+        if: always()
+        run: |
+          docker compose -f contrib/docker-compose/compose.yaml down -v
+          docker stop $(docker ps -aq) || true
+          docker rm $(docker ps -aq) || true
