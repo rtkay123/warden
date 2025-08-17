@@ -179,6 +179,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: lcov.info
+          slug: ${{ github.repository }}
       - name: Stop stack
         if: always()
         run: |
