@@ -175,7 +175,7 @@ jobs:
       #     # cargo llvm-cov --no-report --doc
       #     # cargo llvm-cov report --doctests --lcov --output-path lcov.info
       - name: cargo llvm-cov
-        run: cargo llvm-cov  nextest--workspace --locked --all-features --lcov --output-path lcov.info
+        run: cargo llvm-cov nextest --workspace --locked --all-features --lcov --output-path lcov.info
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v5
         with:
