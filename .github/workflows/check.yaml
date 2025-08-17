@@ -167,13 +167,16 @@ jobs:
       - name: Collect coverage data
         # Generate separate reports for nextest and doctests, and combine them.
         run: |
-          cargo llvm-cov --no-report nextest
-          cargo llvm-cov --no-report --doc
-          cargo llvm-cov report --doctests --lcov --output-path lcov.info
+          cargo llvm-cov nextest --workspace --locked --all-features --lcov --output-path lcov.info
+          # switch to nightly
+          # cargo llvm-cov --no-report nextest
+          # cargo llvm-cov --no-report --doc
+          # cargo llvm-cov report --doctests --lcov --output-path lcov.info
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: lcov.info
       - name: Stop stack
         if: always()
         run: |
