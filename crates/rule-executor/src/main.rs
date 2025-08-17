@@ -1,4 +1,6 @@
+#[allow(dead_code)]
 mod cnfg;
+
 mod processor;
 mod state;
 

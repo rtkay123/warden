@@ -22,6 +22,7 @@ pub mod iso20022;
 
 /// Message in transit
 #[allow(missing_docs)]
+#[allow(clippy::large_enum_variant)]
 #[cfg(feature = "message")]
 pub mod message;
 

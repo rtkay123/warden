@@ -5,10 +5,14 @@ mod state;
 mod version;
 
 use std::net::{Ipv6Addr, SocketAddr};
+use tokio::signal;
 
 use clap::{Parser, command};
 use tracing::{error, info, trace};
-use warden_stack::{Configuration, Services, tracing::Tracing};
+use warden_stack::{
+    Configuration, Services,
+    tracing::{SdkTracerProvider, Tracing},
+};
 
 use crate::state::AppState;
 
@@ -41,6 +45,8 @@ async fn main() -> Result<(), error::AppError> {
         .opentelemetry(&config.application, &config.monitoring)?
         .loki(&config.application, &config.monitoring)?
         .build(&config.monitoring);
+
+    let provider = tracing.otel_provider;
 
     tokio::spawn(tracing.loki_task);
 
@@ -91,7 +97,37 @@ async fn main() -> Result<(), error::AppError> {
     info!(port = addr.port(), "starting warden");
 
     let router = server::router(state).merge(server::metrics_app());
-    axum::serve(listener, router).await?;
+    axum::serve(listener, router)
+        .with_graceful_shutdown(shutdown_signal(provider))
+        .await?;
 
     Ok(())
+}
+
+async fn shutdown_signal(provider: SdkTracerProvider) {
+    let ctrl_c = async {
+        signal::ctrl_c()
+            .await
+            .expect("failed to install Ctrl+C handler");
+    };
+
+    #[cfg(unix)]
+    let terminate = async {
+        signal::unix::signal(signal::unix::SignalKind::terminate())
+            .expect("failed to install signal handler")
+            .recv()
+            .await;
+    };
+
+    #[cfg(not(unix))]
+    let terminate = std::future::pending::<()>();
+
+    tokio::select! {
+        _ = ctrl_c => {},
+        _ = terminate => {},
+    }
+
+    provider
+        .shutdown()
+        .expect("failed to shutdown trace provider");
 }
