@@ -166,19 +166,21 @@ jobs:
           for processor in warden pseudonyms aggregator configuration; do
             cp crates/$processor/.env.example crates/$processor/.env
           done
-      - name: Collect coverage data
-        # Generate separate reports for nextest and doctests, and combine them.
-        run: |
-          cargo llvm-cov nextest --workspace --locked --all-features --lcov --output-path lcov.info
-          # switch to nightly
-          # cargo llvm-cov --no-report nextest
-          # cargo llvm-cov --no-report --doc
-          # cargo llvm-cov report --doctests --lcov --output-path lcov.info
-      - name: Upload coverage reports to Codecov
+      # - name: Collect coverage data
+      #   # Generate separate reports for nextest and doctests, and combine them.
+      #   run: |
+      #     cargo llvm-cov nextest --workspace --locked --all-features --lcov --output-path lcov.info
+      #     # switch to nightly
+      #     # cargo llvm-cov --no-report nextest
+      #     # cargo llvm-cov --no-report --doc
+      #     # cargo llvm-cov report --doctests --lcov --output-path lcov.info
+      - name: cargo llvm-cov
+        run: cargo llvm-cov --workspace --locked --all-features --lcov --output-path lcov.info
+      - name: Upload to codecov.io
         uses: codecov/codecov-action@v5
         with:
+          fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: lcov.info
           slug: ${{ github.repository }}
       - name: Stop stack
         if: always()
