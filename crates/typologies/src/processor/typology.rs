@@ -35,49 +35,43 @@ pub async fn process_typology(
 
     let payload: Payload = Message::decode(message.payload.as_ref())?;
 
-    match payload.transaction {
-        Some(ref transaction) => {
-            match transaction {
-                warden_core::message::payload::Transaction::Pacs008(_) => {
-                    warn!("Pacs008 is unsupported on this version: this should be unreachable");
-                }
-                warden_core::message::payload::Transaction::Pacs002(pacs002_document) => {
-                    let key = format!(
-                        "tp_{}",
-                        pacs002_document.f_i_to_f_i_pmt_sts_rpt.grp_hdr.msg_id
-                    );
-
-                    let rule_result = &payload
-                        .rule_result
-                        .as_ref()
-                        .expect("rule result should be here");
-                    let rule_results =
-                        cache_and_get_all(&key, rule_result, Arc::clone(&state)).await?;
-
-                    let routing = payload
-                        .routing
-                        .as_ref()
-                        .expect("routing missing from payload");
-
-                    let (mut typology_result, _rule_count) =
-                        aggregate_rules(&rule_results, routing, rule_result)?;
-
-                    let _ = evaluate_typology(
-                        &mut typology_result,
-                        routing,
-                        payload.clone(),
-                        &key,
-                        state,
-                    )
-                    .await
-                    .inspect_err(|e| error!("{e}"));
-                }
-            };
-        }
-        None => {
-            warn!("transaction is empty - proceeding with ack");
-        }
+    if payload.transaction.is_none() {
+        warn!("transaction is empty - proceeding with ack");
+        let _ = message.ack().await;
+        return Ok(());
     }
+
+    let transaction = payload.transaction.as_ref().expect("to have returned");
+
+    match transaction {
+        warden_core::message::payload::Transaction::Pacs008(_) => {
+            warn!("Pacs008 is unsupported on this version: this should be unreachable");
+        }
+        warden_core::message::payload::Transaction::Pacs002(pacs002_document) => {
+            let key = format!(
+                "tp_{}",
+                pacs002_document.f_i_to_f_i_pmt_sts_rpt.grp_hdr.msg_id
+            );
+
+            let rule_result = &payload
+                .rule_result
+                .as_ref()
+                .expect("rule result should be here");
+            let rule_results = cache_and_get_all(&key, rule_result, Arc::clone(&state)).await?;
+
+            let routing = payload
+                .routing
+                .as_ref()
+                .expect("routing missing from payload");
+
+            let (mut typology_result, _rule_count) =
+                aggregate_rules(&rule_results, routing, rule_result)?;
+
+            let _ = evaluate_typology(&mut typology_result, routing, payload.clone(), &key, state)
+                .await
+                .inspect_err(|e| error!("{e}"));
+        }
+    };
 
     let span = info_span!("nats.ack");
     message
@@ -291,4 +285,153 @@ fn aggregate_rules(
     });
 
     Ok((typology_result, all_rules_set.len()))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use warden_core::{
+        configuration::routing::{Message, RoutingConfiguration, Rule, Typology},
+        message::RuleResult,
+    };
+
+    fn create_rule(id: &str, version: &str) -> Rule {
+        Rule {
+            id: id.to_string(),
+            version: Some(version.to_string()),
+        }
+    }
+
+    fn create_rule_result(id: &str, version: &str) -> RuleResult {
+        RuleResult {
+            id: id.to_string(),
+            version: version.to_string(),
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn returns_empty_when_no_matching_typology() {
+        let routing = RoutingConfiguration {
+            messages: vec![Message {
+                typologies: vec![Typology {
+                    id: "T1".to_string(),
+                    version: "v1".to_string(),
+                    rules: vec![create_rule("R1", "v1")],
+                }],
+                ..Default::default()
+            }],
+            ..Default::default()
+        };
+
+        let rule_results = vec![create_rule_result("R2", "v1")];
+        let input_rule = create_rule_result("R2", "v1");
+
+        let (result, count) = aggregate_rules(&rule_results, &routing, &input_rule).unwrap();
+        assert!(result.is_empty());
+        assert_eq!(count, 1); // one rule in routing
+    }
+
+    #[test]
+    fn returns_typology_with_matching_rule() {
+        let routing = RoutingConfiguration {
+            messages: vec![Message {
+                typologies: vec![Typology {
+                    id: "T1".to_string(),
+                    version: "v1".to_string(),
+                    rules: vec![create_rule("R1", "v1"), create_rule("R2", "v1")],
+                }],
+                ..Default::default()
+            }],
+            ..Default::default()
+        };
+
+        let rule_results = vec![
+            create_rule_result("R1", "v1"),
+            create_rule_result("R2", "v1"),
+        ];
+
+        let input_rule = create_rule_result("R1", "v1");
+
+        let (result, count) = aggregate_rules(&rule_results, &routing, &input_rule).unwrap();
+
+        assert_eq!(count, 2); // R1, R2
+        assert_eq!(result.len(), 1);
+        assert_eq!(result[0].id, "T1");
+        assert_eq!(result[0].rule_results.len(), 2);
+    }
+
+    #[test]
+    fn ignores_unrelated_rules_in_rule_results() {
+        let routing = RoutingConfiguration {
+            messages: vec![Message {
+                typologies: vec![Typology {
+                    id: "T1".to_string(),
+                    version: "v1".to_string(),
+                    rules: vec![create_rule("R1", "v1")],
+                }],
+                ..Default::default()
+            }],
+            ..Default::default()
+        };
+
+        let rule_results = vec![
+            create_rule_result("R1", "v1"),
+            create_rule_result("R99", "v1"), // unrelated
+        ];
+
+        let input_rule = create_rule_result("R1", "v1");
+
+        let (result, count) = aggregate_rules(&rule_results, &routing, &input_rule).unwrap();
+
+        assert_eq!(count, 1);
+        assert_eq!(result.len(), 1);
+        assert_eq!(result[0].rule_results.len(), 1);
+        assert_eq!(result[0].rule_results[0].id, "R1");
+    }
+
+    #[test]
+    fn handles_multiple_messages_and_typologies() {
+        let routing = RoutingConfiguration {
+            messages: vec![
+                Message {
+                    typologies: vec![
+                        Typology {
+                            id: "T1".to_string(),
+                            version: "v1".to_string(),
+                            rules: vec![create_rule("R1", "v1")],
+                        },
+                        Typology {
+                            id: "T2".to_string(),
+                            version: "v1".to_string(),
+                            rules: vec![create_rule("R2", "v1")],
+                        },
+                    ],
+                    ..Default::default()
+                },
+                Message {
+                    typologies: vec![Typology {
+                        id: "T3".to_string(),
+                        version: "v1".to_string(),
+                        rules: vec![create_rule("R1", "v1"), create_rule("R2", "v1")],
+                    }],
+                    ..Default::default()
+                },
+            ],
+            ..Default::default()
+        };
+
+        let rule_results = vec![
+            create_rule_result("R1", "v1"),
+            create_rule_result("R2", "v1"),
+        ];
+        let input_rule = create_rule_result("R1", "v1");
+
+        let (result, count) = aggregate_rules(&rule_results, &routing, &input_rule).unwrap();
+
+        assert_eq!(count, 2); // R1, R2 appear in multiple typologies, but unique rules are 2
+        assert_eq!(result.len(), 2); // T1 (R1) and T3 (R1 & R2)
+        assert_eq!(result[0].id, "T1");
+        assert_eq!(result[1].id, "T3");
+    }
 }
