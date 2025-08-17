@@ -51,6 +51,7 @@ jobs:
           - router
           - rule-executor
           - aggregator
+          - typologies
     name: dockerfile / ${{ matrix.crate }}
     steps:
       - uses: actions/checkout@v5
