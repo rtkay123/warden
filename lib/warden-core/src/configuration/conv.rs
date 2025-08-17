@@ -157,3 +157,150 @@ impl TryFrom<String> for Operator {
         Operator::from_str_name(&value).ok_or_else(|| format!("unsupported operator: {}", value))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::google::protobuf::{Value, value::Kind};
+    use serde::{Deserialize, Serialize};
+    use serde_json::{self, json};
+
+    #[derive(Deserialize, Serialize)]
+    struct OpWrap {
+        #[serde(with = "super::operator_serde")]
+        op: i32,
+    }
+
+    fn normalize_json_numbers(val: serde_json::Value) -> serde_json::Value {
+        match val {
+            serde_json::Value::Array(arr) => {
+                serde_json::Value::Array(arr.into_iter().map(normalize_json_numbers).collect())
+            }
+            serde_json::Value::Object(map) => serde_json::Value::Object(
+                map.into_iter()
+                    .map(|(k, v)| (k, normalize_json_numbers(v)))
+                    .collect(),
+            ),
+            serde_json::Value::Number(n) => {
+                if let Some(f) = n.as_f64() {
+                    serde_json::Value::Number(
+                        serde_json::Number::from_f64(f)
+                            .unwrap_or_else(|| serde_json::Number::from(0)),
+                    )
+                } else {
+                    serde_json::Value::Number(n)
+                }
+            }
+            other => other,
+        }
+    }
+
+    #[test]
+    fn test_json_to_protobuf_value_null() {
+        let json = serde_json::Value::Null;
+        let protobuf_value = Value::try_from(json).unwrap();
+        assert!(matches!(protobuf_value.kind.unwrap(), Kind::NullValue(_)));
+    }
+
+    #[test]
+    fn test_json_to_protobuf_value_bool() {
+        let json = serde_json::Value::Bool(true);
+        let protobuf_value = Value::try_from(json).unwrap();
+        assert_eq!(protobuf_value.kind.unwrap(), Kind::BoolValue(true));
+    }
+
+    #[test]
+    fn test_json_to_protobuf_value_number() {
+        let json = serde_json::Value::Number(serde_json::Number::from(42));
+        let protobuf_value = Value::try_from(json).unwrap();
+        assert_eq!(protobuf_value.kind.unwrap(), Kind::NumberValue(42.0));
+    }
+
+    #[test]
+    fn test_json_to_protobuf_value_string() {
+        let json = serde_json::Value::String("hello".to_string());
+        let protobuf_value = Value::try_from(json).unwrap();
+        assert_eq!(
+            protobuf_value.kind.unwrap(),
+            Kind::StringValue("hello".to_string())
+        );
+    }
+
+    #[test]
+    fn test_json_to_protobuf_value_array() {
+        let json = json!([1, 2, "three"]);
+        let protobuf_value = Value::try_from(json).unwrap();
+        if let Kind::ListValue(list) = protobuf_value.kind.unwrap() {
+            assert_eq!(list.values.len(), 3);
+        } else {
+            panic!("Expected ListValue");
+        }
+    }
+
+    #[test]
+    fn test_json_to_protobuf_value_object() {
+        let json = json!({
+            "a": 1,
+            "b": true,
+            "c": "hello"
+        });
+        let protobuf_value = Value::try_from(json).unwrap();
+        if let Kind::StructValue(s) = protobuf_value.kind.unwrap() {
+            assert_eq!(
+                s.fields["a"].kind.as_ref().unwrap(),
+                &Kind::NumberValue(1.0)
+            );
+            assert_eq!(s.fields["b"].kind.as_ref().unwrap(), &Kind::BoolValue(true));
+            assert_eq!(
+                s.fields["c"].kind.as_ref().unwrap(),
+                &Kind::StringValue("hello".to_string())
+            );
+        } else {
+            panic!("Expected StructValue");
+        }
+    }
+
+    #[test]
+    fn test_protobuf_to_json_roundtrip() {
+        let original = json!({
+            "x": 1,
+            "y": [true, null, "str"],
+            "z": {
+                "nested": 3.14
+            }
+        });
+
+        let protobuf_value = Value::try_from(original.clone()).unwrap();
+        let json_value: serde_json::Value = protobuf_value.into();
+
+        assert_eq!(
+            normalize_json_numbers(original),
+            normalize_json_numbers(json_value)
+        );
+    }
+
+    #[test]
+    fn test_operator_serialization() {
+        let wrap = OpWrap {
+            op: Operator::Add as i32, // Replace with actual enum variant
+        };
+
+        let s = serde_json::to_string(&wrap).unwrap();
+        assert!(s.contains("ADD")); // Assuming .as_str_name() gives "ADD"
+    }
+
+    #[test]
+    fn test_operator_deserialization() {
+        let json_data = json!({ "op": "ADD" }).to_string();
+        let wrap: OpWrap = serde_json::from_str(&json_data).unwrap();
+
+        assert_eq!(wrap.op, Operator::Add as i32); // Replace with actual enum variant
+    }
+
+    #[test]
+    fn test_operator_invalid_deserialization() {
+        let json_data = json!({ "op": "UNKNOWN_OP" }).to_string();
+        let result: Result<OpWrap, _> = serde_json::from_str(&json_data);
+        assert!(result.is_err());
+    }
+}

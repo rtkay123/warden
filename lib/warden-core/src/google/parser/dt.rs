@@ -103,6 +103,97 @@ mod date {
             )
         }
     }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use time::{Month, OffsetDateTime};
+
+        use time::Date as TimeDate;
+
+        #[test]
+        fn converts_dates() {
+            let d = TimeDate::from_calendar_date(2023, Month::August, 17).unwrap();
+            let date: Date = d.into();
+
+            let time_date = TimeDate::try_from(date);
+
+            assert!(time_date.is_ok());
+        }
+
+        #[test]
+        fn converts_regular_date_no_time() {
+            let d = TimeDate::from_calendar_date(2023, Month::August, 17).unwrap();
+            let date: Date = d.into();
+
+            assert_eq!(date.year, 2023);
+            assert_eq!(date.month, 8);
+            assert_eq!(date.day, 17);
+        }
+
+        #[test]
+        fn converts_leap_year_date() {
+            let d = TimeDate::from_calendar_date(2020, Month::February, 29).unwrap();
+            let date: Date = d.into();
+
+            assert_eq!(date.year, 2020);
+            assert_eq!(date.month, 2);
+            assert_eq!(date.day, 29);
+        }
+
+        #[test]
+        fn converts_minimum_date() {
+            let d = TimeDate::MIN; // Year -9999-01-01
+            let date: Date = d.into();
+
+            assert_eq!(date.year, -9999);
+            assert_eq!(date.month, 1);
+            assert_eq!(date.day, 1);
+        }
+
+        #[test]
+        fn converts_maximum_date() {
+            let d = TimeDate::MAX; // Year 9999-12-31
+            let date: Date = d.into();
+
+            assert_eq!(date.year, 9999);
+            assert_eq!(date.month, 12);
+            assert_eq!(date.day, 31);
+        }
+
+        #[test]
+        fn converts_regular_date() {
+            let dt = OffsetDateTime::from_unix_timestamp(1_600_000_000).unwrap(); // 2020-09-13 UTC
+            let date: Date = dt.into();
+
+            assert_eq!(date.year, 2020);
+            assert_eq!(date.month, 9);
+            assert_eq!(date.day, 13);
+        }
+
+        #[test]
+        fn converts_leap_year_feb_29() {
+            let dt = OffsetDateTime::new_utc(
+                time::Date::from_calendar_date(2020, Month::February, 29).unwrap(),
+                time::Time::from_hms(0, 0, 0).unwrap(),
+            );
+            let date: Date = dt.into();
+
+            assert_eq!(date.year, 2020);
+            assert_eq!(date.month, 2);
+            assert_eq!(date.day, 29);
+        }
+
+        #[test]
+        fn converts_first_day_of_epoch() {
+            let dt = OffsetDateTime::UNIX_EPOCH; // 1970-01-01
+            let date: Date = dt.into();
+
+            assert_eq!(date.year, 1970);
+            assert_eq!(date.month, 1);
+            assert_eq!(date.day, 1);
+        }
+    }
 }
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
