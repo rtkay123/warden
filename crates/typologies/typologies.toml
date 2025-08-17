@@ -1,0 +1,32 @@
+[application]
+env = "development"
+
+[monitoring]
+log-level = "warden_typologies=trace,info"
+opentelemetry-endpoint = "http://localhost:4317"
+loki-endpoint = "http://localhost:3100"
+
+[misc]
+config-endpoint = "http://localhost:1304"
+
+[misc.nats]
+stream-name = "typology"
+subjects = ["typology-rule.>"]
+destination-prefix = "tadp"
+max-messages = 10000
+durable-name = "typologies"
+
+[misc.nats.config]
+stream = "configuration"
+reload-subject = "configuration.reload"
+
+[nats]
+hosts = ["nats://localhost:4222"]
+
+[cache]
+dsn = "redis://localhost:6379"
+pooled = true
+type = "non-clustered"         # clustered, non-clustered or sentinel
+max-connections = 100
+
+# vim:ft=toml
