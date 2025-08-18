@@ -45,6 +45,9 @@ async fn main() -> Result<()> {
         .nats_jetstream(&config.nats)
         .await
         .inspect_err(|e| error!("nats: {e}"))?
+        .cache(&config.cache)
+        .await
+        .inspect_err(|e| error!("cache: {e}"))?
         .build();
 
     let jetstream = services
