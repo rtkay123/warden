@@ -175,14 +175,26 @@ jobs:
       #     # cargo llvm-cov --no-report nextest
       #     # cargo llvm-cov --no-report --doc
       #     # cargo llvm-cov report --doctests --lcov --output-path lcov.info
+      - name: Create junit.xml (nextest)
+        run: |
+          mkdir -p .config
+          echo '[profile.ci.junit]' > .config/nextest.toml
+          echo 'path = "junit.xml"' >> .config/nextest.toml
       - name: cargo llvm-cov
-        run: cargo llvm-cov nextest --workspace --locked --all-features --lcov --output-path lcov.info
+        run: cargo llvm-cov nextest --profile ci --workspace --locked --all-features --lcov --output-path lcov.info
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v5
         with:
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: ${{ github.repository }}
+      - uses: codecov/test-results-action@v1
+        if: ${{ !cancelled() }}
+        with:
+          fail_ci_if_error: true
+          files: ./target/nextest/ci/junit.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
       - name: Stop stack
         if: always()
         run: |
