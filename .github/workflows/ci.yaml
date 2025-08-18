@@ -26,29 +26,25 @@ jobs:
 
   clippy:
     runs-on: ubuntu-latest
-    name: ${{ matrix.toolchain }} / clippy
+    name: beta / clippy
     permissions:
       contents: read
       checks: write
       security-events: write # to upload sarif results
     strategy:
       fail-fast: false
-      matrix:
-        toolchain: [stable, beta]
     steps:
       - uses: actions/checkout@v5
         with:
           submodules: true
-      - name: Install ${{ matrix.toolchain }}
+      - name: Install beta
         uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: ${{ matrix.toolchain }}
+          toolchain: beta
           components: clippy
       - uses: Swatinem/rust-cache@v2
       - name: Install SARIF tools
-        run: cargo install clippy-sarif --locked
-      - name: Install SARIF tools
-        run: cargo install sarif-fmt --locked
+        run: cargo install clippy-sarif sarif-fmt --locked
       - name: install protoc
         uses: arduino/setup-protoc@v3
         with:
