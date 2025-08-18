@@ -22,6 +22,8 @@ async fn main() -> Result<()> {
     let args = Args::parse();
     let config = include_str!("../rule-executor.toml");
 
+    let a = ();
+
     let mut config = config::Config::builder()
         .add_source(config::File::from_str(config, config::FileFormat::Toml));
 
