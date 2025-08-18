@@ -37,10 +37,8 @@ pub(super) async fn get_configuration(
         .configuration
         .ok_or_else(|| anyhow!("missing configuration"))?;
 
-    println!("inserting");
     let cache = state.local_cache.write().await;
     cache.insert(request, config.clone()).await;
-    println!("inserted");
 
     Ok(config)
 }

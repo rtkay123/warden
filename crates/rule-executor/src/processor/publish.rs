@@ -32,10 +32,7 @@ pub(super) async fn to_typologies(
         attribute::MESSAGING_DESTINATION_SUBSCRIPTION_NAME,
         subject.to_string(),
     );
-    span.set_attribute(
-        "otel.kind",
-        "producer"
-    );
+    span.set_attribute("otel.kind", "producer");
     state
         .services
         .jetstream
