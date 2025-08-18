@@ -62,9 +62,6 @@ async fn main() -> Result<(), error::AppError> {
         .inspect_err(|e| error!("nats: {e}"))?
         .build();
 
-    let mut more = vec![];
-    more.push(2);
-
     let postgres = services
         .postgres
         .take()

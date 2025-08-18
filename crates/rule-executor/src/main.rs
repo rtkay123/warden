@@ -33,8 +33,6 @@ async fn main() -> Result<()> {
     config.application.name = env!("CARGO_CRATE_NAME").into();
     config.application.version = env!("CARGO_PKG_VERSION").into();
 
-    let str_v = String::default();
-
     let tracing = Tracing::builder()
         .opentelemetry(&config.application, &config.monitoring)?
         .loki(&config.application, &config.monitoring)?
