@@ -65,8 +65,6 @@ jobs:
         with:
           sarif_file: clippy-results.sarif
           wait-for-processing: true
-      - name: Report status
-        run: cargo clippy --workspace --all-features --all-targets --keep-going -- -D warnings
 
   os-check:
     runs-on: ${{ matrix.os }}
