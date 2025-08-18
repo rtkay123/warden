@@ -72,9 +72,7 @@ mod tests {
 
     #[test]
     fn match_when_no_upper_limit() {
-        let bands = vec![
-            make_band(Some(0.0), None, "A", "Above 0"),
-        ];
+        let bands = vec![make_band(Some(0.0), None, "A", "Above 0")];
         let mut rule_result = RuleResult::default();
 
         determine_outcome(100, &bands, &mut rule_result);
@@ -85,9 +83,7 @@ mod tests {
 
     #[test]
     fn match_when_no_lower_limit() {
-        let bands = vec![
-            make_band(None, Some(50.0), "A", "Below 50"),
-        ];
+        let bands = vec![make_band(None, Some(50.0), "A", "Below 50")];
         let mut rule_result = RuleResult::default();
 
         determine_outcome(-10, &bands, &mut rule_result);
@@ -98,9 +94,7 @@ mod tests {
 
     #[test]
     fn match_when_no_limits() {
-        let bands = vec![
-            make_band(None, None, "A", "Any value"),
-        ];
+        let bands = vec![make_band(None, None, "A", "Any value")];
         let mut rule_result = RuleResult::default();
 
         determine_outcome(9999, &bands, &mut rule_result);
@@ -122,6 +116,4 @@ mod tests {
         assert_eq!(rule_result.sub_rule_ref, "A");
         assert_eq!(rule_result.reason, "Any value");
     }
-
-
 }

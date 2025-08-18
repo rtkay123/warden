@@ -266,7 +266,7 @@ mod tests {
             "x": 1,
             "y": [true, null, "str"],
             "z": {
-                "nested": 3.14
+                "nested": 3.90
             }
         });
 
