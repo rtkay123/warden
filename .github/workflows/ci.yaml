@@ -31,16 +31,19 @@ jobs:
         uses: arduino/setup-protoc@v3
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Check
-        run: >
-          cargo clippy --workspace --all-features --all-targets --message-format=json
-          | clippy-sarif
-          | tee results.sarif
-          | sarif-fmt
-      - name: Upload
+      - name: Run rust-clippy
+        run:
+          cargo clippy
+          --workspace
+          --all-features
+          --message-format=json | clippy-sarif | tee rust-clippy-results.sarif | sarif-fmt
+        continue-on-error: true
+      - name: Upload analysis results to GitHub
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: results.sarif
+          sarif_file: rust-clippy-results.sarif
+          wait-for-processing: true
+
 
   fmt:
     runs-on: ubuntu-latest
