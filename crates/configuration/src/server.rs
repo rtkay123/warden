@@ -16,6 +16,10 @@ use warden_core::{
             mutate_rule_configuration_server::MutateRuleConfigurationServer,
             query_rule_configuration_server::QueryRuleConfigurationServer,
         },
+        typology::{
+            mutate_typologies_server::MutateTypologiesServer,
+            query_typologies_server::QueryTypologiesServer,
+        },
     },
 };
 use warden_middleware::grpc::interceptor::MyInterceptor;
@@ -41,6 +45,14 @@ pub fn serve(state: AppHandle) -> Result<(axum::Router, axum::Router), AppError>
             MyInterceptor,
         ))
         .add_service(QueryRuleConfigurationServer::with_interceptor(
+            state.clone(),
+            MyInterceptor,
+        ))
+        .add_service(QueryTypologiesServer::with_interceptor(
+            state.clone(),
+            MyInterceptor,
+        ))
+        .add_service(MutateTypologiesServer::with_interceptor(
             state.clone(),
             MyInterceptor,
         ))
