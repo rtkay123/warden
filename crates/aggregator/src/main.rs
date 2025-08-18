@@ -41,6 +41,8 @@ async fn main() -> Result<()> {
 
     let provider = tracing.otel_provider;
 
+    let some_value = String::default();
+
     tokio::spawn(tracing.loki_task);
 
     let mut services = Services::builder()
