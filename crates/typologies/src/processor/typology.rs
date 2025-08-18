@@ -83,7 +83,7 @@ pub async fn process_typology(
     Ok(())
 }
 
-#[instrument(skip(typology_result, routing, payload, state), err(Debug))]
+#[instrument(skip(routing, payload, state), err(Debug))]
 async fn evaluate_typology(
     typology_result: &mut [TypologyResult],
     routing: &RoutingConfiguration,
