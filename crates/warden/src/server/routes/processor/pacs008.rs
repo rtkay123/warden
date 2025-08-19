@@ -68,7 +68,7 @@ pub(super) async fn post_pacs008(
         .f_i_to_f_i_cstmr_cdt_trf
         .cdt_trf_tx_inf
         .first()
-        .ok_or_else(|| anyhow::anyhow!("required cdt_trf_tx_inf missing"))?;
+        .expect("required cdt_trf_tx_inf missing");
 
     let amount = cdt_trf_tx_inf.instd_amt.as_ref().map(|value| value.value);
 
@@ -432,6 +432,49 @@ mod tests {
 
         assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
     }
+
+    #[sqlx::test]
+    async fn post_missing_pmt_id(pool: PgPool) {
+        let config = test_config();
+
+        let cache = RedisManager::new(&config.cache).await.unwrap();
+        let client = async_nats::connect(&config.nats.hosts[0]).await.unwrap();
+        let jetstream = async_nats::jetstream::new(client);
+
+        let state = AppState::create(
+            Services {
+                postgres: pool,
+                cache,
+                jetstream,
+            },
+            &test_config(),
+        )
+        .await
+        .unwrap();
+        let app = server::router(state);
+        // no end to end id
+
+        let mut pacs = server::test_pacs008();
+        pacs.f_i_to_f_i_cstmr_cdt_trf.cdt_trf_tx_inf[0].pmt_id.instr_id = None;
+
+        let body = serde_json::to_vec(&pacs).unwrap();
+
+        let response = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .header("Content-Type", "application/json")
+                    .uri("/api/v0/pacs008")
+                    .body(Body::from(body))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
+    }
+    
     async fn post_clearance(
         app: Router,
         end_to_end_id: &str,
