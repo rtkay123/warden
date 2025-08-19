@@ -455,7 +455,9 @@ mod tests {
         // no end to end id
 
         let mut pacs = server::test_pacs008();
-        pacs.f_i_to_f_i_cstmr_cdt_trf.cdt_trf_tx_inf[0].pmt_id.instr_id = None;
+        pacs.f_i_to_f_i_cstmr_cdt_trf.cdt_trf_tx_inf[0]
+            .pmt_id
+            .instr_id = None;
 
         let body = serde_json::to_vec(&pacs).unwrap();
 
@@ -474,7 +476,7 @@ mod tests {
 
         assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
     }
-    
+
     async fn post_clearance(
         app: Router,
         end_to_end_id: &str,
