@@ -325,7 +325,7 @@ mod tests {
     use warden_stack::cache::RedisManager;
 
     use crate::{
-        server::{self, generate_id, test_config},
+        server::{self, generate_id, metrics_app, test_config},
         state::{AppState, Services},
     };
 
@@ -347,7 +347,7 @@ mod tests {
         )
         .await
         .unwrap();
-        let app = server::router(state);
+        let app = server::router(state).merge(metrics_app());
 
         let pacs = server::test_pacs008();
 
