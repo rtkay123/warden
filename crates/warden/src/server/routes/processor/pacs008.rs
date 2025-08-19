@@ -62,22 +62,22 @@ pub(super) async fn post_pacs008(
         );
     }
 
-    // take the first
+    // take the first - guaranteed by utoipa
     trace!("extracting first credit transfer transaction info");
-    let cdt_trf_tx_inf = transaction.f_i_to_f_i_cstmr_cdt_trf.cdt_trf_tx_inf.first();
+    let cdt_trf_tx_inf = transaction
+        .f_i_to_f_i_cstmr_cdt_trf
+        .cdt_trf_tx_inf
+        .first()
+        .ok_or_else(|| anyhow::anyhow!("required cdt_trf_tx_inf missing"))?;
 
-    let amount = cdt_trf_tx_inf.and_then(|value| value.instd_amt.as_ref().map(|value| value.value));
+    let amount = cdt_trf_tx_inf.instd_amt.as_ref().map(|value| value.value);
 
-    let ccy =
-        cdt_trf_tx_inf.and_then(|value| value.instd_amt.as_ref().map(|value| value.ccy.as_str()));
-
-    let end_to_end_id = cdt_trf_tx_inf
+    let ccy = cdt_trf_tx_inf
+        .instd_amt
         .as_ref()
-        .map(|value| value.pmt_id.end_to_end_id.as_str())
-        .ok_or_else(|| {
-            error!("missing end_to_end_id");
-            anyhow::anyhow!("missing end_to_end_id id")
-        })?;
+        .map(|value| value.ccy.as_str());
+
+    let end_to_end_id = cdt_trf_tx_inf.pmt_id.end_to_end_id.as_str();
 
     tracing::Span::current().record("end_to_end_id", end_to_end_id);
     let end_to_end_id = String::from(end_to_end_id);
@@ -85,12 +85,10 @@ pub(super) async fn post_pacs008(
     let msg_id = &transaction.f_i_to_f_i_cstmr_cdt_trf.grp_hdr.msg_id;
     tracing::Span::current().record("msg_id", msg_id);
 
-    let pmt_inf_id = cdt_trf_tx_inf
-        .and_then(|value| value.pmt_id.instr_id.as_ref())
-        .ok_or_else(|| {
-            error!("missing pmt_inf_id");
-            anyhow::anyhow!("missing pmt_inf_id id")
-        })?;
+    let pmt_inf_id = cdt_trf_tx_inf.pmt_id.instr_id.as_ref().ok_or_else(|| {
+        error!("missing pmt_inf_id");
+        anyhow::anyhow!("missing pmt_inf_id id")
+    })?;
 
     debug!(%msg_id, %end_to_end_id, "extracted transaction identifiers");
 
@@ -324,11 +322,10 @@ mod tests {
     use sqlx::PgPool;
     use time::{OffsetDateTime, format_description::well_known::Rfc3339};
     use tower::ServiceExt;
-    use uuid::Uuid;
     use warden_stack::cache::RedisManager;
 
     use crate::{
-        server::{self, test_config},
+        server::{self, generate_id, test_config},
         state::{AppState, Services},
     };
 
@@ -352,224 +349,29 @@ mod tests {
         .unwrap();
         let app = server::router(state);
 
-        let ccy = "XTS";
+        let pacs = server::test_pacs008();
 
-        let msg_id = generate_id();
-        let cre_dt_tm = OffsetDateTime::now_utc().format(&Rfc3339).unwrap();
+        let inf = &pacs.f_i_to_f_i_cstmr_cdt_trf.cdt_trf_tx_inf[0];
+        let ccy = &inf.intr_bk_sttlm_amt.as_ref().unwrap().ccy;
+        let end_to_end_id = &inf.pmt_id.end_to_end_id;
+        let debtor_fsp = &inf.chrgs_inf[0]
+            .agt
+            .fin_instn_id
+            .clr_sys_mmb_id
+            .as_ref()
+            .unwrap()
+            .mmb_id;
+        let creditor_fsp = &inf
+            .cdtr_agt
+            .as_ref()
+            .unwrap()
+            .fin_instn_id
+            .clr_sys_mmb_id
+            .as_ref()
+            .unwrap()
+            .mmb_id;
 
-        let debtor_fsp = "fsp001";
-        let creditor_fsp = "fsp002";
-
-        let end_to_end_id = generate_id();
-
-        let v = serde_json::json!({
-              "f_i_to_f_i_cstmr_cdt_trf": {
-                "grp_hdr": {
-                  "msg_id": msg_id,
-                  "cre_dt_tm": cre_dt_tm,
-                  "nb_of_txs": "CLRG",
-                  "sttlm_inf": {
-                    "sttlm_mtd": 1
-                  }
-                },
-                "splmtry_data": [],
-                "cdt_trf_tx_inf": [
-                  {
-                    "pmt_id": {
-                      "instr_id": generate_id(),
-                      "end_to_end_id": end_to_end_id
-                    },
-                    "intr_bk_sttlm_amt": {
-                      "value": 294.3,
-                      "ccy": ccy,
-                    },
-                    "instd_amt": {
-                      "value": 294.3,
-                      "ccy": ccy
-                    },
-                    "xchg_rate": 1,
-                    "chrg_br": 1,
-                    "chrgs_inf": [
-                      {
-                        "amt": {
-                          "value": 0,
-                          "ccy": ccy
-                        },
-                        "agt": {
-                          "fin_instn_id": {
-                            "clr_sys_mmb_id": {
-                              "mmb_id": debtor_fsp,
-                            }
-                          }
-                        }
-                      }
-                    ],
-                    "initg_pty": {
-                      "nm": "April Blake Grant",
-                      "id": {
-                        "org_id": {
-                          "othr": []
-                        },
-                        "prvt_id": {
-                          "dt_and_plc_of_birth": {
-                            "birth_dt": "1968-02-01",
-                            "city_of_birth": "Unknown",
-                            "ctry_of_birth": "ZZ"
-                          },
-                          "othr": [
-                            {
-                              "id": "+27730975224",
-                              "schme_nm": {
-                                "prtry": "MSISDN",
-                                "cd": "cd-value"
-                              }
-                            }
-                          ]
-                        }
-                      },
-                      "ctct_dtls": {
-                        "mob_nb": "+27-730975224",
-                        "othr": []
-                      }
-                    },
-                    "dbtr": {
-                      "nm": "April Blake Grant",
-                      "id": {
-                        "org_id": {
-                          "othr": []
-                        },
-                        "prvt_id": {
-                          "dt_and_plc_of_birth": {
-                            "birth_dt": "2000-07-23",
-                            "city_of_birth": "Unknown",
-                            "ctry_of_birth": "ZZ"
-                          },
-                          "othr": [
-                            {
-                              "id": generate_id(),
-                              "schme_nm": {
-                                "prtry": "EID",
-                                "cd": "cd-value"
-                              }
-                            }
-                          ]
-                        }
-                      },
-                      "ctct_dtls": {
-                        "mob_nb": "+27-730975224",
-                        "othr": []
-                      }
-                    },
-                    "dbtr_acct": {
-                      "id": {
-                        "i_b_a_n": "value",
-                        "othr": {
-                          "id": generate_id(),
-                          "schme_nm": {
-                            "prtry": "MSISDN",
-                            "cd": "value"
-                          }
-                        }
-                      },
-                      "nm": "April Grant"
-                    },
-                    "dbtr_agt": {
-                      "fin_instn_id": {
-                        "clr_sys_mmb_id": {
-                          "mmb_id": debtor_fsp,
-                        }
-                      }
-                    },
-                    "cdtr_agt": {
-                      "fin_instn_id": {
-                        "clr_sys_mmb_id": {
-                          "mmb_id": creditor_fsp,
-                        }
-                      }
-                    },
-                    "cdtr": {
-                      "nm": "Felicia Easton Quill",
-                      "id": {
-                        "org_id": {
-                          "othr": []
-                        },
-                        "prvt_id": {
-                          "dt_and_plc_of_birth": {
-                            "birth_dt": "1935-05-08",
-                            "city_of_birth": "Unknown",
-                            "ctry_of_birth": "ZZ"
-                          },
-                          "othr": [
-                            {
-                              "id": generate_id(),
-                              "schme_nm": {
-                                "prtry": "EID",
-                                "cd": ""
-                              }
-                            }
-                          ]
-                        }
-                      },
-                      "ctct_dtls": {
-                        "mob_nb": "+27-707650428",
-                        "othr": []
-                      }
-                    },
-                    "cdtr_acct": {
-                      "id": {
-                        "i_b_a_n": "",
-                        "othr": {
-                          "id": generate_id(),
-                          "schme_nm": {
-                            "prtry": "MSISDN",
-                            "cd": "acc"
-                          }
-                        }
-                      },
-                      "nm": "Felicia Quill"
-                    },
-                    "purp": {
-                      "cd": "MP2P",
-                      "prtry": ""
-                    },
-                    "rgltry_rptg": [
-                      {
-                        "dtls": [
-                          {
-                            "tp": "BALANCE OF PAYMENTS",
-                            "cd": "100",
-                            "inf": []
-                          }
-                        ]
-                      }
-                    ],
-                    "rmt_inf": {
-                      "ustrd": [],
-                      "strd": []
-                    },
-                    "splmtry_data": [
-                      {
-                        "envlp": {
-                          "doc": {
-                            "xprtn": "2021-11-30T10:38:56.000Z",
-                            "initg_pty": {
-                              "glctn": {
-                                "lat": "-3.1609",
-                                "long": "38.3588"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ],
-                    "instr_for_cdtr_agt": [],
-                    "instr_for_nxt_agt": [],
-                    "rltd_rmt_inf": []
-                  }
-                ]
-              }
-        });
-        let body = serde_json::to_vec(&v).unwrap();
+        let body = serde_json::to_vec(&pacs).unwrap();
 
         let response = app
             .clone()
@@ -586,14 +388,50 @@ mod tests {
 
         assert_eq!(response.status(), StatusCode::CREATED);
 
-        post_clearance(app, &end_to_end_id, ccy, debtor_fsp, creditor_fsp).await;
+        post_clearance(app, end_to_end_id, ccy, debtor_fsp, creditor_fsp).await;
     }
 
-    fn generate_id() -> String {
-        let id = Uuid::new_v4().to_string();
-        id.replace("-", "")
-    }
+    #[sqlx::test]
+    async fn post_missing_e2e(pool: PgPool) {
+        let config = test_config();
 
+        let cache = RedisManager::new(&config.cache).await.unwrap();
+        let client = async_nats::connect(&config.nats.hosts[0]).await.unwrap();
+        let jetstream = async_nats::jetstream::new(client);
+
+        let state = AppState::create(
+            Services {
+                postgres: pool,
+                cache,
+                jetstream,
+            },
+            &test_config(),
+        )
+        .await
+        .unwrap();
+        let app = server::router(state);
+        // no end to end id
+
+        let mut pacs = server::test_pacs008();
+        pacs.f_i_to_f_i_cstmr_cdt_trf.cdt_trf_tx_inf = vec![];
+
+        let body = serde_json::to_vec(&pacs).unwrap();
+
+        let response = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .header("Content-Type", "application/json")
+                    .uri("/api/v0/pacs008")
+                    .body(Body::from(body))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
+    }
     async fn post_clearance(
         app: Router,
         end_to_end_id: &str,
