@@ -37,6 +37,7 @@ pub async fn active_routing(
         .into_inner();
     Ok(axum::Json(config.configuration).into_response())
 }
+
 #[cfg(test)]
 mod tests {
     use axum::{
@@ -53,7 +54,7 @@ mod tests {
     };
 
     #[sqlx::test]
-    async fn post(pool: PgPool) {
+    async fn get_empty(pool: PgPool) {
         let config = test_config();
 
         let cache = RedisManager::new(&config.cache).await.unwrap();
@@ -72,47 +73,19 @@ mod tests {
         .unwrap();
         let app = build_router(state);
 
-        let routing = serde_json::json!(
-        {
-            "active": true,
-            "name": "Public Network Map",
-            "version": "1.0.0",
-            "messages": [
-                {
-                    "id": "004",
-                    "version": "1.0.0",
-                    "tx_tp": "pacs.002.001.12",
-                    "typologies": [
-                    {
-                        "id": "999",
-                        "version": "1.0.0",
-                        "rules": [
-                        {
-                            "id": "901",
-                            "version": "1.0.0"
-                        }
-                        ]
-                    }
-                    ]
-                }
-            ]
-        });
-
-        let body = serde_json::to_vec(&routing).unwrap();
-
         let response = app
             .clone()
             .oneshot(
                 Request::builder()
-                    .method("POST")
+                    .method("GET")
                     .header("Content-Type", "application/json")
                     .uri("/api/v0/routing")
-                    .body(Body::from(body))
+                    .body(Body::empty())
                     .unwrap(),
             )
             .await
             .unwrap();
 
-        assert_eq!(response.status(), StatusCode::CREATED);
+        assert_eq!(response.status(), StatusCode::OK);
     }
 }
