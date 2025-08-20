@@ -151,7 +151,7 @@ mod tests {
         assert_eq!(&config.version, "1.0.0");
 
         let rule = serde_json::json!({
-              "id": "901",
+              "id": "902",
               "version": "1.0.0",
               "description": "Number of outgoing transactions - debtor",
               "configuration": {
@@ -175,7 +175,7 @@ mod tests {
                 Request::builder()
                     .method("PUT")
                     .header("Content-Type", "application/json")
-                    .uri("/api/v0/rule")
+                    .uri("/api/v0/rule?id=901&version=1.0.0")
                     .body(Body::from(body))
                     .unwrap(),
             )
@@ -188,7 +188,7 @@ mod tests {
                 Request::builder()
                     .method("GET")
                     .header("Content-Type", "application/json")
-                    .uri("/api/v0/rule?id=901&version=1.0.0")
+                    .uri("/api/v0/rule?id=902&version=1.0.0")
                     .body(Body::empty())
                     .unwrap(),
             )
@@ -201,7 +201,8 @@ mod tests {
 
         let config: RuleConfiguration = serde_json::from_slice(&body).unwrap();
 
-        assert_eq!(&config.id, "901");
+        assert_eq!(&config.id, "902");
+        assert!(&config.configuration.unwrap().bands.is_empty());
 
         let response = app
             .clone()
@@ -209,7 +210,7 @@ mod tests {
                 Request::builder()
                     .method("DELETE")
                     .header("Content-Type", "application/json")
-                    .uri("/api/v0/rule?id=901&version=1.0.0")
+                    .uri("/api/v0/rule?id=902&version=1.0.0")
                     .body(Body::from(body))
                     .unwrap(),
             )
