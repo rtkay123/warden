@@ -73,8 +73,8 @@ impl MutateTypologies for AppHandle {
                 where id = $2 and version = $3
             "#,
             sqlx::types::Json(&config) as _,
-            config.id,
-            config.version,
+            request.id,
+            request.version,
         )
         .execute(&self.services.postgres)
         .instrument(span)
