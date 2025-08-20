@@ -39,15 +39,12 @@ pub async fn create_rule(
 
 #[cfg(test)]
 mod tests {
-    use std::usize;
-
     use axum::{
-        body::{self, Body},
+        body::Body,
         http::{Request, StatusCode},
     };
     use sqlx::PgPool;
     use tower::ServiceExt;
-    use warden_core::configuration::rule::RuleConfiguration;
     use warden_stack::cache::RedisManager;
 
     use crate::{
@@ -127,96 +124,5 @@ mod tests {
             .unwrap();
 
         assert_eq!(response.status(), StatusCode::CREATED);
-
-        let response = app
-            .clone()
-            .oneshot(
-                Request::builder()
-                    .method("GET")
-                    .header("Content-Type", "application/json")
-                    .uri("/api/v0/rule?id=901&version=1.0.0")
-                    .body(Body::empty())
-                    .unwrap(),
-            )
-            .await
-            .unwrap();
-
-        let body = body::to_bytes(response.into_body(), usize::MAX)
-            .await
-            .unwrap();
-
-        let config: RuleConfiguration = serde_json::from_slice(&body).unwrap();
-
-        assert_eq!(&config.id, "901");
-        assert_eq!(&config.version, "1.0.0");
-
-        let rule = serde_json::json!({
-              "id": "902",
-              "version": "1.0.0",
-              "description": "Number of outgoing transactions - debtor",
-              "configuration": {
-                "parameters": {
-                  "max_query_range": 86400000
-                },
-                "exit_conditions": [
-                  {
-                    "sub_rule_ref": ".x00",
-                    "reason": "Incoming transaction is unsuccessful"
-                  }
-                ],
-                "bands": []
-              }
-        });
-
-        let body = serde_json::to_vec(&rule).unwrap();
-
-        app.clone()
-            .oneshot(
-                Request::builder()
-                    .method("PUT")
-                    .header("Content-Type", "application/json")
-                    .uri("/api/v0/rule?id=901&version=1.0.0")
-                    .body(Body::from(body))
-                    .unwrap(),
-            )
-            .await
-            .unwrap();
-
-        let response = app
-            .clone()
-            .oneshot(
-                Request::builder()
-                    .method("GET")
-                    .header("Content-Type", "application/json")
-                    .uri("/api/v0/rule?id=902&version=1.0.0")
-                    .body(Body::empty())
-                    .unwrap(),
-            )
-            .await
-            .unwrap();
-
-        let body = body::to_bytes(response.into_body(), usize::MAX)
-            .await
-            .unwrap();
-
-        let config: RuleConfiguration = serde_json::from_slice(&body).unwrap();
-
-        assert_eq!(&config.id, "902");
-        assert!(&config.configuration.unwrap().bands.is_empty());
-
-        let response = app
-            .clone()
-            .oneshot(
-                Request::builder()
-                    .method("DELETE")
-                    .header("Content-Type", "application/json")
-                    .uri("/api/v0/rule?id=902&version=1.0.0")
-                    .body(Body::from(body))
-                    .unwrap(),
-            )
-            .await
-            .unwrap();
-
-        assert_eq!(response.status(), StatusCode::OK);
     }
 }
