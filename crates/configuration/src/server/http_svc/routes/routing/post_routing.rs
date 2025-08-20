@@ -73,8 +73,7 @@ mod tests {
         .unwrap();
         let app = build_router(state);
 
-        let routing = serde_json::json!(
-        {
+        let routing = serde_json::json!({
             "active": true,
             "name": "Public Network Map",
             "version": "1.0.0",
