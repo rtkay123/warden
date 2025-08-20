@@ -149,5 +149,73 @@ mod tests {
 
         assert_eq!(&config.id, "901");
         assert_eq!(&config.version, "1.0.0");
+
+        let rule = serde_json::json!({
+              "id": "901",
+              "version": "1.0.0",
+              "description": "Number of outgoing transactions - debtor",
+              "configuration": {
+                "parameters": {
+                  "max_query_range": 86400000
+                },
+                "exit_conditions": [
+                  {
+                    "sub_rule_ref": ".x00",
+                    "reason": "Incoming transaction is unsuccessful"
+                  }
+                ],
+                "bands": []
+              }
+        });
+
+        let body = serde_json::to_vec(&rule).unwrap();
+
+        app.clone()
+            .oneshot(
+                Request::builder()
+                    .method("PUT")
+                    .header("Content-Type", "application/json")
+                    .uri("/api/v0/rule")
+                    .body(Body::from(body))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        let response = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("GET")
+                    .header("Content-Type", "application/json")
+                    .uri("/api/v0/rule?id=901&version=1.0.0")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        let body = body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
+
+        let config: RuleConfiguration = serde_json::from_slice(&body).unwrap();
+
+        assert_eq!(&config.id, "901");
+
+        let response = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("DELETE")
+                    .header("Content-Type", "application/json")
+                    .uri("/api/v0/rule?id=901&version=1.0.0")
+                    .body(Body::from(body))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
     }
 }

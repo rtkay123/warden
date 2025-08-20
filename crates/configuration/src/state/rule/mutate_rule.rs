@@ -74,7 +74,7 @@ impl MutateRuleConfiguration for AppHandle {
             "#,
             sqlx::types::Json(&config) as _,
             config.id,
-            config.id,
+            config.version,
         )
         .execute(&self.services.postgres)
         .instrument(span)
