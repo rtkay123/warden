@@ -131,5 +131,9 @@ mod tests {
             .unwrap();
 
         assert_eq!(response.status(), StatusCode::OK);
+
+        // let bytes = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        // let routing_info: RoutingConfiguration = serde_json::from_slice(&bytes).unwrap();
+        //
     }
 }
