@@ -73,8 +73,8 @@ impl MutateRuleConfiguration for AppHandle {
                 where id = $2 and version = $3
             "#,
             sqlx::types::Json(&config) as _,
-            config.id,
-            config.id,
+            request.id,
+            request.version,
         )
         .execute(&self.services.postgres)
         .instrument(span)

@@ -37,3 +37,55 @@ pub async fn active_routing(
         .into_inner();
     Ok(axum::Json(config.configuration).into_response())
 }
+
+#[cfg(test)]
+mod tests {
+    use axum::{
+        body::Body,
+        http::{Request, StatusCode},
+    };
+    use sqlx::PgPool;
+    use tower::ServiceExt;
+    use warden_stack::cache::RedisManager;
+
+    use crate::{
+        server::http_svc::{build_router, routes::test_config},
+        state::{AppState, Services},
+    };
+
+    #[sqlx::test]
+    async fn get_empty(pool: PgPool) {
+        let config = test_config();
+
+        let cache = RedisManager::new(&config.cache).await.unwrap();
+        let client = async_nats::connect(&config.nats.hosts[0]).await.unwrap();
+        let jetstream = async_nats::jetstream::new(client);
+
+        let state = AppState::create(
+            Services {
+                postgres: pool,
+                cache,
+                jetstream,
+            },
+            &test_config(),
+        )
+        .await
+        .unwrap();
+        let app = build_router(state);
+
+        let response = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("GET")
+                    .header("Content-Type", "application/json")
+                    .uri("/api/v0/routing")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+}
