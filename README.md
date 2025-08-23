@@ -129,3 +129,4 @@ All contributions to the original project should go to the
 [`protoc`]: https://protobuf.dev/installation/
 [`rustc`]: https://www.rust-lang.org/tools/install
 [compose]: https://docs.docker.com/compose/
+[docker]: https://docs.docker.com
