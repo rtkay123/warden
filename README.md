@@ -22,6 +22,10 @@ An experimental rewrite of the Tazama platform in Rust.
 - [`protoc`] - protobuf compiler
 - [`cargo`] - Rust's package manager
 - [`rustc`] - MSRV 1.89
+- [`docker`] - (optional)
+
+> [!TIP]
+> If planning to run on docker, you do not need the other 3 dependencies
 
 Clone the repository:
 
@@ -67,6 +71,35 @@ available in logs, but these are safe to ignore
 
 > [!TIP]
 > Silence the noise by adjusting your log level in the configuration
+
+Each application requires a configuration file in TOML format. Before running,
+it could be useful to checkout what each application expects through the config.
+
+In the [crates] directory, there are subfolders representing each binary.
+Each of these subfolders contains a `.toml` file used as the default config.
+
+
+### Run Applications
+
+#### Native
+
+An example for the configuration API:
+```sh
+cargo run -p warden-config
+```
+
+#### Docker
+
+Build and run the images. An example for the configuration API:
+
+```sh
+docker build -f crates/configuration/Dockerfile -t warden-config:latest .
+docker run -p 1304:1304 warden-config:latest 
+```
+
+> [!IMPORTANT]
+> You can run the applications in any order AFTER the pseudonyms and configuration
+service are running
 
 ## Disclaimer
 
