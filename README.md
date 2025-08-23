@@ -75,7 +75,7 @@ available in logs, but these are safe to ignore
 Each application requires a configuration file in TOML format. Before running,
 it could be useful to checkout what each application expects through the config.
 
-In the [crates] directory, there are subfolders representing each binary.
+In the [crates](./crates/) directory, there are subfolders representing each binary.
 Each of these subfolders contains a `.toml` file used as the default config.
 
 
@@ -98,7 +98,7 @@ docker run -p 1304:1304 warden-config:latest
 ```
 
 > [!IMPORTANT]
-> You can run the applications in any order AFTER the pseudonyms and configuration
+> You can run the applications in any order **after** the pseudonyms and configuration
 service are running
 
 ## Disclaimer
