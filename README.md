@@ -1,9 +1,11 @@
 # warden
 
-An experimental rewrite of the Tazama platform in Rust.
+An experimental rewrite of the core Tazama platform processors in Rust.
 
 [![codecov](https://codecov.io/github/rtkay123/warden/graph/badge.svg?token=D2N2885O77)](https://codecov.io/github/rtkay123/warden)
+![GitHub License](https://img.shields.io/github/license/rtkay123/warden)
 [![ci](https://github.com/rtkay123/warden/actions/workflows/ci.yaml/badge.svg)](https://github.com/rtkay123/warden/actions/workflows/ci.yaml)
+![status: Experimental](https://img.shields.io/badge/status-experimental-orange)
 
 ## Project Structure
 
@@ -97,9 +99,22 @@ docker build -f crates/configuration/Dockerfile -t warden-config:latest .
 docker run -p 1304:1304 warden-config:latest 
 ```
 
+> [!TIP]
+> Some processors leverage conditional compilation to toggle additional features.
+Checkout each processor's documentation to see what else it is capable of
+
+### Testing End-to-End
+
+An example for using [Bruno] for API testing is avaiable through the [sample collection and environment](./contrib/bruno/)
+. This collection supplies initial configuration data and can be used for triggering the end-to-end flow
+
 > [!IMPORTANT]
 > You can run the applications in any order **after** the pseudonyms and configuration
 service are running
+
+## License
+
+This project is licensed under AGPL-3.0
 
 ## Disclaimer
 
