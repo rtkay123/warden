@@ -24,7 +24,7 @@ An experimental rewrite of the core Tazama platform processors in Rust.
 - [`protoc`] - protobuf compiler
 - [`cargo`] - Rust's package manager
 - [`rustc`] - MSRV 1.89
-- [`docker`] - (optional)
+- [docker] - (optional)
 
 > [!TIP]
 > If planning to run on docker, you do not need the other 3 dependencies
