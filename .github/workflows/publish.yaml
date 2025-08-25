@@ -3,7 +3,7 @@ permissions:
   packages: write
 on:
   push:
-    branches: [master]
+    # branches: [master]
     tags: [v*]
   workflow_dispatch:
     inputs:
