@@ -782,7 +782,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "778e2ac28f6c47af28e4907f13ffd1e1ddbd400980a9abd7c8df189bf578a5ad"
 dependencies = [
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.60.2",
 ]
 
 [[package]]
@@ -2479,7 +2479,7 @@ dependencies = [
  "sqlx",
  "time",
  "tokio",
- "tonic 0.14.1",
+ "tonic 0.14.2",
  "tracing",
  "tracing-opentelemetry",
  "uuid",
@@ -2553,7 +2553,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys",
- "windows-sys 0.52.0",
+ "windows-sys 0.60.2",
 ]
 
 [[package]]
@@ -3458,9 +3458,9 @@ dependencies = [
 
 [[package]]
 name = "tonic"
-version = "0.14.1"
+version = "0.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "67ac5a8627ada0968acec063a4746bf79588aa03ccb66db2f75d7dce26722a40"
+checksum = "eb7613188ce9f7df5bfe185db26c5814347d110db17920415cf2fbcad85e7203"
 dependencies = [
  "async-trait",
  "axum",
@@ -3499,20 +3499,20 @@ dependencies = [
 
 [[package]]
 name = "tonic-prost"
-version = "0.14.1"
+version = "0.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b9c511b9a96d40cb12b7d5d00464446acf3b9105fd3ce25437cfe41c92b1c87d"
+checksum = "66bd50ad6ce1252d87ef024b3d64fe4c3cf54a86fb9ef4c631fdd0ded7aeaa67"
 dependencies = [
  "bytes",
  "prost 0.14.1",
- "tonic 0.14.1",
+ "tonic 0.14.2",
 ]
 
 [[package]]
 name = "tonic-prost-build"
-version = "0.14.1"
+version = "0.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8ef298fcd01b15e135440c4b8c974460ceca4e6a5af7f1c933b08e4d2875efa1"
+checksum = "b4a16cba4043dc3ff43fcb3f96b4c5c154c64cbd18ca8dce2ab2c6a451d058a2"
 dependencies = [
  "prettyplease",
  "proc-macro2",
@@ -3526,27 +3526,27 @@ dependencies = [
 
 [[package]]
 name = "tonic-reflection"
-version = "0.14.1"
+version = "0.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0267a0073385cd94996197d12acb1856a3a0a2367482c726a48a769f6fed8a3a"
+checksum = "34da53e8387581d66db16ff01f98a70b426b091fdf76856e289d5c1bd386ed7b"
 dependencies = [
  "prost 0.14.1",
  "prost-types 0.14.1",
  "tokio",
  "tokio-stream",
- "tonic 0.14.1",
+ "tonic 0.14.2",
  "tonic-prost",
 ]
 
 [[package]]
 name = "tonic-types"
-version = "0.14.1"
+version = "0.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2830bdf6d112fe42b060125a5eaf9242e1f63cc48085951879d7c4ae21247daa"
+checksum = "37c8dfa7c722a8fb39faed16908397743dec84e8d331aa7a91ea9e40aaea457c"
 dependencies = [
  "prost 0.14.1",
  "prost-types 0.14.1",
- "tonic 0.14.1",
+ "tonic 0.14.2",
 ]
 
 [[package]]
@@ -3962,7 +3962,7 @@ dependencies = [
  "sqlx",
  "time",
  "tokio",
- "tonic 0.14.1",
+ "tonic 0.14.2",
  "tower",
  "tower-http",
  "tracing",
@@ -3995,7 +3995,7 @@ dependencies = [
  "serde_json",
  "sqlx",
  "tokio",
- "tonic 0.14.1",
+ "tonic 0.14.2",
  "tracing",
  "tracing-opentelemetry",
  "uuid",
@@ -4022,7 +4022,7 @@ dependencies = [
  "sqlx",
  "time",
  "tokio",
- "tonic 0.14.1",
+ "tonic 0.14.2",
  "tonic-reflection",
  "tower",
  "tower-http",
@@ -4048,7 +4048,7 @@ dependencies = [
  "serde",
  "serde_json",
  "time",
- "tonic 0.14.1",
+ "tonic 0.14.2",
  "tonic-prost",
  "tonic-prost-build",
  "tonic-types",
@@ -4062,7 +4062,7 @@ dependencies = [
  "axum",
  "metrics",
  "metrics-exporter-prometheus",
- "tonic 0.14.1",
+ "tonic 0.14.2",
  "tower-http",
  "tracing",
  "warden-stack",
@@ -4082,7 +4082,7 @@ dependencies = [
  "sqlx",
  "time",
  "tokio",
- "tonic 0.14.1",
+ "tonic 0.14.2",
  "tracing",
  "warden-core",
  "warden-stack",
@@ -4105,7 +4105,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tokio",
- "tonic 0.14.1",
+ "tonic 0.14.2",
  "tracing",
  "tracing-opentelemetry",
  "uuid",
@@ -4134,7 +4134,7 @@ dependencies = [
  "sqlx",
  "thiserror 2.0.16",
  "tokio",
- "tonic 0.14.1",
+ "tonic 0.14.2",
  "tracing",
  "tracing-loki",
  "tracing-opentelemetry",
@@ -4158,7 +4158,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tokio",
- "tonic 0.14.1",
+ "tonic 0.14.2",
  "tracing",
  "tracing-opentelemetry",
  "uuid",
@@ -4329,7 +4329,7 @@ version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf221c93e13a30d793f7645a0e7762c55d169dbb0a49671918a2319d289b10bb"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.48.0",
 ]
 
 [[package]]
