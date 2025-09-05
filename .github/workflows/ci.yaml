@@ -158,7 +158,7 @@ jobs:
       - name: Start stack
         run: docker compose -f contrib/docker-compose/compose.yaml up -d
       - name: Setup node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '22'
       - name: Download artifacts
