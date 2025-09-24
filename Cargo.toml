@@ -10,7 +10,7 @@ description = "A rule-based fraud detection platform"
 
 [workspace.dependencies]
 anyhow = "1.0.98"
-async-nats = "0.42.0"
+async-nats = "0.43.0"
 axum = "0.8.4"
 bon = "3.4.0"
 clap = "4.5.43"
