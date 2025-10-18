@@ -16,6 +16,10 @@
       "matchPackageNames": ["actions/setup-node"],
       "automerge": true,
       "automergeType": "branch"
+    },
+    {
+      "matchPackageNames": ["/opentelemetry/"],
+      "groupName": "opentelemetry"
     }
   ]
 }

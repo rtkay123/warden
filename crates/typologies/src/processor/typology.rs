@@ -30,7 +30,10 @@ pub async fn process_typology(
         let context = global::get_text_map_propagator(|propagator| {
             propagator.extract(&extractor::HeaderMap(headers))
         });
-        span.set_parent(context);
+
+        if let Err(e) = span.set_parent(context) {
+            error!("{e:?}");
+        };
     };
 
     let payload: Payload = Message::decode(message.payload.as_ref())?;

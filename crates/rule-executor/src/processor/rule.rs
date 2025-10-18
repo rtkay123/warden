@@ -26,7 +26,10 @@ pub async fn process_rule(message: jetstream::Message, state: AppHandle) -> Resu
         let context = global::get_text_map_propagator(|propagator| {
             propagator.extract(&nats::extractor::HeaderMap(headers))
         });
-        span.set_parent(context);
+
+        if let Err(e) = span.set_parent(context) {
+            error!("{e:?}");
+        };
     };
 
     let mut payload: Payload = prost::Message::decode(message.payload.as_ref())?;

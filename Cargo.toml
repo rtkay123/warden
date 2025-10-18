@@ -19,11 +19,11 @@ futures-util = { version = "0.3.31", default-features = false }
 metrics = { version = "0.24.2", default-features = false }
 metrics-exporter-prometheus = { version = "0.17.2", default-features = false }
 moka = "0.12.10"
-opentelemetry = { version = "0.30.0", default-features = false }
-opentelemetry-http = "0.30.0"
-opentelemetry-otlp = { version = "0.30.0", default-features = false }
-opentelemetry-semantic-conventions = { version = "0.30.0", default-features = false }
-opentelemetry_sdk = { version = "0.30.0", default-features = false }
+opentelemetry = { version = "0.31.0", default-features = false }
+opentelemetry-http = "0.31.0"
+opentelemetry-otlp = { version = "0.31.0", default-features = false }
+opentelemetry-semantic-conventions = { version = "0.31.0", default-features = false }
+opentelemetry_sdk = { version = "0.31.0", default-features = false }
 prost = "0.14.1"
 redis = { version = "0.32.5", default-features = false }
 secrecy = "0.10.3"
@@ -31,7 +31,7 @@ serde = "1.0.219"
 serde_json = "1.0.142"
 sqlx = { version = "0.8.6", default-features = false }
 thiserror = "2.0.12"
-tracing-opentelemetry = "0.31.0"
+tracing-opentelemetry = "0.32.0"
 url = "2.5.4"
 time = "0.3.41"
 tokio = "1.47.1"

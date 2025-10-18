@@ -17,10 +17,13 @@ pub async fn handle(message: Message, state: AppHandle) -> anyhow::Result<()> {
     let span = Span::current();
 
     if let Some(ref headers) = message.headers {
-        let context = global::get_text_map_propagator(|propagator| {
+        let cx = global::get_text_map_propagator(|propagator| {
             propagator.extract(&extractor::HeaderMap(headers))
         });
-        span.set_parent(context);
+
+        if let Err(e) = span.set_parent(cx) {
+            tracing::error!("{e:?}");
+        };
     };
 
     let mut payload: Payload = prost::Message::decode(message.payload.as_ref())?;
