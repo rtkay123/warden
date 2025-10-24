@@ -117,7 +117,7 @@ jobs:
           cache-to: type=gha,mode=max
           outputs: type=docker,dest=/tmp/${{ matrix.crate }}.tar
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: warden-${{ matrix.crate }}
           path: /tmp/${{ matrix.crate }}.tar
@@ -162,7 +162,7 @@ jobs:
         with:
           node-version: '22'
       - name: Download artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           path: warden-images
           pattern: warden-*
@@ -191,7 +191,7 @@ jobs:
             configuration/typology/01-create.bru \
             --env warden --reporter-html results.html
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-results
           path: contrib/bruno/results.html
