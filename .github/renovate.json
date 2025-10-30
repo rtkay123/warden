@@ -5,6 +5,7 @@
   ],
   "automergeType": "branch",
   "semanticCommits": "enabled",
+  "schedule": "* * * * 5,6",
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch"],
