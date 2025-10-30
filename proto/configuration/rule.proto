@@ -52,7 +52,9 @@ message DeleteRuleConfigurationRequest {
 }
 
 message UpdateRuleRequest {
-  RuleConfiguration configuration = 1;
+  string id = 1;
+  string version = 2;
+  RuleConfiguration configuration = 3;
 }
 
 message GetRuleConfigResponse {

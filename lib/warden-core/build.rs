@@ -166,4 +166,8 @@ fn add_openapi(config: tonic_prost_build::Builder) -> tonic_prost_build::Builder
             ".configuration.rule.DeleteRuleConfigurationRequest",
             "#[derive(utoipa::IntoParams)]",
         )
+        .field_attribute(
+            ".iso20022.pacs008.FIToFICustomerCreditTransferV12.cdt_trf_tx_inf",
+            "#[schema(min_items = 1, max_items = 1)]",
+        )
 }

@@ -172,7 +172,7 @@ mod tests {
 
     #[test]
     fn test_round_trip_conversion() {
-        let original = 1234.567_890_123;
+        let original = 1_234.567_890_123;
         let money = Money::try_from((original, "USD")).unwrap();
         let back: f64 = money.into();
         assert!(

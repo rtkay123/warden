@@ -59,7 +59,9 @@ message GetTypologyConfigResponse {
 }
 
 message UpdateTypologyConfigRequest {
-  TypologyConfiguration configuration = 1;
+  string id = 1;
+  string version = 2;
+  TypologyConfiguration configuration = 3;
 }
 
 service QueryTypologies {

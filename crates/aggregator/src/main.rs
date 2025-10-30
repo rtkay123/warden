@@ -4,7 +4,7 @@ mod state;
 
 use anyhow::Result;
 use clap::Parser;
-use tracing::error;
+use tracing::{error, trace};
 use warden_stack::{Configuration, Services, tracing::Tracing};
 
 use crate::state::AppState;
@@ -77,6 +77,12 @@ async fn main() -> Result<()> {
     };
 
     let state = AppState::create(services, &config).await?;
+
+    trace!("running migrations");
+    sqlx::migrate!("./migrations")
+        .run(&state.services.postgres)
+        .await?;
+    trace!("migrations updated");
 
     processor::serve(state, provider).await?;
 

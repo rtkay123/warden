@@ -16,7 +16,9 @@ impl Interceptor for MyInterceptor {
             propagator.extract(&extractor::MetadataMap(request.metadata()))
         });
 
-        span.set_parent(cx);
+        if let Err(e) = span.set_parent(cx) {
+            tracing::error!("{e:?}");
+        };
 
         Ok(request)
     }

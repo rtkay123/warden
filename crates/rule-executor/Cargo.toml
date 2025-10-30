@@ -19,6 +19,14 @@ opentelemetry-semantic-conventions.workspace = true
 prost.workspace = true
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
+sqlx = { workspace = true, features = [
+    "bigdecimal",
+    "macros",
+    "postgres",
+    "runtime-tokio",
+    "time",
+    "tls-rustls",
+] }
 time = { workspace = true, features = ["serde"] }
 tokio = { workspace = true, features = [
     "macros",

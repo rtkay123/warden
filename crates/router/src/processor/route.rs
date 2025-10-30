@@ -3,7 +3,7 @@ use std::{collections::HashSet, sync::Arc};
 
 use opentelemetry::global;
 use prost::Message;
-use tracing::{Instrument, Span, info_span, instrument, trace, trace_span, warn};
+use tracing::{Instrument, Span, error, info_span, instrument, trace, trace_span, warn};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 use warden_core::{google, message::Payload};
 use warden_stack::tracing::telemetry::nats;
@@ -18,7 +18,9 @@ pub async fn route(message: async_nats::jetstream::Message, state: AppHandle) ->
         let context = global::get_text_map_propagator(|propagator| {
             propagator.extract(&nats::extractor::HeaderMap(headers))
         });
-        span.set_parent(context);
+        if let Err(e) = span.set_parent(context) {
+            error!("{e:?}");
+        };
     };
 
     let payload: Payload = Message::decode(message.payload.as_ref())?;

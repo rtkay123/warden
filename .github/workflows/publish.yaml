@@ -1,0 +1,72 @@
+permissions:
+  contents: read
+  packages: write
+on:
+  push:
+    # branches: [master]
+    tags: [v*]
+  workflow_dispatch:
+    inputs:
+      processors:
+        description: "List of processors"
+        type: string
+        required: false
+        default: "['pseudonyms', 'warden', 'configuration', 'router', 'rule-executor', 'aggregator', 'typologies']"
+      apiDoc:
+        description: 'API Documentation'
+        required: false
+        type: choice
+        options:
+        - scalar
+        - swagger
+        - redoc
+        - rapidoc
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+name: publish
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        crate: ${{ fromJSON(github.event.inputs.processors || '["pseudonyms", "warden", "configuration", "router", "rule-executor", "aggregator", "typologies"]') }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.actor }}/warden-${{ matrix.crate }}${{ (matrix.crate == 'warden' || matrix.crate == 'configuration') && format('-{0}', github.event.inputs.apiDoc || 'scalar') || '' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          sbom: true
+          push: true
+          context: .
+          file: crates/${{ matrix.crate }}/Dockerfile
+          provenance: mode=max
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            FEATURES=${{ github.event.inputs.apiDoc || 'scalar' }}

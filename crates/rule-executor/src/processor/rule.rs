@@ -2,15 +2,17 @@ use std::sync::Arc;
 
 use anyhow::Result;
 mod configuration;
+mod determine_outcome;
+mod rule_901;
 
 use async_nats::jetstream;
 use opentelemetry::global;
-use tracing::{Span, error, instrument, warn};
+use tracing::{Span, debug, error, instrument, warn};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 use warden_core::{configuration::rule::RuleConfigurationRequest, message::Payload};
 use warden_stack::tracing::telemetry::nats;
 
-use crate::state::AppHandle;
+use crate::{processor::publish, state::AppHandle};
 
 #[instrument(
     skip(message, state),
@@ -24,10 +26,13 @@ pub async fn process_rule(message: jetstream::Message, state: AppHandle) -> Resu
         let context = global::get_text_map_propagator(|propagator| {
             propagator.extract(&nats::extractor::HeaderMap(headers))
         });
-        span.set_parent(context);
+
+        if let Err(e) = span.set_parent(context) {
+            error!("{e:?}");
+        };
     };
 
-    let payload: Payload = prost::Message::decode(message.payload.as_ref())?;
+    let mut payload: Payload = prost::Message::decode(message.payload.as_ref())?;
 
     if payload.transaction.is_none() {
         warn!("transaction is empty - proceeding with ack");
@@ -58,9 +63,22 @@ pub async fn process_rule(message: jetstream::Message, state: AppHandle) -> Resu
     span.record("rule_id", &req.id);
     span.record("rule_version", &req.version);
 
-    let _rule_configuration = configuration::get_configuration(req, Arc::clone(&state))
+    let config = configuration::get_configuration(req, Arc::clone(&state))
         .await
         .unwrap();
+
+    match rule_901::process_901(&config, &payload, state.clone()).await {
+        Ok(res) => {
+            debug!(outcome = ?res.reason, "rule executed");
+            payload.rule_result = Some(res);
+            publish::to_typologies(&config.id, state, payload)
+                .await
+                .inspect_err(|e| error!("{e}"))?;
+        }
+        Err(e) => {
+            error!("{e}");
+        }
+    };
 
     if let Err(e) = message.ack().await {
         error!("ack error {e:?}");

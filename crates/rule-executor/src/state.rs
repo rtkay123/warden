@@ -9,7 +9,7 @@ use warden_core::configuration::rule::{
     RuleConfiguration, RuleConfigurationRequest,
     query_rule_configuration_client::QueryRuleConfigurationClient,
 };
-use warden_stack::Configuration;
+use warden_stack::{Configuration, sqlx::PgPool};
 
 use crate::cnfg::LocalConfig;
 use warden_middleware::grpc::interceptor::{Intercepted, MyInterceptor};
@@ -17,6 +17,7 @@ use warden_middleware::grpc::interceptor::{Intercepted, MyInterceptor};
 #[derive(Clone)]
 pub struct Services {
     pub jetstream: Context,
+    pub postgres: PgPool,
 }
 
 pub type AppHandle = Arc<AppState>;

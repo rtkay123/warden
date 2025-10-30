@@ -2,7 +2,7 @@ name: warden
 
 services:
   loki:
-    image: grafana/loki:3.5.3
+    image: grafana/loki:3.5.7
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
@@ -10,7 +10,7 @@ services:
       - warden
 
   promtail:
-    image: grafana/promtail:3.5.3
+    image: grafana/promtail:3.5.7
     volumes:
       - /var/log:/var/log
     command: -config.file=/etc/promtail/config.yml
@@ -18,7 +18,7 @@ services:
       - warden
 
   grafana:
-    image: grafana/grafana:12.1.0
+    image: grafana/grafana:12.2.1
     environment:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
       - GF_AUTH_ANONYMOUS_ENABLED=true
@@ -34,7 +34,7 @@ services:
   # Tempo runs as user 10001, and docker compose creates the volume as root.
   # As such, we need to chown the volume in order for Tempo to start correctly.
   init:
-    image: &tempoImage grafana/tempo:2.8.2
+    image: &tempoImage grafana/tempo:2.9.0
     user: root
     entrypoint:
       - "chown"
@@ -59,7 +59,7 @@ services:
 
   # And put them in an OTEL collector pipeline...
   otel-collector:
-    image: otel/opentelemetry-collector:0.131.1
+    image: otel/opentelemetry-collector:0.138.0
     command: [ "--config=/etc/otel-collector.yaml" ]
     volumes:
       - ./config/otel-collector.yaml:/etc/otel-collector.yaml
@@ -67,7 +67,7 @@ services:
       - warden
 
   prometheus:
-    image: prom/prometheus:v3.5.0
+    image: prom/prometheus:v3.7.2
     command:
       - --config.file=/etc/prometheus.yaml
       - --web.enable-remote-write-receiver

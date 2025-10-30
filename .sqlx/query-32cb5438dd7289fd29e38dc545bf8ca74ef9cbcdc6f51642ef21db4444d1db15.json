@@ -1,0 +1,25 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "select count(*) from transaction_relationship tr\n                 where tr.destination = $1\n                   and tr.tx_tp = $2\n                   and extract(epoch from ($3::timestamptz - tr.cre_dt_tm)) * 1000 <= $4\n                   and tr.cre_dt_tm <= $3::timestamptz",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "count",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Timestamptz",
+        "Numeric"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "32cb5438dd7289fd29e38dc545bf8ca74ef9cbcdc6f51642ef21db4444d1db15"
+}

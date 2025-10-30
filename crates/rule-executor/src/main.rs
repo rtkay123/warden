@@ -1,4 +1,5 @@
 mod cnfg;
+
 mod processor;
 mod state;
 
@@ -45,6 +46,9 @@ async fn main() -> Result<()> {
         .nats_jetstream(&config.nats)
         .await
         .inspect_err(|e| error!("nats: {e}"))?
+        .postgres(&config.database)
+        .await
+        .inspect_err(|e| error!("postgres: {e}"))?
         .build();
 
     let jetstream = services
@@ -52,7 +56,15 @@ async fn main() -> Result<()> {
         .take()
         .ok_or_else(|| anyhow::anyhow!("jetstream is not ready"))?;
 
-    let services = state::Services { jetstream };
+    let postgres = services
+        .postgres
+        .take()
+        .ok_or_else(|| anyhow::anyhow!("database is not ready"))?;
+
+    let services = state::Services {
+        jetstream,
+        postgres,
+    };
 
     processor::serve(services, config, provider)
         .await

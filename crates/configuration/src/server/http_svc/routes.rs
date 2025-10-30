@@ -31,3 +31,17 @@ pub fn router(store: AppHandle) -> OpenApiRouter {
         ))
         .with_state(store)
 }
+
+#[cfg(test)]
+pub(crate) fn test_config() -> warden_stack::Configuration {
+    use warden_stack::Configuration;
+
+    let config_path = "warden-config.toml";
+
+    let config = config::Config::builder()
+        .add_source(config::File::new(config_path, config::FileFormat::Toml))
+        .build()
+        .unwrap();
+
+    config.try_deserialize::<Configuration>().unwrap()
+}

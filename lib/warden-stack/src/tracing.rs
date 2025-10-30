@@ -46,21 +46,32 @@ impl<S: tracing_builder::IsComplete> TracingBuilder<S> {
     }
 }
 
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//
-//     #[test]
-//     fn build() {
-//         let builder = Tracing::builder().build();
-//         let level = crate::Monitoring {
-//             log_level: "info".to_string(),
-//             #[cfg(feature = "opentelemetry")]
-//             opentelemetry_endpoint: "http://localhost:4317".into(),
-//             #[cfg(feature = "tracing-loki")]
-//             loki_endpoint: "http://localhost:3100".into(),
-//         };
-//         builder.init(&level);
-//         builder.loki_task
-//     }
-// }
+#[cfg(test)]
+mod tests {
+    use crate::{AppConfig, Environment, Monitoring};
+
+    use super::*;
+
+    #[tokio::test]
+    async fn build() {
+        let config = Monitoring {
+            log_level: "error".to_string(),
+            opentelemetry_endpoint: "http://localhost:4317".into(),
+            loki_endpoint: "http://localhost:3100".into(),
+        };
+
+        let app_config = AppConfig {
+            name: "test".into(),
+            version: "1.0.0".into(),
+            env: Environment::Development,
+            port: 6969,
+        };
+
+        let tracing = Tracing::builder().opentelemetry(&app_config, &config);
+        assert!(tracing.is_ok());
+
+        let tracing = tracing.unwrap().loki(&app_config, &config);
+
+        assert!(tracing.is_ok());
+    }
+}
