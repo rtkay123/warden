@@ -35,7 +35,7 @@ jobs:
       matrix:
         crate: ${{ fromJSON(github.event.inputs.processors || '["pseudonyms", "warden", "configuration", "router", "rule-executor", "aggregator", "typologies"]') }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
