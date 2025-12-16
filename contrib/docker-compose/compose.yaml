@@ -22,7 +22,7 @@ services:
       retries: 3
 
   valkey:
-    image: valkey/valkey:9.0.0-alpine
+    image: valkey/valkey:9.0.1-alpine
     command: "valkey-server --port 6379"
     ports:
       - "6379:6379"
