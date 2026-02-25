@@ -1725,7 +1725,7 @@ dependencies = [
  "opentelemetry-http",
  "opentelemetry-proto",
  "opentelemetry_sdk",
- "prost 0.14.1",
+ "prost 0.14.3",
  "thiserror 2.0.17",
  "tokio",
  "tonic",
@@ -1739,7 +1739,7 @@ checksum = "a7175df06de5eaee9909d4805a3d07e28bb752c34cab57fa9cff549da596b30f"
 dependencies = [
  "opentelemetry",
  "opentelemetry_sdk",
- "prost 0.14.1",
+ "prost 0.14.3",
  "tonic",
  "tonic-prost",
 ]
@@ -1953,12 +1953,12 @@ dependencies = [
 
 [[package]]
 name = "prost"
-version = "0.14.1"
+version = "0.14.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7231bd9b3d3d33c86b58adbac74b5ec0ad9f496b19d22801d773636feaa95f3d"
+checksum = "d2ea70524a2f82d518bce41317d0fae74151505651af45faf1ffbd6fd33f0568"
 dependencies = [
  "bytes",
- "prost-derive 0.14.1",
+ "prost-derive 0.14.3",
 ]
 
 [[package]]
@@ -1974,7 +1974,7 @@ dependencies = [
  "once_cell",
  "petgraph",
  "prettyplease",
- "prost 0.14.1",
+ "prost 0.14.3",
  "prost-types 0.14.1",
  "pulldown-cmark",
  "pulldown-cmark-to-cmark",
@@ -1998,9 +1998,9 @@ dependencies = [
 
 [[package]]
 name = "prost-derive"
-version = "0.14.1"
+version = "0.14.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9120690fafc389a67ba3803df527d0ec9cbbc9cc45e4cc20b332996dfb672425"
+checksum = "27c6023962132f4b30eb4c172c91ce92d933da334c59c23cddee82358ddafb0b"
 dependencies = [
  "anyhow",
  "itertools",
@@ -2024,7 +2024,7 @@ version = "0.14.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b9b4db3d6da204ed77bb26ba83b6122a73aeb2e87e25fbf7ad2e84c4ccbf8f72"
 dependencies = [
- "prost 0.14.1",
+ "prost 0.14.3",
 ]
 
 [[package]]
@@ -2359,7 +2359,7 @@ dependencies = [
  "moka",
  "opentelemetry",
  "opentelemetry-semantic-conventions",
- "prost 0.14.1",
+ "prost 0.14.3",
  "serde",
  "serde_json",
  "sqlx",
@@ -3360,7 +3360,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "66bd50ad6ce1252d87ef024b3d64fe4c3cf54a86fb9ef4c631fdd0ded7aeaa67"
 dependencies = [
  "bytes",
- "prost 0.14.1",
+ "prost 0.14.3",
  "tonic",
 ]
 
@@ -3386,7 +3386,7 @@ version = "0.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "34da53e8387581d66db16ff01f98a70b426b091fdf76856e289d5c1bd386ed7b"
 dependencies = [
- "prost 0.14.1",
+ "prost 0.14.3",
  "prost-types 0.14.1",
  "tokio",
  "tokio-stream",
@@ -3400,7 +3400,7 @@ version = "0.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "37c8dfa7c722a8fb39faed16908397743dec84e8d331aa7a91ea9e40aaea457c"
 dependencies = [
- "prost 0.14.1",
+ "prost 0.14.3",
  "prost-types 0.14.1",
  "tonic",
 ]
@@ -3814,7 +3814,7 @@ dependencies = [
  "metrics-exporter-prometheus",
  "opentelemetry",
  "opentelemetry-semantic-conventions",
- "prost 0.14.1",
+ "prost 0.14.3",
  "serde",
  "serde_json",
  "sqlx",
@@ -3848,7 +3848,7 @@ dependencies = [
  "futures-util",
  "opentelemetry",
  "opentelemetry-semantic-conventions",
- "prost 0.14.1",
+ "prost 0.14.3",
  "serde",
  "serde_json",
  "sqlx",
@@ -3874,7 +3874,7 @@ dependencies = [
  "metrics-exporter-prometheus",
  "opentelemetry",
  "opentelemetry-semantic-conventions",
- "prost 0.14.1",
+ "prost 0.14.3",
  "serde",
  "serde_json",
  "sqlx",
@@ -3902,7 +3902,7 @@ dependencies = [
 name = "warden-core"
 version = "0.1.0"
 dependencies = [
- "prost 0.14.1",
+ "prost 0.14.3",
  "serde",
  "serde_json",
  "time",
@@ -3959,7 +3959,7 @@ dependencies = [
  "moka",
  "opentelemetry",
  "opentelemetry-semantic-conventions",
- "prost 0.14.1",
+ "prost 0.14.3",
  "serde",
  "serde_json",
  "tokio",
@@ -4012,7 +4012,7 @@ dependencies = [
  "moka",
  "opentelemetry",
  "opentelemetry-semantic-conventions",
- "prost 0.14.1",
+ "prost 0.14.3",
  "serde",
  "serde_json",
  "tokio",
