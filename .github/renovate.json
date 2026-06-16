@@ -21,6 +21,10 @@
     {
       "matchPackageNames": ["/opentelemetry/"],
       "groupName": "opentelemetry"
+    },
+    {
+      "matchPackageNames": ["/redis/"],
+      "groupName": "redis"
     }
   ]
 }
